@@ -1,0 +1,16 @@
+package model.tasks;
+
+import java.io.OutputStream;
+
+/**
+ * Adapter that allows the task model to talk to the serial model through specified methods only.
+ * @author Christian
+ *
+ */
+public interface TaskToSerialModelAdapter {
+
+	/**
+	 * @return the OutputStream being used to talk to the Arduino
+	 */
+	public OutputStream getOutputStream();
+}

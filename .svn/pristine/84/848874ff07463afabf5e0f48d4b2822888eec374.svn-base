@@ -1,0 +1,21 @@
+package model.tasks;
+
+import java.awt.Color;
+
+public class ExecutionParam {
+
+	public double fluidAmount;
+	
+	public double lowerAmount;
+	
+	public double delay;
+	
+	public Color taskColor;
+	
+	public ExecutionParam(String fluidAmount, String delay, Color taskColor){
+		this.fluidAmount = Double.parseDouble(fluidAmount);
+		this.lowerAmount = 1;
+		this.delay = Double.parseDouble(delay);
+		this.taskColor = taskColor;
+	}
+}

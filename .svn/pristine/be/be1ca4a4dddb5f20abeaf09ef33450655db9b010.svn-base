@@ -1,0 +1,29 @@
+package model.plate.objects;
+
+import java.awt.geom.Point2D;
+
+/**
+ * Class that holds all information relevant to the arm's current state.
+ * @author Christian
+ *
+ */
+public class ArmState {
+
+	private Point2D currentLocation;
+	
+	public ArmState(Point2D currentLocation){
+		this.currentLocation = currentLocation;
+	}
+	
+	public double getX(){
+		return currentLocation.getX();
+	}
+	
+	public double getY(){
+		return currentLocation.getY();
+	}
+	
+	public void setLocation(double x, double y){
+		currentLocation = new Point2D.Double(x, y);
+	}
+}

@@ -1,0 +1,278 @@
+package main;
+
+import java.awt.Component;
+import java.awt.EventQueue;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.geom.Point2D;
+import java.io.OutputStream;
+import java.util.ArrayList;
+
+import view.MainGUI;
+import view.ViewToPlateModelAdapter;
+import view.ViewToSerialModelAdapter;
+import view.ViewToTaskModelAdapter;
+import model.externalcomm.ExternalCommModel;
+import model.externalcomm.ExternalToTaskAdapter;
+import model.plate.PlateModel;
+import model.plate.PlateModelToViewAdapter;
+import model.plate.objects.ArmState;
+import model.plate.objects.Plate;
+import model.plate.objects.PlateSpecifications;
+import model.plate.TaskAdapter;
+import model.serial.SerialModel;
+import model.serial.SerialModelToViewAdapter;
+import model.serial.SerialToTaskModelAdapter;
+import model.serialization.SaveType;
+import model.serialization.SerializationModel;
+import model.tasks.ExecutionParam;
+import model.tasks.SetupParam;
+import model.tasks.ITaskFactory;
+import model.tasks.TaskModel;
+import model.tasks.TaskToPlateModelAdapter;
+import model.tasks.TaskToSerialModelAdapter;
+import model.tasks.ViewAdapter;
+import model.tasks.basictasks.MultiTask;
+
+/**
+ * Controller for our M-V-C system. Makes instances of model and view
+ * when the program is run, and connects them via their appropriate
+ * adapters (initialized through anonymous inner classes).
+ */
+public class MainController {
+
+	private ExternalCommModel externalCommModel;
+	private PlateModel plateModel;
+	private SerialModel serialModel;
+	private TaskModel taskModel;
+	private SerializationModel serializationModel;
+	private MainGUI<ITaskFactory> view;
+	
+	/**
+	 * Makes controller that initializes both models and the view, using anonymous inner classes to link them together. 
+	 * For each adapter, description for each method lies in its interface.
+	 */
+	public MainController(){
+		externalCommModel = new ExternalCommModel(new ExternalToTaskAdapter(){
+
+			@Override
+			public void executeStage(int stageNumber) {
+				taskModel.executeStage(stageNumber);
+			}
+			@Override
+			public void addTaskAndExecute() {
+				
+			}
+			
+		});
+		
+		/**
+		 * Initializes plate model. Functions described here are ones that are called from the plate model 
+		 * to invoke some function in the view.
+		 */
+		plateModel = new PlateModel(new PlateModelToViewAdapter() {
+			@Override
+			public void updateView(){
+				view.update();
+			}
+		},	new TaskAdapter(){
+			@Override
+			public void drawTasks(Graphics g, double sF) {
+				taskModel.drawCurrentStage(g, sF);
+			}
+		});
+		
+		/**
+		 * Initializes serial model. Functions described here are ones that are called from the serial model 
+		 * to invoke some function in the view.
+		 */
+		serialModel = new SerialModel(new SerialModelToViewAdapter() {
+			@Override
+			public void addPortsToList(ArrayList<String> ports){
+				view.addPortsToList(ports);}
+			}, 
+			new SerialToTaskModelAdapter(){
+			@Override
+			public void executeNext(){
+				taskModel.executeNext();}
+			}
+		);
+		
+		taskModel = new TaskModel(new ViewAdapter(){
+
+			@Override
+			public int getCurrentStage() {
+				return view.getCurrentStage();
+			}
+
+			@Override
+			public void updateView() {
+				view.update();
+			}
+		}, new TaskToPlateModelAdapter(){
+
+			@Override
+			public Point2D getLocationFromNumber(int wellNumber) {
+				return plateModel.getLocationFromNumber(wellNumber);
+			}
+
+			@Override
+			public ArmState getArmState() {
+				return plateModel.getArmState();
+			}
+
+			@Override
+			public Point2D getLocationFromScreen(Point point) {
+				return plateModel.getLocationFromScreen(point);
+			}
+			
+		}, new TaskToSerialModelAdapter(){
+
+			@Override
+			public OutputStream getOutputStream() {
+				return serialModel.getOutputStream();
+			}
+			
+		});
+		
+		/**
+		 * Initializes view. Functions described here
+		 * are ones that are called from the view to invoke some function in the model.
+		 */
+		view = new MainGUI<ITaskFactory>(new ViewToPlateModelAdapter() {
+			@Override
+			public void addPlate(String numberingOrder, Point2D _platePos, PlateSpecifications _specs){
+				plateModel.addPlate(numberingOrder, _platePos, _specs);
+			}
+			@Override
+			public void paint(Graphics g){
+				plateModel.paintAll(g);
+			}
+			@Override
+			public void setFrame(Point2D borderSize, Component canvas) {
+				plateModel.setBorderFrame(borderSize, canvas);
+			}
+			@Override
+			public void clearAllPlates(){
+				plateModel.clearAllPlates();
+			}
+        }, new ViewToSerialModelAdapter(){
+        	@Override
+        	public void connectToPort(String _portName){
+        		serialModel.connectToPort(_portName);
+        	}
+			@Override
+			public void scanForPorts() {
+				serialModel.scanForPorts();
+			}
+        }, new ViewToTaskModelAdapter<ITaskFactory>(){
+        	
+			@Override
+			public void addToQueue(ExecutionParam executeParams, SetupParam setupParams, String source, String destination) {
+				taskModel.addToQueue(executeParams, setupParams, source, destination);
+			}
+			
+			@Override
+			public void addToQueue(ExecutionParam executeParams, SetupParam setupParams, Point source, Point destination) {
+				taskModel.addToQueue(executeParams, setupParams, source, destination);
+			}
+
+			@Override
+			public int addStage() {
+				return taskModel.addStage();
+			}
+			
+			@Override
+			public void clearAllStages(){
+				taskModel.clearAllStages();
+			}
+
+			@Override
+			public void executeStage(int stageNumber) {
+				taskModel.executeStage(stageNumber);
+			}
+
+			@Override
+			public void executeAllStages() {
+				taskModel.executeAllStages();
+			}
+
+			@Override
+			public void setCurrentStage(int stageNumber) {
+				taskModel.setCurrentStage(stageNumber);
+			}
+        }, new view.SerializationAdapter(){
+        	@Override
+			public void saveSpecs(String nickname, PlateSpecifications plateSpecs) {
+				serializationModel.savePlate(nickname, plateSpecs);
+			}
+			@Override
+			public PlateSpecifications loadSpecs(String nickname) {
+				return serializationModel.loadPlate(nickname);
+			}
+			@Override
+			public void loadWorkflow(String filename) {
+				serializationModel.loadWorkflow(filename);
+			}
+			@Override
+			public void saveWorkflow(String filename) {
+				serializationModel.saveWorkflow(filename);
+			}
+			@Override
+			public void deleteData(String filename, SaveType type) {
+				serializationModel.deleteData(filename, type);
+			}
+			@Override
+			public Iterable<String> updateDataList(SaveType type) {
+				return serializationModel.updateDataList(type);
+			}
+        });
+		
+		serializationModel = new SerializationModel(new model.serialization.TaskAdapter(){
+			@Override
+			public MultiTask getTasks() {
+				return taskModel.getTasks();
+			}
+			@Override
+			public void setTasks(MultiTask taskQueue) {
+				taskModel.setTasks(taskQueue);
+			}
+		}, new model.serialization.PlateAdapter(){
+			@Override
+			public Iterable<Plate> getPlateList() {
+				return plateModel.getPlateList();
+			}
+			@Override
+			public void setPlateList(Iterable<Plate> plates) {
+				plateModel.setPlateList(plates);
+			}
+		});
+	}
+	
+	/**
+	 * First thing called from main, initializes model and view, linking them together, 
+	 * before controller backs away.
+	 */
+	public void start(){
+		view.start();
+		externalCommModel.start();
+		plateModel.start();
+		serialModel.start();
+		serializationModel.start();
+	}
+	
+	/**
+	 * Launch the application, called right when program starts.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					new MainController().start();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+}

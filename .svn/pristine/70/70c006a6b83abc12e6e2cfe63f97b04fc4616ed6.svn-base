@@ -1,0 +1,75 @@
+package model.externalcomm;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
+
+public class ClientTask implements Runnable {
+	
+    private final Socket clientSocket;
+    
+    private BufferedReader inputStream;
+    
+    private ExternalToTaskAdapter taskModel;
+    
+    public ClientTask(Socket clientSocket, ExternalToTaskAdapter taskModel) {
+        this.clientSocket = clientSocket;
+        this.taskModel = taskModel;
+    }
+
+    @Override
+    public void run() {
+        System.out.println("Got a client !");
+
+        // Do whatever required to process the client's request
+        try {
+        	inputStream = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+		    while (true){
+		    	String clientSentence = inputStream.readLine();
+				processInput(clientSentence);
+		    }
+		    
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
+        try {
+            clientSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void processInput(String input){
+	    if (isInteger(input)){
+			taskModel.executeStage(Integer.parseInt(input)-1);
+		}
+		else{
+			sendMultiTask(input);
+		}
+    }
+    
+    private boolean isInteger(String s) {
+	    return isInteger(s,10);
+	}
+
+	private boolean isInteger(String s, int radix) {
+	    if(s.isEmpty()) return false;
+	    for(int i = 0; i < s.length(); i++) {
+	        if(i == 0 && s.charAt(i) == '-') {
+	            if(s.length() == 1) return false;
+	            else continue;
+	        }
+	        if(Character.digit(s.charAt(i),radix) < 0) return false;
+	    }
+	    return true;
+	}
+	
+	/**
+	 * 
+	 * @param multiTask
+	 */
+	private void sendMultiTask(String multiTask){
+	}
+}

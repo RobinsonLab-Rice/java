@@ -1,0 +1,192 @@
+package model.plate;
+
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
+import java.util.ArrayList;
+
+import model.plate.objects.ArmState;
+import model.plate.objects.BorderFrame;
+import model.plate.objects.Plate;
+import model.plate.objects.PlateSpecifications;
+import model.plate.objects.Well;
+
+/**
+ * Model that keeps track of the current state of the frame, cell plates, and the wells themselves. Essentially,
+ * keeps track of the physical world, any updates the user makes to it, and relays this between the view and
+ * serial communication model.
+ * @author Christian
+ *
+ */
+public class PlateModel {
+
+	/**
+	 * Adapter from plate model to main view.
+	 */
+	private PlateModelToViewAdapter viewAdapter;
+	
+	/**
+	 * Adapter from plate model to serial model.
+	 */
+	private TaskAdapter taskModel;
+	
+	/**
+	 * Dispatcher to talk to all wells.
+	 */
+	private WellDispatcher dispatcher;
+	
+	/**
+	 * All the plates that are currently on the screen.
+	 */
+	private ArrayList<Plate> plates;
+	
+	/**
+	 * The border representing the area the arm can move over.
+	 */
+	private BorderFrame border;
+	
+	/**
+	 * Current location of the arm, in steps.
+	 */
+	private ArmState armState;
+	
+	/**
+	 * Total number of wells on the area now.
+	 */
+	private int totalNumWells;
+	
+	/**
+	 * Constructor that links the model to view via its adapter.
+	 * @param _adapter - adapter linking model to view
+	 */
+	public PlateModel(PlateModelToViewAdapter viewAdapter, TaskAdapter serialAdapter){
+		totalNumWells = 1;
+		dispatcher = new WellDispatcher();
+		this.viewAdapter = viewAdapter;
+		this.taskModel = serialAdapter;
+		plates = new ArrayList<Plate>();
+	}
+	
+	/**
+	 * Sets the width/length of the area our arm can move over, as well as
+	 * where to draw it in the view.
+	 * @param _bounds - width/length of the area arm can move over
+	 * @param _canvas - canvas to draw the bounding box on
+	 */
+	public void setBorderFrame(Point2D bounds, Component canvas){
+		armState = new ArmState(bounds, dispatcher);
+		border = new BorderFrame(bounds, canvas);
+		viewAdapter.updateView();
+	}
+	
+	/**
+	 * Called by the controller, performs any start up tasks necessary for the model.
+	 */
+	public void start(){
+	}
+	
+	/**
+	 * Adds a plate to the current ArrayList of plates when requested.
+	 * @param numberingOrder - order to number all the wells on the plate
+	 * @param _platePos - where to position the (currently) top left corner of the plate
+	 * @param _specs - set of specifications for this particular plate, usually from data sheet
+	 */
+	public void addPlate(String numberingOrder, Point2D _platePos, PlateSpecifications _specs){
+		Plate plate = new Plate(_platePos, _specs);
+		plates.add(plate);
+		totalNumWells = plate.addAllWells(dispatcher, numberingOrder, totalNumWells);
+		viewAdapter.updateView();
+	}
+	
+	/**
+	 * When the request is received from the view, draw everything necessary (border, plates, wells).
+	 * @param g - graphics object to draw everything with
+	 */
+	public void paintAll(final Graphics g){
+		final double sF = border.getScaleFactor();
+		//tell the border to paint itself
+		border.drawBorderFrame(g);
+		//tell all plates to paint themselves
+		for (int i = 0; i < plates.size(); i++){
+			plates.get(i).paint(g, sF);
+		}
+		//tell dispatcher to get all wells to paint
+		dispatcher.notifyAll(
+			new IWellCmd(){
+				public void apply(Well context, WellDispatcher disp){
+					context.paint(g, sF);
+				}
+			}
+		);
+		//tell the serial model to draw whatever tasks it needs to
+		taskModel.drawTasks(g, sF);
+	}
+	
+	/**
+	 * Clears all plates from the model.
+	 */
+	public void clearAllPlates(){
+		totalNumWells = 1;
+		plates.clear();
+		dispatcher.deleteObservers();
+		viewAdapter.updateView();
+	}
+	
+	/**
+	 * Returns the well's location given its number.
+	 * @return location of the well, in cm from origin
+	 */
+	public Point2D getLocationFromNumber(final int wellNumber){
+		//find well with the input number through the dispatcher
+		final ArrayList<Point2D> returnPoint = new ArrayList<Point2D>();
+		//set a default value to return if nothing is found
+		returnPoint.add(new Point2D.Double(-1,-1));
+		dispatcher.notifyAll(
+			new IWellCmd(){
+				public void apply(Well context, WellDispatcher disp){
+					if (context.getNumber() == wellNumber){
+						//if we find a match, overwrite the default value
+						returnPoint.set(0, context.getAbsoluteLocation());
+					}
+				}
+			}
+		);
+		//if no well matches the number, tell the user and return a bad location
+		if (returnPoint.get(0).equals(new Point2D.Double(-1,-1))){
+			System.out.println("Could not find the well with specified number.");
+		}
+		return returnPoint.get(0);
+	}
+
+	/**
+	 * @return variable encompassing current arm state
+	 */
+	public ArmState getArmState() {
+		return armState;
+	}
+	
+	/**
+	 * @return dispatcher for all wells
+	 */
+	public WellDispatcher getWellDispatcher(){
+		return dispatcher;
+	}
+
+	public Point2D getLocationFromScreen(Point point) {
+		final Point2D clicked = new Point2D.Double(point.x/border.getScaleFactor(), point.y/border.getScaleFactor());
+		final ArrayList<Point2D> returnPoint = new ArrayList<Point2D>();
+		returnPoint.add(null);
+		dispatcher.notifyAll(
+			new IWellCmd(){
+				public void apply(Well context, WellDispatcher disp){
+					if (context.getAbsoluteLocation().distance(clicked) < context.getDiameter()/2){
+						returnPoint.set(0,context.getAbsoluteLocation());
+					}
+				}
+			}
+		);
+		return returnPoint.get(0);
+	}
+}

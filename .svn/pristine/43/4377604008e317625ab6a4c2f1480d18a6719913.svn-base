@@ -1,0 +1,37 @@
+package view;
+
+import model.plate.objects.PlateSpecifications;
+
+/**
+ * Adapter to link the view to the plate model. All functions that the view needs the model
+ * to perform are described here.
+ * @author Christian
+ *
+ */
+public interface SerializationAdapter {
+	
+	/**
+	 * Tells plate model to save given plate specifications.
+	 * @param nickname - name to later refer to this specification as
+	 * @param plateSpecs - object encompassing all datasheet information
+	 */
+	public void saveSpecs(String nickname, PlateSpecifications plateSpecs);
+
+	/**
+	 * Loads the previously saved PlateSpecifications with the given filename.
+	 * @param nickname - name of the file specifications are actually saved in
+	 */
+	public PlateSpecifications loadSpecs(String nickname);
+
+	/**
+	 * Deletes previously saved plate specification that matches the given filename.
+	 * @param filename - name of the plate specification to load
+	 */
+	public void deleteSpecs(String filename);
+	
+	/**
+	 * Gets all plate specifications that are saved.
+	 * @return Iterable of each file name
+	 */
+	public Iterable<String> updateSpecList();
+}
