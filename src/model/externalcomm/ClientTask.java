@@ -6,6 +6,9 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
+import com.cedarsoftware.util.io.JsonReader;
+
+import model.tasks.basictasks.IExecuteTask;
 import model.tasks.basictasks.MultiTask;
 
 public class ClientTask implements Runnable {
@@ -29,8 +32,9 @@ public class ClientTask implements Runnable {
         try {
         	inputStream = new ObjectInputStream(clientSocket.getInputStream());
 		    while (true){
-		    	MultiTask inputTask = (MultiTask) inputStream.readObject();
-				processInput(inputTask);
+		    	JsonReader jr = new JsonReader(inputStream);
+		    	IExecuteTask task = (IExecuteTask) jr.readObject();
+		    	taskModel.appendTaskToQueue(task);
 		    }
 		    
 		} catch (Exception e1) {
@@ -43,31 +47,4 @@ public class ClientTask implements Runnable {
             e.printStackTrace();
         }
     }
-    
-    public void processInput(MultiTask input){
-	    //taskModel
-    }
-    
-//    private boolean isInteger(String s) {
-//	    return isInteger(s,10);
-//	}
-//
-//	private boolean isInteger(String s, int radix) {
-//	    if(s.isEmpty()) return false;
-//	    for(int i = 0; i < s.length(); i++) {
-//	        if(i == 0 && s.charAt(i) == '-') {
-//	            if(s.length() == 1) return false;
-//	            else continue;
-//	        }
-//	        if(Character.digit(s.charAt(i),radix) < 0) return false;
-//	    }
-//	    return true;
-//	}
-	
-	/**
-	 * 
-	 * @param multiTask
-	 */
-	private void sendMultiTask(String multiTask){
-	}
 }

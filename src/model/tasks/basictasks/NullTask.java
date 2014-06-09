@@ -31,5 +31,14 @@ public class NullTask extends ASerialTask{
 	public Object executeVisitor(ITaskVisitor visitor, Object... params) {
 		return visitor.caseAt("Null", this, params);
 	}
+
+	/**
+	 * Null task, do nothing.
+	 */
+	@Override
+	public void traverseOrModify(Object[] taskPath, String toChange) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

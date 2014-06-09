@@ -9,6 +9,8 @@ import java.util.Iterator;
 import model.tasks.PlateAdapter;
 import model.tasks.SerialCommAdapter;
 import model.tasks.basictasks.ASerialTask;
+import model.tasks.basictasks.IExecuteTask;
+import model.tasks.basictasks.MLDRTask;
 import model.tasks.basictasks.MoveFromExternalTask;
 import model.tasks.basictasks.MoveWellToWellTask;
 import model.tasks.basictasks.MultiTask;
@@ -46,8 +48,6 @@ public class TaskModel {
 	
 	private ITaskVisitor drawVisitor;
 	
-	private int currentStage;
-	
 	/**
 	 * Constructor for TaskModel, takes in adapters to allow the TaskModel to talk to the plate and serial model.
 	 * @param plateModelAdapter - adapter from the task model to plate model
@@ -63,8 +63,6 @@ public class TaskModel {
 		decompileVisitor = new DecompileVisitor();
 		
 		drawVisitor = new DrawVisitor();
-		
-		currentStage = 0;
 	}
 
 	/**
@@ -77,13 +75,12 @@ public class TaskModel {
 		//get the location of the well with specified number
 		Point2D destinationPoint = plateModelAdapter.getLocationFromNumber(Integer.parseInt(destination));
 		
-		MultiTask stageMultiTask = (MultiTask) taskQueue.getSubtask(setupParams.stageNumber);
 		if (source.equals("EXTERNAL")){
-			stageMultiTask.addTask(new MoveFromExternalTask(taskParams, destinationPoint));
+			taskQueue.addTask(new MoveFromExternalTask(taskParams, destinationPoint));
 		}
 		else{
 			Point2D sourcePoint = plateModelAdapter.getLocationFromNumber(Integer.parseInt(source));
-			stageMultiTask.addTask(new MoveWellToWellTask(taskParams, sourcePoint, destinationPoint));
+			taskQueue.addTask(new MoveWellToWellTask(taskParams, sourcePoint, destinationPoint));
 		}
 		
 		view.updateView();
@@ -93,7 +90,6 @@ public class TaskModel {
 	 * Queue up a task based on points clicked on the screen (and so must be a well to well task).
 	 */
 	public void addToQueue(ExecutionParam executionParams, SetupParam setupParams, Point source, Point destination){
-		MultiTask stageMultiTask = (MultiTask) taskQueue.getSubtask(setupParams.stageNumber);
 		Point2D destinationWell = plateModelAdapter.getLocationFromScreen(destination);
 		Point2D sourceWell = plateModelAdapter.getLocationFromScreen(source);
 		
@@ -101,9 +97,30 @@ public class TaskModel {
 			System.out.println("Did not click on a well.");
 		}
 		else{
-			stageMultiTask.addTask(new MoveWellToWellTask(executionParams, sourceWell, destinationWell));
+			taskQueue.addTask(new MoveWellToWellTask(executionParams, sourceWell, destinationWell));
 			view.updateView();
 		}
+	}
+	
+	/**
+	 * Adds a MLDR task to the execution queue.
+	 * @param wellNum - well number to go to
+	 * @param fluidAmount - amount of fluid to move
+	 */
+	public void addToQueue(int wellNum, int fluidAmount) {
+		Point2D wellLocation = plateModelAdapter.getLocationFromNumber(wellNum);
+		MLDRTask taskToAdd = new MLDRTask(wellLocation, fluidAmount);
+		taskQueue.addTask(taskToAdd);
+		view.updateView();
+	}
+	
+	/**
+	 * Adds a task (any task) to execution queue.
+	 * @param taskToAdd - task to add (no preparation involved)
+	 */
+	public void addToQueue(IExecuteTask taskToAdd) {
+		taskQueue.addTask(taskToAdd);
+		view.updateView();
 	}
 	
 	/**
@@ -119,82 +136,50 @@ public class TaskModel {
 			System.out.println("Done executing all tasks!");
 		}
 	}
-	
+
 	/**
-	 * Mostly for testing purposes, just to test if all tasks are executing properly.
+	 * Removes all stages from the taskQueue, adding a new MultiTask to have something in it.
 	 */
-	private void executeAll(){
+	public void clearAllTasks() {
+		taskQueue.getSubtasks().clear();
+		view.updateView();
+	}
+
+	/**
+	 * Executes the tasks normally, ie by sending one command over at a time to Arduino
+	 */
+	public void executeAll() {
+		//make sure we start on a clean slate
+		decompiledTasks.clear();
+		
+		//decompile the specified stage and put the results in the decompiledTasks ArrayList
+		taskQueue.executeVisitor(decompileVisitor, decompiledTasks);
+		
+		//execute the first one to start the chain!
+		executeNext();
+	}
+
+	/**
+	 * Executes all stages listed, in order.
+	 */
+	public void debugExecuteAll() {
+		//make sure we start on a clean slate
+		decompiledTasks.clear();
+		
+		//run the decompile visitor on all tasks
+		taskQueue.executeVisitor(decompileVisitor, decompiledTasks);
+		
+		//execute them all at once by printing them out
 		for (ASerialTask task : decompiledTasks){
 			task.execute(plateModelAdapter.getArmState(), serialModelAdapter.getOutputStream());
 		}
 	}
 	
 	/**
-	 * Add a new stage (MultiTask) to our taskQueue.
-	 * @return
-	 */
-	public int addStage(){
-		taskQueue.addTask(new MultiTask());
-		return taskQueue.getSubtasks().size();
-	}
-
-	/**
-	 * Removes all stages from the taskQueue, adding a new MultiTask to have something in it.
-	 */
-	public void clearAllStages() {
-		taskQueue.getSubtasks().clear();
-		view.updateView();
-	}
-
-	/**
-	 * Executes the specified stage.
-	 * @param stageNumber stage number to execute
-	 */
-	public void executeStage(int stageNumber) {
-		//make sure we start on a clean slate
-		decompiledTasks.clear();
-		
-		//decompile the specified stage and put the results in the decompiledTasks ArrayList
-		MultiTask taskToDecompile = (MultiTask) taskQueue.getSubtask(stageNumber);
-		taskToDecompile.executeVisitor(decompileVisitor, decompiledTasks);
-		
-		//execute the first one to start the chain!
-		executeNext();
-	}
-	
-	/**
-	 * Executes the current stage.
-	 */
-	public void executeCurrentStage(){
-		//then make a call to decompile and execute it
-		executeStage(currentStage);
-	}
-
-	/**
-	 * Executes all stages listed, in order.
-	 */
-	public void executeAllStages() {
-		//make sure we start on a clean slate
-		decompiledTasks.clear();
-		
-		taskQueue.executeVisitor(decompileVisitor, decompiledTasks);
-		//executeNext();
-		executeAll();
-	}
-	
-	/**
 	 * Draw all tasks by slapping the draw visitor onto them.
 	 */
-	public void drawCurrentStage(Graphics g, double sF) {
-		taskQueue.getSubtask(currentStage).executeVisitor(drawVisitor, g, sF);
-	}
-	
-	/**
-	 * Sets the current stage to the input int.
-	 */
-	public void setCurrentStage(int stageNumber){
-		currentStage = stageNumber;
-		view.updateView();
+	public void drawTasks(Graphics g, double sF) {
+		taskQueue.executeVisitor(drawVisitor, g, sF);
 	}
 	
 	/**
@@ -209,6 +194,22 @@ public class TaskModel {
 	 */
 	public void setTasks(MultiTask taskQueue){
 		this.taskQueue = taskQueue;
+		view.updateView();
+		view.setTask(taskQueue);
+	}
+
+	public void changeExecutionData(Object[] path, String newData) {
+		taskQueue.traverseOrModify(path, newData);
+		view.updateView();
+	}
+
+	public void deleteExecutionTask(Object[] path) {
+		taskQueue.traverseOrDelete(path);
+		view.updateView();
+	}
+
+	public void insertAfterSelected(Object[] path, IExecuteTask taskToAdd) {
+		taskQueue.traverseOrInsert(path, taskToAdd);
 		view.updateView();
 	}
 }

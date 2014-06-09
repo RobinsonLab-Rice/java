@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 import model.plate.objects.ArmState;
 import model.tasks.ExecutionParam;
@@ -30,7 +31,7 @@ public class MoveWellToWellTask extends ADrawingTask{
 		this.destination = destination;
 		wellTasks = new MultiTask();
 		wellTasks.addTask(getMldrTask(source, executionParams));
-		wellTasks.addTask(getMldrTask(destination, executionParams));
+		wellTasks.addTask(getInverseMldrTask(destination, executionParams));
 	}
 
 	public void execute(ArmState armState, OutputStream outputStream) {
@@ -63,5 +64,46 @@ public class MoveWellToWellTask extends ADrawingTask{
 	 */
 	public MultiTask getTask(){
 		return wellTasks;
+	}
+	
+	/**
+	 * TODO: same as MLDRtask
+	 */
+	public int getChildCount() {
+		return wellTasks.getChildCount();
+	}
+	
+	/**
+	 * Get the MultiTask's subtasks when we need a specific one.
+	 */
+	public IExecuteTask getChild(int index) {
+		return wellTasks.getChild(index);
+	}
+
+	/**
+	 * This is an abstract task, so this function will traverse down the path
+	 * until it gets to the leaf task.
+	 */
+	@Override
+	public void traverseOrModify(Object[] taskPath, String toChange) {
+		Object[] reducedPath = Arrays.copyOfRange(taskPath, 1, taskPath.length);
+		IExecuteTask taskToEnter = (IExecuteTask) reducedPath[0];
+		for (IExecuteTask task : wellTasks.getSubtasks()) {
+			if (task == taskToEnter) {
+				task.traverseOrModify(reducedPath, toChange);
+			}
+		}
+	}
+
+	@Override
+	public void traverseOrDelete(Object[] path) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void traverseOrInsert(Object[] path, IExecuteTask taskToAdd) {
+		// TODO Auto-generated method stub
+		
 	}
 }

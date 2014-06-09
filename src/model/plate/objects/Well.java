@@ -75,7 +75,7 @@ public class Well implements Observer{
 		g.drawOval(screenLocX, screenLocY, (int)Math.round(diameter*sF), (int)Math.round(diameter*sF));
 		
 		//regardless, draw the well's label in the corner
-		g.setFont(g.getFont().deriveFont((float) sF*8));
+		g.setFont(g.getFont().deriveFont((float) (sF*diameter/2)));
 		screenLocY += Math.round(diameter*sF);
 		g.drawString(Integer.toString(number), screenLocX, screenLocY);
 	}

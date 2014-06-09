@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 import model.plate.objects.ArmState;
 import model.tasks.ExecutionParam;
@@ -38,7 +39,7 @@ public class MoveFromExternalTask extends ADrawingTask{
 	 */
 	public void draw(Graphics g, double sF) {
 		g.setColor(executeParams.taskColor);
-		int xFactor = 10;
+		int xFactor = 1;
 		Point destPoint = new Point((int) Math.round(destination.getX()*sF), (int) Math.round(destination.getY()*sF));
 		g.drawLine(destPoint.x - (int)(xFactor*sF), destPoint.y - (int)(xFactor*sF), destPoint.x + (int)(xFactor*sF), destPoint.y + (int)(xFactor*sF));
 		g.drawLine(destPoint.x - (int)(xFactor*sF), destPoint.y + (int)(xFactor*sF), destPoint.x + (int)(xFactor*sF), destPoint.y - (int)(xFactor*sF));
@@ -60,5 +61,45 @@ public class MoveFromExternalTask extends ADrawingTask{
 	 */
 	public IExecuteTask getTask(){
 		return taskToDo;
+	}
+	
+	/**
+	 * TODO: same as MLDRTask
+	 */
+	public int getChildCount() {
+		return taskToDo.getChildCount();
+	}
+	
+	/**
+	 * Get the MultiTask's subtasks when we need a specific one.
+	 */
+	public IExecuteTask getChild(int index) {
+		return taskToDo.getChild(index);
+	}
+
+	/**
+	 * Never doing this now, needs to be reconsidered.
+	 */
+	@Override
+	public void traverseOrModify(Object[] taskPath, String toChange) {
+//		Object[] reducedPath = Arrays.copyOfRange(taskPath, 1, taskPath.length);
+//		IExecuteTask taskToEnter = (IExecuteTask) reducedPath[0];
+//		for (IExecuteTask task : task) {
+//			if (task == taskToEnter) {
+//				task.traverseOrModify(reducedPath, toChange);
+//			}
+//		}
+	}
+
+	@Override
+	public void traverseOrDelete(Object[] path) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void traverseOrInsert(Object[] path, IExecuteTask taskToAdd) {
+		// TODO Auto-generated method stub
+		
 	}
 }

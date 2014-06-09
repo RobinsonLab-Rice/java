@@ -34,7 +34,11 @@ public abstract class ADrawingTask implements IExecuteTask{
 	}
 	
 	public IExecuteTask getMldrTask(Point2D wellPos, ExecutionParam executeParams){
-		return new MultiTask(new MoveTask(wellPos), new NozzleHeightTask(executeParams.lowerAmount), new DispenseTask(executeParams.fluidAmount), new NozzleHeightTask(-executeParams.lowerAmount));
+		return new MultiTask(new MoveTask(wellPos), new DispenseTask(1200.0), new NozzleHeightTask(executeParams.lowerAmount), new DispenseTask(executeParams.fluidAmount), new NozzleHeightTask(-executeParams.lowerAmount));
+	}
+	
+	public IExecuteTask getInverseMldrTask(Point2D wellPos, ExecutionParam executeParams){
+		return new MultiTask(new MoveTask(wellPos), new NozzleHeightTask(executeParams.lowerAmount), new DispenseTask(-executeParams.fluidAmount - 1200), new NozzleHeightTask(-executeParams.lowerAmount));
 	}
 
 }

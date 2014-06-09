@@ -19,6 +19,7 @@ import model.plate.objects.PlateSpecifications;
 import model.serialization.SaveType;
 import model.tasks.ExecutionParam;
 import model.tasks.SetupParam;
+import model.tasks.basictasks.MultiTask;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.JComboBox;
@@ -66,7 +67,6 @@ public class MainGUI<TFactoryItem> extends JFrame {
 	private static final long serialVersionUID = -6312809072912568634L;
 	
 	final JComboBox<String> cmbSavedSpecs = new JComboBox<String>();
-	private JComboBox<String> cmbWorkflowSel = new JComboBox<String>();
 	private JComboBox<String> COMMPortDropList;
 	private JPanel contentPane;
 	private JPanel modelPanel;
@@ -99,27 +99,20 @@ public class MainGUI<TFactoryItem> extends JFrame {
 	private JLabel lblWidth_2;
 	private JTextField BoundingWidthText;
 	private JTabbedPane tabbedPane;
-	private JPanel DeviceControlPanel;
 	private JButton ClearPlatesButton;
 	private JButton ConnectButton;
-	private JLabel lblTaskParams;
-	private JComboBox<String> cmbStages;
-	private JButton btnTaskColor;
 	private JLabel lblWellVol;
 	private JTextField txtWellVolume;
 	private JLabel lblNewLabel;
 	private JLabel lblWellWellSpacing;
 	private JTextField txtWellWellSpacing;
-	private JButton btnClearStages;
-	private JButton btnAddStage;
 	private JButton btnSaveSpecs;
 	private JTextField txtPlateNickname;
 	private JButton btnLoadSpecs;
 	private JButton btnDeleteSpecs;
-	private JTextField txtWorkflowName;
-	private JButton btnDeleteWorkflow;
-	private JButton btnSaveWorkflow;
-	private JButton btnLoadWorkflow;
+	private JPanel pnlDemoDeviceControl;
+	private JLabel lblCreateBasicTasks;
+	private TaskCreationPanel pnlTaskManagement;
 	
 
 	/**
@@ -310,7 +303,7 @@ public class MainGUI<TFactoryItem> extends JFrame {
 		plateSetupPanel.add(lblXpos, "cell 0 17,alignx center");
 		
 		txtXpos = new JTextField();
-		txtXpos.setText("0");
+		txtXpos.setText("13.1");
 		plateSetupPanel.add(txtXpos, "cell 1 17 2 1,growx");
 		txtXpos.setColumns(10);
 		
@@ -319,7 +312,7 @@ public class MainGUI<TFactoryItem> extends JFrame {
 		plateSetupPanel.add(lblYpos, "cell 0 18,alignx center");
 		
 		txtYpos = new JTextField();
-		txtYpos.setText("0");
+		txtYpos.setText("16.5");
 		plateSetupPanel.add(txtYpos, "cell 1 18 2 1,growx");
 		txtYpos.setColumns(10);
 		
@@ -371,7 +364,7 @@ public class MainGUI<TFactoryItem> extends JFrame {
 		plateSetupPanel.add(lblWidth_2, "cell 0 24,alignx center");
 		
 		BoundingWidthText = new JTextField();
-		BoundingWidthText.setText("146.4");
+		BoundingWidthText.setText("223.46");
 		plateSetupPanel.add(BoundingWidthText, "cell 1 24,growx");
 		BoundingWidthText.setColumns(10);
 		plateSetupPanel.add(UpdateButton, "cell 2 24 1 2,alignx center,aligny center");
@@ -381,159 +374,9 @@ public class MainGUI<TFactoryItem> extends JFrame {
 		plateSetupPanel.add(lblHeight, "cell 0 25,alignx center");
 		
 		BoundingHeightText = new JTextField();
-		BoundingHeightText.setText("92");
+		BoundingHeightText.setText("93");
 		plateSetupPanel.add(BoundingHeightText, "cell 1 25,growx");
 		BoundingHeightText.setColumns(10);
-		
-		DeviceControlPanel = new JPanel();
-		tabbedPane.addTab("Device Control", null, DeviceControlPanel, null);
-		DeviceControlPanel.setLayout(new MigLayout("", "[grow][20px,grow][20px,grow]", "[grow][][][][][][][][][][][][][][][][][15.00][]"));
-		
-		JLabel lblStages = new JLabel("Currently Selected Stage");
-		DeviceControlPanel.add(lblStages, "cell 0 1,alignx center");
-		
-		cmbStages = new JComboBox<String>();
-		cmbStages.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent arg0) {
-				taskModelAdapter.setCurrentStage(cmbStages.getSelectedIndex());
-			}
-		});
-		cmbStages.setMaximumRowCount(20);
-		cmbStages.setToolTipText("Wells that are flagged will use this task.");
-		DeviceControlPanel.add(cmbStages, "cell 1 1 2 1,growx,aligny center");
-		
-		btnAddStage = new JButton("Add Stage");
-		btnAddStage.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				addStage();
-			}
-		});
-		DeviceControlPanel.add(btnAddStage, "cell 1 2 2 1,growx");
-		
-		lblTaskParams = new JLabel("Task Parameters");
-		lblTaskParams.setToolTipText("Format = Task Name:Parameter");
-		DeviceControlPanel.add(lblTaskParams, "cell 0 4 3 1,alignx center");
-		
-		JLabel lblFluidAmount = new JLabel("Fluid To Move");
-		DeviceControlPanel.add(lblFluidAmount, "cell 0 5,alignx trailing");
-		
-		final JTextField txtFluidAmount = new JTextField();
-		txtFluidAmount.setText("1000");
-		DeviceControlPanel.add(txtFluidAmount, "cell 1 5 2 1,growx");
-		txtFluidAmount.setColumns(10);
-		
-		JLabel lblDelay = new JLabel("Delay After Movement");
-		DeviceControlPanel.add(lblDelay, "cell 0 6,alignx trailing");
-		
-		final JTextField txtDelay = new JTextField();
-		txtDelay.setText("0");
-		DeviceControlPanel.add(txtDelay, "cell 1 6 2 1,growx");
-		txtDelay.setColumns(10);
-		
-		final JCheckBox chckMixSource = new JCheckBox("Mix Source?");
-		DeviceControlPanel.add(chckMixSource, "cell 1 7 2 1");
-		
-		btnTaskColor = new JButton(" ");
-		btnTaskColor.setBackground(util.Randomizer.Singleton.randomColor());
-		btnTaskColor.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				 btnTaskColor.setBackground(JColorChooser.showDialog(DeviceControlPanel, "Choose Well Color", btnTaskColor.getBackground()));
-			}
-		});
-		
-		JLabel lblTaskColor = new JLabel("Task Color");
-		DeviceControlPanel.add(lblTaskColor, "cell 0 8,alignx trailing");
-		DeviceControlPanel.add(btnTaskColor, "cell 1 8 2 1,growx");
-		
-		JLabel lblSource = new JLabel("Source");
-		DeviceControlPanel.add(lblSource, "cell 0 10,alignx trailing");
-		
-		final JTextField txtSource = new JTextField();
-		txtSource.setText("1");
-		DeviceControlPanel.add(txtSource, "cell 1 10 2 1,growx");
-		txtSource.setColumns(10);
-		
-		JLabel lblDestination = new JLabel("Destination");
-		DeviceControlPanel.add(lblDestination, "cell 0 11,alignx trailing");
-		
-		final JTextField txtDestination = new JTextField();
-		txtDestination.setText("2");
-		DeviceControlPanel.add(txtDestination, "cell 1 11 2 1,growx");
-		txtDestination.setColumns(10);
-		
-		JButton btnExecuteSelected = new JButton("Execute Current Stage");
-		btnExecuteSelected.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				taskModelAdapter.executeStage(cmbStages.getSelectedIndex());
-			}
-		});
-		
-		txtWorkflowName = new JTextField();
-		DeviceControlPanel.add(txtWorkflowName, "cell 0 13,growx");
-		txtWorkflowName.setColumns(10);
-		
-		DeviceControlPanel.add(cmbWorkflowSel, "cell 1 13 2 1,growx");
-		
-		btnSaveWorkflow = new JButton("Save Workflow");
-		btnSaveWorkflow.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				serializationAdapter.saveWorkflow(txtWorkflowName.getText());
-				updateDataCmb(serializationAdapter.updateDataList(SaveType.WORKFLOW), cmbWorkflowSel);
-			}
-		});
-		DeviceControlPanel.add(btnSaveWorkflow, "cell 0 14,growx");
-		
-		btnLoadWorkflow = new JButton("Load Workflow");
-		btnLoadWorkflow.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				serializationAdapter.loadWorkflow((String) cmbWorkflowSel.getSelectedItem());
-			}
-		});
-		DeviceControlPanel.add(btnLoadWorkflow, "cell 1 14,growx");
-		
-		btnDeleteWorkflow = new JButton("Delete Workflow");
-		btnDeleteWorkflow.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				serializationAdapter.deleteData((String) cmbWorkflowSel.getSelectedItem(), SaveType.WORKFLOW);
-				updateDataCmb(serializationAdapter.updateDataList(SaveType.WORKFLOW), cmbWorkflowSel);
-			}
-		});
-		DeviceControlPanel.add(btnDeleteWorkflow, "cell 2 14,growx");
-		DeviceControlPanel.add(btnExecuteSelected, "cell 0 15 3 1,growx");
-		
-		JButton btnExecuteAll = new JButton("Execute All Stages");
-		btnExecuteAll.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				taskModelAdapter.executeAllStages();
-			}
-		});
-		DeviceControlPanel.add(btnExecuteAll, "cell 0 16 3 1,growx");
-		
-		btnClearStages = new JButton("Clear All Stages");
-		btnClearStages.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				taskModelAdapter.clearAllStages();
-				cmbStages.removeAllItems();
-				addStage();
-			}
-		});
-		DeviceControlPanel.add(btnClearStages, "cell 0 17 3 1,growx");
-		
-		Action addToQueueAction = new AbstractAction("Add To Current Stage Queue"){
-			
-			private static final long serialVersionUID = 4401751039595258694L;
-
-			public void actionPerformed(ActionEvent e){
-				taskModelAdapter.addToQueue(new ExecutionParam(txtFluidAmount.getText(), txtDelay.getText(), btnTaskColor.getBackground()),
-						new SetupParam(chckMixSource.isSelected(), cmbStages.getSelectedIndex()), txtSource.getText(), txtDestination.getText());
-			}
-		};
-		
-		txtSource.setAction(addToQueueAction);
-		txtDestination.setAction(addToQueueAction);
-		
-		JButton btnAddToQueue = new JButton(addToQueueAction);
-		DeviceControlPanel.add(btnAddToQueue, "cell 0 12 3 1,growx");
 		
 		JPanel pnlArduinoSetup = new JPanel();
 		tabbedPane.addTab("Arduino Setup", null, pnlArduinoSetup, null);
@@ -562,6 +405,12 @@ public class MainGUI<TFactoryItem> extends JFrame {
 		});
 		pnlArduinoSetup.add(btnRescan, "cell 0 3,growx");
 		
+		pnlDemoDeviceControl = new DemoDeviceControlPanel(taskModelAdapter, serialModelAdapter);
+		tabbedPane.addTab("Create Basic Tasks", null, pnlDemoDeviceControl, null);
+		
+		pnlTaskManagement = new TaskCreationPanel(taskModelAdapter, serializationAdapter);
+		tabbedPane.addTab("Task Management", null, pnlTaskManagement, null);
+		
 		/**
 		 * Handle all well selection GUI code here.
 		 */
@@ -581,8 +430,6 @@ public class MainGUI<TFactoryItem> extends JFrame {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				taskModelAdapter.addToQueue(new ExecutionParam(txtFluidAmount.getText(), txtDelay.getText(), btnTaskColor.getBackground()),
-						new SetupParam(chckMixSource.isSelected(), cmbStages.getSelectedIndex()), sourceLocation, e.getPoint());
 			}
 
 			@Override
@@ -609,8 +456,7 @@ public class MainGUI<TFactoryItem> extends JFrame {
 		 */
 		plateModelAdapter.setFrame(new Point2D.Double(Double.parseDouble(BoundingWidthText.getText()), Double.parseDouble(BoundingHeightText.getText())), modelPanel);
 		updateDataCmb(serializationAdapter.updateDataList(SaveType.PLATE_SPEC), cmbSavedSpecs);
-		updateDataCmb(serializationAdapter.updateDataList(SaveType.WORKFLOW), cmbWorkflowSel);
-		addStage();
+		pnlTaskManagement.start();
 		setVisible(true);
 	}
 	
@@ -667,16 +513,8 @@ public class MainGUI<TFactoryItem> extends JFrame {
 			COMMPortDropList.setSelectedIndex(0);
 		}
 	}
-	
-	/**
-	 * Add stage method, extracted here so it can be called by the appropriate button as well as on start().
-	 */
-	private void addStage(){
-		int numberOfStages = taskModelAdapter.addStage();
-		cmbStages.addItem(String.valueOf(numberOfStages));
-	}
 
-	public int getCurrentStage() {
-		return cmbStages.getSelectedIndex();
+	public void setTask(MultiTask taskQueue) {
+		pnlTaskManagement.setTask(taskQueue);
 	}
 }

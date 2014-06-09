@@ -7,12 +7,19 @@ import java.io.FilenameFilter;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
+import model.plate.Workflow;
 import model.plate.objects.Plate;
 import model.plate.objects.PlateSpecifications;
+import model.tasks.basictasks.IExecuteTask;
 import model.tasks.basictasks.MultiTask;
 
 import org.apache.commons.io.FilenameUtils;
+
+import com.cedarsoftware.util.io.JsonReader;
+import com.cedarsoftware.util.io.JsonWriter;
 
 /**
  * Model that handles all serialization (saving to and loading data from files).
@@ -37,11 +44,17 @@ public class SerializationModel {
 	private String ext = ".txt";
 	
 	/**
+	 * Tool to save objects to json with.
+	 */
+	//private Gson gson;
+	
+	/**
 	 * On initialization, connects to given adapters.
 	 */
 	public SerializationModel(TaskAdapter taskModel, PlateAdapter plateModel){
 		this.taskModel = taskModel;
 		this.plateModel = plateModel;
+		//gson = new GsonBuilder().setPrettyPrinting().create();
 	}
 	
 	/**
@@ -49,50 +62,6 @@ public class SerializationModel {
 	 */
 	public void start(){
 		
-	}
-	
-	/**
-	 * Saves the given plate specifications into a file in the plates data folder.
-	 * @param nickname - name to later refer to this plate spec, for loading
-	 * @param plateSpecs - object encompassing all datasheet information
-	 */
-	public void savePlate(String nickname, PlateSpecifications plateSpecs){
-		String filename = "data/plates/" + nickname + ext;
-		
-		FileOutputStream fos = null;
-		ObjectOutputStream oos = null;
-		
-		try {
-			fos = new FileOutputStream(filename);
-			oos = new ObjectOutputStream(fos);
-			oos.writeObject(plateSpecs);
-			oos.close();
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Loads plate with the given filename, returning it to the view to be put in correct fields.
-	 * @param name - filename to look for the specifications
-	 */
-	public PlateSpecifications loadPlate(String name){
-		PlateSpecifications specs = null;
-		
-		FileInputStream fis = null;
-	    ObjectInputStream in = null;
-	 
-	    try {
-	    	fis = new FileInputStream("data/plates/" + name + ext);
-	    	in = new ObjectInputStream(fis);
-	    	specs = (PlateSpecifications) in.readObject();
-	    	in.close();
-	    } 
-	    catch (Exception ex) {
-	    	ex.printStackTrace();
-	    }
-	    return specs;
 	}
 	
 	/**
@@ -114,6 +83,7 @@ public class SerializationModel {
 		switch (type){
 			case PLATE_SPEC: dir = new File("data/plates"); 		break;
 			case WORKFLOW: dir = new File("data/workflow"); 		break;
+			case TASK: dir = new File("data/tasks");				break;
 			default: System.out.println("Not a valid save type."); 	break;
 		}
  
@@ -141,49 +111,7 @@ public class SerializationModel {
 		
 		return returnList;
 	}
-
-	/**
-	 * Loads workflow with given filename, giving it to the task and plate models to load back into the program.
-	 * @param filename - name of file to load from, without folder or extension
-	 */
-	public void loadWorkflow(String filename) {
-		FileInputStream fis = null;
-	    ObjectInputStream in = null;
-	 
-	    try {
-	    	fis = new FileInputStream("data/workflow/" + filename + ext);
-	    	in = new ObjectInputStream(fis);
-	    	plateModel.setPlateList((ArrayList<Plate>) in.readObject());
-	    	taskModel.setTasks((MultiTask) in.readObject());
-	    	in.close();
-	    } 
-	    catch (Exception ex) {
-	    	ex.printStackTrace();
-	    }
-	}
-
-	/**
-	 * Get current plates and taskQueue from plate and task models and save it to the input file.
-	 * @param filename - name of location to save the file, without folder or extension
-	 */
-	public void saveWorkflow(String filename) {
-		String qualifiedName = "data/workflow/" + filename + ext;
-		
-		FileOutputStream fos = null;
-		ObjectOutputStream oos = null;
-		
-		try {
-			fos = new FileOutputStream(qualifiedName);
-			oos = new ObjectOutputStream(fos);
-			oos.writeObject(plateModel.getPlateList());
-			oos.writeObject(taskModel.getTasks());
-			oos.close();
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-
+	
 	/**
 	 * Delete piece of data with given filename from appropriate folder (taken from input SaveType).
 	 * @param filename - name of the file to delete, without folders or extension
@@ -197,5 +125,162 @@ public class SerializationModel {
 			default: System.out.println("Did not recognize the save data type!");	break;
 		}
 		dataFile.delete();
+	}
+
+	/**
+	 * Loads workflow with given filename, giving it to the task and plate models to load back into the program.
+	 * @param filename - name of file to load from, without folder or extension
+	 */
+	public void loadWorkflow(String filename) {
+//		FileInputStream fis = null;
+//	    ObjectInputStream in = null;
+//	 
+//	    try {
+//	    	fis = new FileInputStream("data/workflow/" + filename + ext);
+//	    	in = new ObjectInputStream(fis);
+//	    	plateModel.setPlateList((ArrayList<Plate>) in.readObject());
+//	    	taskModel.setTasks((MultiTask) in.readObject());
+//	    	in.close();
+//	    } 
+//	    catch (Exception ex) {
+//	    	ex.printStackTrace();
+//	    }
+		
+		FileInputStream fis = null;
+	    ObjectInputStream in = null;
+	 
+	    try {
+	    	fis = new FileInputStream("data/workflow/" + filename + ext);
+	    	in = new ObjectInputStream(fis);
+	    	
+	    	JsonReader jr = new JsonReader(in);
+	    	Workflow toLoad = (Workflow) jr.readObject();
+	    	plateModel.setPlateList(toLoad.plates);
+	    	taskModel.setTasks((MultiTask)toLoad.tasks);
+	    	
+	    	in.close();
+	    } 
+	    catch (Exception ex) {
+	    	ex.printStackTrace();
+	    }
+	}
+	
+	/**
+	 * Loads plate with the given filename, returning it to the view to be put in correct fields.
+	 * @param name - filename to look for the specifications
+	 */
+	public PlateSpecifications loadPlate(String filename){
+//		PlateSpecifications specs = null;
+//		
+//		FileInputStream fis = null;
+//	    ObjectInputStream in = null;
+//	 
+//	    try {
+//	    	fis = new FileInputStream("data/plates/" + name + ext);
+//	    	in = new ObjectInputStream(fis);
+//	    	specs = (PlateSpecifications) in.readObject();
+//	    	in.close();
+//	    } 
+//	    catch (Exception ex) {
+//	    	ex.printStackTrace();
+//	    }
+//	    return specs;
+		
+		FileInputStream fis = null;
+	    ObjectInputStream in = null;
+	    
+	    PlateSpecifications specs = null;
+	 
+	    try {
+	    	fis = new FileInputStream("data/plates/" + filename + ext);
+	    	in = new ObjectInputStream(fis);
+	    	
+	    	JsonReader jr = new JsonReader(in);
+	    	specs = (PlateSpecifications) jr.readObject();
+	    	
+	    	in.close();
+	    	
+	    	return specs;
+	    } 
+	    catch (Exception ex) {
+	    	ex.printStackTrace();
+	    	return null;
+	    }
+	}
+	
+	public IExecuteTask loadTask(String filename) {
+		String qualifiedName = "data/tasks/" + filename + ext;
+		
+		FileInputStream fis = null;
+	    ObjectInputStream in = null;
+	    
+	    String json = "";
+	 
+	    try {
+	    	fis = new FileInputStream("data/tasks/" + filename + ext);
+	    	in = new ObjectInputStream(fis);
+	    	
+	    	JsonReader jr = new JsonReader(in);
+	    	IExecuteTask task = (IExecuteTask) jr.readObject();
+	    	
+	    	in.close();
+	    	
+	    	return task;
+	    } 
+	    catch (Exception ex) {
+	    	ex.printStackTrace();
+	    	return null;
+	    }
+	}
+	
+	/**
+	 * Get current plates and taskQueue from plate and task models and save it to the input file.
+	 * @param filename - name of location to save the file, without folder or extension
+	 */
+	public void saveWorkflow(String filename) {
+		String qualifiedName = "data/workflow/" + filename + ext;
+		saveItem(qualifiedName, new Workflow(plateModel.getPlateList(), taskModel.getTasks()));
+	}
+	
+	/**
+	 * Uses JSON to save the IExecuteTask to data/tasks/filename
+	 * @param task - incoming task to persist
+	 * @param filename - name of file to save task to
+	 */
+	public void saveTask(IExecuteTask task, String filename) {
+		String qualifiedName = "data/tasks/" + filename + ext;
+		saveItem(qualifiedName, task);
+	}
+	
+	/**
+	 * Uses JSON to save the PlateSpecifications to data/plates/filename
+	 * @param plateSpecs - incoming plate specs to persist
+	 * @param filename - name of file to save task to
+	 */
+	public void savePlate(String filename, PlateSpecifications plateSpecs){
+		String qualifiedName = "data/plates/" + filename + ext;
+		saveItem(qualifiedName, plateSpecs);
+	}
+	
+	/**
+	 * Common method to save any item to specified location.
+	 */
+	public void saveItem(String qualifiedName, Object item){
+		FileOutputStream fos = null;
+		ObjectOutputStream oos = null;
+		
+		try {
+			fos = new FileOutputStream(qualifiedName);
+			oos = new ObjectOutputStream(fos);
+			Map args = new HashMap();
+			args.put(JsonWriter.PRETTY_PRINT, true);
+			JsonWriter jw = new JsonWriter(oos, args);
+			jw.write(item);
+			jw.close();
+			oos.close();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 }

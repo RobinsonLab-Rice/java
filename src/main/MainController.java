@@ -8,6 +8,8 @@ import java.awt.geom.Point2D;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import javax.swing.tree.TreePath;
+
 import view.MainGUI;
 import model.externalcomm.ExternalCommModel;
 import model.plate.PlateModel;
@@ -22,8 +24,10 @@ import model.tasks.ExecutionParam;
 import model.tasks.SetupParam;
 import model.tasks.ITaskFactory;
 import model.tasks.TaskModel;
+import model.tasks.basictasks.IExecuteTask;
 import model.tasks.basictasks.MultiTask;
 
+//WHATS UP CHRISTIAN AND RAHUL DONT DO DRUGS STAY IN SCHOOL BE COOL WATCH OUT FOR KARL
 /**
  * Controller for our M-V-C system. Makes instances of model and view
  * when the program is run, and connects them via their appropriate
@@ -46,12 +50,8 @@ public class MainController {
 		externalCommModel = new ExternalCommModel(new model.externalcomm.TaskAdapter(){
 
 			@Override
-			public void executeStage(int stageNumber) {
-				taskModel.executeStage(stageNumber);
-			}
-			@Override
-			public void addTaskAndExecute() {
-				
+			public void appendTaskToQueue(IExecuteTask taskToAdd) {
+				taskModel.addToQueue(taskToAdd);
 			}
 			
 		});
@@ -68,7 +68,7 @@ public class MainController {
 		},	new model.plate.TaskAdapter(){
 			@Override
 			public void drawTasks(Graphics g, double sF) {
-				taskModel.drawCurrentStage(g, sF);
+				taskModel.drawTasks(g, sF);
 			}
 		});
 		
@@ -85,19 +85,24 @@ public class MainController {
 			@Override
 			public void executeNext(){
 				taskModel.executeNext();}
+			}, new model.serial.PlateAdapter() {
+				@Override
+				public void resetArmPosition() {
+					plateModel.setInternalPosition(0.0, 0.0);
+				}
 			}
 		);
 		
 		taskModel = new TaskModel(new model.tasks.ViewAdapter(){
 
 			@Override
-			public int getCurrentStage() {
-				return view.getCurrentStage();
+			public void updateView() {
+				view.update();
 			}
 
 			@Override
-			public void updateView() {
-				view.update();
+			public void setTask(MultiTask taskQueue) {
+				view.setTask(taskQueue);
 			}
 		}, new model.tasks.PlateAdapter(){
 
@@ -155,6 +160,10 @@ public class MainController {
 			public void scanForPorts() {
 				serialModel.scanForPorts();
 			}
+			@Override
+			public void sendText(String command) {
+				serialModel.sendText(command);
+			}
         }, new view.TaskAdapter<ITaskFactory>(){
         	
 			@Override
@@ -166,31 +175,52 @@ public class MainController {
 			public void addToQueue(ExecutionParam executeParams, SetupParam setupParams, Point source, Point destination) {
 				taskModel.addToQueue(executeParams, setupParams, source, destination);
 			}
-
+			
 			@Override
-			public int addStage() {
-				return taskModel.addStage();
+			public void addToQueue(IExecuteTask taskToAdd) {
+				taskModel.addToQueue(taskToAdd);
 			}
 			
 			@Override
-			public void clearAllStages(){
-				taskModel.clearAllStages();
+			public void clearAllTasks(){
+				taskModel.clearAllTasks();
 			}
 
 			@Override
-			public void executeStage(int stageNumber) {
-				taskModel.executeStage(stageNumber);
+			public void addSingleWellTask(int wellNum, int fluidAmount) {
+				taskModel.addToQueue(wellNum, fluidAmount);
 			}
 
 			@Override
-			public void executeAllStages() {
-				taskModel.executeAllStages();
+			public IExecuteTask getTasks() {
+				return taskModel.getTasks();
 			}
 
 			@Override
-			public void setCurrentStage(int stageNumber) {
-				taskModel.setCurrentStage(stageNumber);
+			public void executeAll() {
+				taskModel.executeAll();
 			}
+
+			@Override
+			public void debugExecuteAll() {
+				taskModel.debugExecuteAll();
+			}
+
+			@Override
+			public void changeExecutionData(Object[] path, String newData) {
+				taskModel.changeExecutionData(path, newData);
+			}
+
+			@Override
+			public void deleteExecutionTask(Object[] path) {
+				taskModel.deleteExecutionTask(path);
+			}
+
+			@Override
+			public void insertAfterSelected(Object[] path, IExecuteTask taskToAdd) {
+				taskModel.insertAfterSelected(path, taskToAdd);
+			}
+		
         }, new view.SerializationAdapter(){
         	@Override
 			public void saveSpecs(String nickname, PlateSpecifications plateSpecs) {
@@ -215,6 +245,14 @@ public class MainController {
 			@Override
 			public Iterable<String> updateDataList(SaveType type) {
 				return serializationModel.updateDataList(type);
+			}
+			@Override
+			public void saveExecutionTask(IExecuteTask task, String filename) {
+				serializationModel.saveTask(task, filename);
+			}
+			@Override
+			public IExecuteTask loadTask(String filename) {
+				return serializationModel.loadTask(filename);
 			}
         });
 		

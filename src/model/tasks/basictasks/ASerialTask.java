@@ -33,4 +33,35 @@ public abstract class ASerialTask implements IExecuteTask {
 			}
 		}
 	}
+	
+	/**
+	 * Serial tasks, by definition, don't have any children.
+	 */
+	public int getChildCount() {
+		return 0;
+	}
+	
+	/**
+	 * A serial task does not have a child, so this will never be called.
+	 */
+	public IExecuteTask getChild(int index) {
+		return null;
+	}
+	
+	/**
+	 * The parent of this task should be deleting it, not the task itself.
+	 */
+	@Override
+	public void traverseOrDelete(Object[] path) {
+		System.out.println("Something went wrong, a serial task is trying to delete itself.");
+	}
+
+	/**
+	 * Only abstract tasks can be inserted into, should never get here.
+	 */
+	@Override
+	public void traverseOrInsert(Object[] path, IExecuteTask taskToAdd) {
+		System.out.println("Something went wrong, we are inserting into a Serial task.");
+	}
+	
 }

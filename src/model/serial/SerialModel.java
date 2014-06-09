@@ -34,6 +34,11 @@ public class SerialModel implements SerialPortEventListener {
 	private TaskAdapter taskModelAdapter;
 	
 	/**
+	 * Adapter from the task model to plate model.
+	 */
+	private PlateAdapter plateModelAdapter;
+	
+	/**
 	 * Serial port the Arduino is found on.
 	 */
 	private SerialPort arduinoPort;
@@ -52,9 +57,10 @@ public class SerialModel implements SerialPortEventListener {
 	 * Constructor that links the model to view via its adapter.
 	 * @param _adapter - adapter linking model to view
 	 */
-	public SerialModel(ViewAdapter viewAdapter, TaskAdapter taskModelAdapter){
+	public SerialModel(ViewAdapter viewAdapter, TaskAdapter taskModelAdapter, PlateAdapter plateModelAdapter){
 		this.view = viewAdapter;
 		this.taskModelAdapter = taskModelAdapter;
+		this.plateModelAdapter = plateModelAdapter;
 	}
 	
 	/**
@@ -152,6 +158,9 @@ public class SerialModel implements SerialPortEventListener {
 		if (serialInput.equals("Done")){
 			taskModelAdapter.executeNext();
 		}
+		if (serialInput.equals("Finished Calibration")){
+			//plateModelAdapter.resetArmPosition();
+		}
 	}
 	
 	/**
@@ -159,5 +168,19 @@ public class SerialModel implements SerialPortEventListener {
 	 */
 	public OutputStream getOutputStream(){
 		return this.outputStream;
+	}
+
+	/**
+	 * Send text directly to the Arduino.
+	 * @param command - string to send Arduino
+	 */
+	public void sendText(String command) {
+		for (int i = 0; i < command.length(); i++){
+			try {
+				outputStream.write(command.charAt(i));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

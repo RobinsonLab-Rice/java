@@ -4,6 +4,7 @@ import java.awt.geom.Point2D;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 
+import model.plate.PlateModel;
 import model.plate.objects.ArmState;
 import model.tasks.ITaskVisitor;
 
@@ -19,7 +20,9 @@ public class MoveTask extends ASerialTask {
 	 */
 	private static final long serialVersionUID = 8216224355050783969L;
 	
-	Point2D destination;
+	private Point2D destination;
+	
+	int wellNum;
 	
 	/**
 	 * Constructor, takes in where the arm should move to.
@@ -27,6 +30,12 @@ public class MoveTask extends ASerialTask {
 	 */
 	public MoveTask(Point2D destination){
 		this.destination = destination;
+		PlateModel.getLocationFromNumber(wellNum);
+	}
+	
+	public MoveTask(int wellNum) {
+		this.wellNum = wellNum;
+		destination = PlateModel.getLocationFromNumber(wellNum);
 	}
 
 	/**
@@ -61,5 +70,29 @@ public class MoveTask extends ASerialTask {
 	@Override
 	public Object executeVisitor(ITaskVisitor visitor, Object... params) {
 		return visitor.caseAt("Move", this, params);
+	}
+
+	/**
+	 * This is a leaf task: the task path should contain only the move task,
+	 * so we can freely parse and change move parameters according to the toChange String.
+	 */
+	@Override
+	public void traverseOrModify(Object[] taskPath, String toChange) {
+		System.out.println(taskPath + ":" + taskPath.length);
+		if (taskPath.length != 1){
+			System.out.println("Something went wrong with move task, length of path is not 1.");
+		}
+		else {
+			//parse the string for a colon, set volume to be the double after the colon
+			wellNum = Integer.parseInt(toChange.split(":")[1]);
+			destination = PlateModel.getLocationFromNumber(wellNum);
+		}
+	}
+	
+	/**
+	 * Define how this task should be printed.
+	 */
+	public String toString() {
+		return "Move:" + wellNum;
 	}
 }

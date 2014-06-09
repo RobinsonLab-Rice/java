@@ -35,7 +35,7 @@ public class PlateModel {
 	/**
 	 * Dispatcher to talk to all wells.
 	 */
-	private WellDispatcher dispatcher;
+	private static WellDispatcher dispatcher;
 	
 	/**
 	 * All the plates that are currently on the screen.
@@ -148,7 +148,7 @@ public class PlateModel {
 	 * Returns the well's location given its number.
 	 * @return location of the well, in cm from origin
 	 */
-	public Point2D getLocationFromNumber(final int wellNumber){
+	public static Point2D getLocationFromNumber(final int wellNumber){
 		//find well with the input number through the dispatcher
 		final ArrayList<Point2D> returnPoint = new ArrayList<Point2D>();
 		//set a default value to return if nothing is found
@@ -222,5 +222,15 @@ public class PlateModel {
 			addPlate(plate);
 		}
 		viewAdapter.updateView();
+	}
+	
+	/**
+	 * Update the position of the internal arm tracker.
+	 * @param x - x coordinate in mm
+	 * @param y - y coordinate in mm
+	 * TODO: change from 0,0 to arm origin
+	 */
+	public void setInternalPosition(double x, double y) {
+		armState.setLocation(x, y);
 	}
 }

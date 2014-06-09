@@ -33,10 +33,10 @@ public class NozzleHeightTask extends ASerialTask {
 	public void execute(ArmState armState, OutputStream outputStream) {
 		String cmdString = "";
 		if (heightToSet > 0){
-			cmdString = "nozzleHeight(" + "down" + ")";
+			cmdString = "nozzleHeight(" + "1250" + ")";
 		}
 		else if (heightToSet < 0){
-			cmdString = "nozzleHeight(" + "up" + ")";
+			cmdString = "nozzleHeight(" + "1500" + ")";
 		}
 		this.writeString(cmdString, outputStream);
 	}
@@ -50,5 +50,11 @@ public class NozzleHeightTask extends ASerialTask {
 	@Override
 	public Object executeVisitor(ITaskVisitor visitor, Object... params) {
 		return visitor.caseAt("NozzleHeight", this, params);
+	}
+
+	@Override
+	public void traverseOrModify(Object[] taskPath, String toChange) {
+		// TODO Auto-generated method stub
+		
 	}
 }

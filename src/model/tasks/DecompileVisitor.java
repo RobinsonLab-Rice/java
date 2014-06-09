@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import model.tasks.basictasks.ASerialTask;
 import model.tasks.basictasks.DispenseTask;
 import model.tasks.basictasks.IExecuteTask;
+import model.tasks.basictasks.LowerTask;
+import model.tasks.basictasks.MLDRTask;
 import model.tasks.basictasks.MoveFromExternalTask;
 import model.tasks.basictasks.MoveTask;
 import model.tasks.basictasks.MoveWellToWellTask;
 import model.tasks.basictasks.MultiTask;
 import model.tasks.basictasks.NozzleHeightTask;
+import model.tasks.basictasks.RaiseTask;
 
 public class DecompileVisitor extends ATaskVisitor{
 
@@ -41,6 +44,14 @@ public class DecompileVisitor extends ATaskVisitor{
 				return null;
 			}
 		});
+		addCmd("MLDR", new ITaskVisitorCmd(){
+			@Override
+			public Object apply(String id, IExecuteTask host, Object... params) {
+				MLDRTask mldrHost = (MLDRTask) host;
+				mldrHost.getTask().executeVisitor(DecompileVisitor.this, params[0]);
+				return null;
+			}
+		});
 		addCmd("Dispense", new ITaskVisitorCmd(){
 			@Override
 			public Object apply(String id, IExecuteTask host, Object... params) {
@@ -59,6 +70,20 @@ public class DecompileVisitor extends ATaskVisitor{
 			@Override
 			public Object apply(String id, IExecuteTask host, Object... params) {
 				((ArrayList<ASerialTask>) params[0]).add((NozzleHeightTask) host);
+				return null;
+			}
+		});
+		addCmd("Lower", new ITaskVisitorCmd(){
+			@Override
+			public Object apply(String id, IExecuteTask host, Object... params) {
+				((ArrayList<ASerialTask>) params[0]).add((LowerTask) host);
+				return null;
+			}
+		});
+		addCmd("Raise", new ITaskVisitorCmd(){
+			@Override
+			public Object apply(String id, IExecuteTask host, Object... params) {
+				((ArrayList<ASerialTask>) params[0]).add((RaiseTask) host);
 				return null;
 			}
 		});

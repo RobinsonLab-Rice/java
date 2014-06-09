@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 
 import model.tasks.basictasks.IExecuteTask;
+import model.tasks.basictasks.MLDRTask;
 import model.tasks.basictasks.MoveFromExternalTask;
 import model.tasks.basictasks.MoveWellToWellTask;
 import model.tasks.basictasks.MultiTask;
@@ -40,6 +41,14 @@ public class DrawVisitor extends ATaskVisitor {
 			public Object apply(String id, IExecuteTask host, Object... params) {
 				MoveWellToWellTask moveWellToWellHost = (MoveWellToWellTask) host;
 				moveWellToWellHost.draw((Graphics) params[0], (Double) params[1]);
+				return null;
+			}
+		});
+		addCmd("MLDR", new ITaskVisitorCmd(){
+			@Override
+			public Object apply(String id, IExecuteTask host, Object... params) {
+				MLDRTask mldrHost = (MLDRTask) host;
+				mldrHost.draw((Graphics) params[0], (Double) params[1]);
 				return null;
 			}
 		});

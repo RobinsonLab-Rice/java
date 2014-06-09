@@ -18,5 +18,11 @@ public interface SerialCommAdapter{
 	 * @param _portName - string name of port to connect to
 	 */
 	public void connectToPort(String _portName);
+	
+	/**
+	 * Send text directly from GUI to Arduino.
+	 * @param command - string to send the Arduino
+	 */
+	public void sendText(String command);
 
 }

@@ -22,10 +22,16 @@ public class DispenseTask extends ASerialTask {
 	private double volume;
 	
 	/**
-	 * Constructor, just sets the appropriate volume.
 	 * @param inputVolume - amount of volume to fill associated well with
 	 */
 	public DispenseTask(Double volume){
+		this.volume = volume;
+	}
+	
+	/**
+	 * @param inputVolume - amount of volume to fill associated well with
+	 */
+	public DispenseTask(int volume){
 		this.volume = volume;
 	}
 
@@ -36,11 +42,11 @@ public class DispenseTask extends ASerialTask {
 	public void execute(ArmState armState, OutputStream outputStream) {
 		//check to see if it will overflow, notify if so
 		if (armState.willOverflow(volume)){
-			System.out.println("Well might overflow from " + volume + " uL!");
+			//System.out.println("Well might overflow from " + volume + " uL!");
 		}
 		
 		//for now, send the command regardless
-		String cmdString = "dispense(" + volume + "," + "10000" + ")";
+		String cmdString = "dispense(" + volume + ")";
 		this.writeString(cmdString, outputStream);
 		
 		//update internal tracker
@@ -56,5 +62,25 @@ public class DispenseTask extends ASerialTask {
 	@Override
 	public Object executeVisitor(ITaskVisitor algo, Object... params) {
 	    return algo.caseAt("Dispense", this, params);
+	}
+	
+	public String toString() {
+		return "Dispense:" + volume;
+	}
+
+	/**
+	 * This is a leaf task: the task path should contain only the dispense task,
+	 * so we can freely parse and change volume according to the toChange String.
+	 */
+	@Override
+	public void traverseOrModify(Object[] taskPath, String toChange) {
+		System.out.println(taskPath + ":" + taskPath.length);
+		if (taskPath.length != 1){
+			System.out.println("Something went wrong with dispense task, length of path is not 1.");
+		}
+		else {
+			//parse the string for a colon, set volume to be the double after the colon
+			volume = Double.parseDouble(toChange.split(":")[1]);
+		}
 	}
 }

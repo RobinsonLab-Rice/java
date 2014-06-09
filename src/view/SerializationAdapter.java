@@ -1,7 +1,10 @@
 package view;
 
+import java.util.ArrayList;
+
 import model.plate.objects.PlateSpecifications;
 import model.serialization.SaveType;
+import model.tasks.basictasks.IExecuteTask;
 
 /**
  * Adapter to link the view to the plate model. All functions that the view needs the model
@@ -45,5 +48,18 @@ public interface SerializationAdapter {
 	 * @return Iterable of each file name
 	 */
 	public Iterable<String> updateDataList(SaveType type);
+	
+	/**
+	 * Saves incoming task to the file system.
+	 * @param task
+	 * @param filename
+	 */
+	public void saveExecutionTask(IExecuteTask task, String filename);
+	
+	/**
+	 * Load a task that has previously been saved to a text file.
+	 * @return
+	 */
+	public IExecuteTask loadTask(String filename);
 	
 }

@@ -3,6 +3,7 @@ package model.tasks.basictasks;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import model.plate.objects.ArmState;
@@ -18,53 +19,9 @@ public class MultiTask implements IExecuteTask{
 	/**
 	 * ArrayList of tasks this MultiTask contains.
 	 */
-	private ArrayList<IExecuteTask> taskList;
-
-	/**
-	 * Constructor for the MultiTask.
-	 * @param nameList - ArrayList of names that will be parsed and converted to an ArrayList of IExecuteTasks
-	 * @param outputStream - stream the tasks that compose this should talk through
-	 */
-	public MultiTask(ArrayList<String> nameList){
-		taskList = new ArrayList<IExecuteTask>();
-		populateTaskList(nameList);
-	}
+	private ArrayList<IExecuteTask> taskList = new ArrayList<IExecuteTask>();
 	
-	/**
-	 * Called by constructor, populates the task list with the list of task names. Does this by parsing the nameList
-	 * input by the loadTask method, initializing each sub-task with its appropriate parameter.
-	 */
-	private void populateTaskList(ArrayList<String> nameList){
-		for (String name : nameList){
-			//grab the task's class name and relevant parameter
-			Scanner input = new Scanner(name);
-			input.useDelimiter("[:]");
-			String taskName = input.next();
-			String taskParam = input.next();
-			input.close();
-			
-			//try to load the class name given
-			Class<?> taskClassName = null;
-			try {
-				//look in the same folder this task is in
-				taskClassName = Class.forName("model.tasks.basictasks." + taskName + "Task");
-			}
-			catch (ClassNotFoundException e){
-				e.printStackTrace();
-			}
-			
-			//try to initialize the class with retrieved name/parameter
-			ASerialTask taskToAdd = null;
-			try {
-				taskToAdd = (ASerialTask) taskClassName.getDeclaredConstructor(new Class[]{Double.class}).newInstance(Double.parseDouble(taskParam));
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-			//add this to the list of tasks
-			taskList.add(taskToAdd);
-		}
-	}
+	public MultiTask() {}
 
 	/**
 	 * Creates a MultiTask out of some variable number of other tasks.
@@ -122,5 +79,86 @@ public class MultiTask implements IExecuteTask{
 	 */
 	public ArrayList<IExecuteTask> getSubtasks(){
 		return taskList;
+	}
+	
+	/**
+	 * Returns number of tasks this MultiTask has.
+	 */
+	public int getChildCount() {
+		return taskList.size();
+	}
+	
+	/**
+	 * Get the subtask at the specified index.
+	 */
+	public IExecuteTask getChild(int index) {
+		return taskList.get(index);
+	}
+	
+	/**
+	 * String representation of a MultiTask, useful for drawing to screen.
+	 */
+	public String toString() {
+		return "MultiTask";
+	}
+
+	/**
+	 * This is an abstract task, so this function will traverse down the path
+	 * until it gets to the leaf task.
+	 */
+	@Override
+	public void traverseOrModify(Object[] taskPath, String toChange) {
+		Object[] reducedPath = Arrays.copyOfRange(taskPath, 1, taskPath.length);
+		IExecuteTask taskToEnter = (IExecuteTask) reducedPath[0];
+		for (IExecuteTask task : taskList) {
+			if (task == taskToEnter) {
+				task.traverseOrModify(reducedPath, toChange);
+			}
+		}
+	}
+
+	@Override
+	public void traverseOrDelete(Object[] path) {
+		//if we want to delete the first multitask, just delete all its children
+		if (path.length == 1) {
+			taskList.clear();
+			return;
+		}
+		Object[] reducedPath = Arrays.copyOfRange(path, 1, path.length);
+		IExecuteTask firstTask = (IExecuteTask) reducedPath[0];
+		//if there's only one task left in the path, delete it from our ArrayList
+		if (reducedPath.length == 1) {
+			taskList.remove(firstTask);
+		}
+		//else, recurse into the first element of the list
+		else {
+			for (IExecuteTask task : taskList) {
+				if (task == firstTask) {
+					task.traverseOrDelete(reducedPath);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void traverseOrInsert(Object[] path, IExecuteTask taskToAdd) {
+		Object[] reducedPath = Arrays.copyOfRange(path, 1, path.length);
+		IExecuteTask firstTask = (IExecuteTask) reducedPath[0];
+		//if there's only one task left in the path, find it in the ArrayList and add taskToAdd after it
+		if (reducedPath.length == 1) {
+			int newTaskIndex = taskList.indexOf(firstTask) + 1;
+			//if we're appending to the end of the list
+			if (newTaskIndex == taskList.size() + 1) taskList.add(taskToAdd);
+			else taskList.add(newTaskIndex, taskToAdd);
+			
+		}
+		//else, recurse into the first element of the list
+		else {
+			for (IExecuteTask task : taskList) {
+				if (task == firstTask) {
+					task.traverseOrInsert(reducedPath, taskToAdd);
+				}
+			}
+		}
 	}
 }
