@@ -1,0 +1,54 @@
+package view;
+
+import javax.swing.JPanel;
+import net.miginfocom.swing.MigLayout;
+import javax.swing.JButton;
+import javax.swing.JScrollPane;
+import javax.swing.JLabel;
+import javax.swing.JComboBox;
+import javax.swing.JSeparator;
+import javax.swing.JSplitPane;
+
+public class TaskCreationPanel extends JPanel {
+
+	/**
+	 * Create the panel.
+	 */
+	public TaskCreationPanel() {
+		setLayout(new MigLayout("", "[grow][grow]", "[grow][]"));
+		
+		JSplitPane splitPane = new JSplitPane();
+		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		add(splitPane, "cell 0 0 2 1,grow");
+		
+		JPanel panel = new JPanel();
+		splitPane.setRightComponent(panel);
+		panel.setLayout(new MigLayout("", "[grow][grow]", "[][grow][]"));
+		
+		JLabel lblTaskToAdd = new JLabel("Task To Add");
+		panel.add(lblTaskToAdd, "cell 0 0,alignx trailing");
+		
+		JComboBox cmbTasks = new JComboBox();
+		panel.add(cmbTasks, "cell 1 0,growx");
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		panel.add(scrollPane_1, "cell 0 1 2 1,grow");
+		
+		JButton btnInsertAfterSelected = new JButton("Insert After Selected");
+		panel.add(btnInsertAfterSelected, "cell 0 2,growx");
+		
+		JButton btnAppendToEnd = new JButton("Append To End");
+		panel.add(btnAppendToEnd, "cell 1 2,growx");
+		
+		JScrollPane scrollPane = new JScrollPane();
+		splitPane.setLeftComponent(scrollPane);
+		
+		JButton btnExecuteSelected = new JButton("Execute Selected");
+		add(btnExecuteSelected, "cell 0 1,growx");
+		
+		JButton btnExecuteAll = new JButton("Execute All");
+		add(btnExecuteAll, "cell 1 1,growx");
+
+	}
+
+}

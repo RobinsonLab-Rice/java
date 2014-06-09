@@ -1,0 +1,147 @@
+package model.tasks.basictasks;
+
+import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+import model.plate.objects.ArmState;
+import model.tasks.ITaskVisitor;
+
+public class MultiTask implements IExecuteTask{
+
+	/**
+	 * Auto generated serial ID to be abe to save the task.
+	 */
+	private static final long serialVersionUID = 2695551386880973088L;
+	
+	/**
+	 * ArrayList of tasks this MultiTask contains.
+	 */
+	private ArrayList<IExecuteTask> taskList;
+
+	/**
+	 * Constructor for the MultiTask.
+	 * @param nameList - ArrayList of names that will be parsed and converted to an ArrayList of IExecuteTasks
+	 * @param outputStream - stream the tasks that compose this should talk through
+	 */
+	public MultiTask(ArrayList<String> nameList){
+		taskList = new ArrayList<IExecuteTask>();
+		populateTaskList(nameList);
+	}
+	
+	/**
+	 * Called by constructor, populates the task list with the list of task names. Does this by parsing the nameList
+	 * input by the loadTask method, initializing each sub-task with its appropriate parameter.
+	 */
+	private void populateTaskList(ArrayList<String> nameList){
+		for (String name : nameList){
+			//grab the task's class name and relevant parameter
+			Scanner input = new Scanner(name);
+			input.useDelimiter("[:]");
+			String taskName = input.next();
+			String taskParam = input.next();
+			input.close();
+			
+			//try to load the class name given
+			Class<?> taskClassName = null;
+			try {
+				//look in the same folder this task is in
+				taskClassName = Class.forName("model.tasks.basictasks." + taskName + "Task");
+			}
+			catch (ClassNotFoundException e){
+				e.printStackTrace();
+			}
+			
+			//try to initialize the class with retrieved name/parameter
+			ASerialTask taskToAdd = null;
+			try {
+				taskToAdd = (ASerialTask) taskClassName.getDeclaredConstructor(new Class[]{Double.class}).newInstance(Double.parseDouble(taskParam));
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			//add this to the list of tasks
+			taskList.add(taskToAdd);
+		}
+	}
+
+	/**
+	 * Creates a MultiTask out of some variable number of other tasks.
+	 */
+	public MultiTask(IExecuteTask... taskArray){
+		taskList = new ArrayList<IExecuteTask>();
+		for (IExecuteTask task: taskArray){
+			taskList.add(task);
+		}
+	}
+	
+	/**
+	 * For this multi-task, take in the well that it belongs to, then execute all sub-tasks it contains.
+	 * @param context - Well that this multi-task belongs to
+	 */
+	public void execute(ArmState armState, OutputStream outputStream) {
+		for (IExecuteTask task : taskList){
+			task.execute(armState, outputStream);
+		}
+	}
+	
+	/**
+	 * Adds the input task to the end of this MultiTask.
+	 */
+	public void addTask(IExecuteTask taskToAdd){
+		this.taskList.add(taskToAdd);
+	}
+	
+	/**
+	 * @return subtask corresponding to input value, or a NullTask if it did not exist.
+	 */
+	public IExecuteTask getSubtask(int taskPosition){
+		if (taskPosition > taskList.size()){
+			System.out.println("Trying to access a task out of bounds in this MultiTask.");
+			return new NullTask();
+		}
+		else{
+			return taskList.get(taskPosition);
+		}
+	}
+	
+	/**
+	 * Calls the "Multi" case of the given algo.
+	 * @param algo The IPhraseVisitor algo to use.
+	 * @param params vararg list of input parameters
+	 * @return the result of running the Chord case of the visitor.
+	 */
+	@Override
+	public Object executeVisitor(ITaskVisitor visitor, Object... params) {
+		return visitor.caseAt("Multi", this, params);
+	}
+	
+	/**
+	 * @return subtasks of this multi task
+	 */
+	public ArrayList<IExecuteTask> getSubtasks(){
+		return taskList;
+	}
+	
+	/**
+	 * Returns number of tasks this MultiTask has.
+	 */
+	public int getChildCount() {
+		return taskList.size();
+	}
+	
+	/**
+	 * Get the subtask at the specified index.
+	 */
+	public IExecuteTask getChild(int index) {
+		return taskList.get(index);
+	}
+	
+	/**
+	 * String representation of a MultiTask, useful for drawing to screen.
+	 */
+	public String toString() {
+		return "MultiTask";
+	}
+}

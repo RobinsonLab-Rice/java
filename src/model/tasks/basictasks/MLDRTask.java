@@ -1,0 +1,157 @@
+package model.tasks.basictasks;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.geom.Point2D;
+import java.io.OutputStream;
+import java.util.Arrays;
+
+import model.plate.PlateModel;
+import model.plate.objects.ArmState;
+import model.tasks.ITaskVisitor;
+
+public class MLDRTask extends ADrawingTask {
+
+	private static final long serialVersionUID = 6773359703734922374L;
+	
+	MultiTask taskToDo;
+	
+	private boolean isDispensing;
+	private int fluidAmount;
+	private Point2D wellLoc;
+	
+	/**
+	 * @param wellLoc - location of the well, in cm
+	 * @param fluidAmount - amount of fluid to move
+	 */
+	public MLDRTask(Point2D wellLoc, int fluidAmount) {
+		isDispensing = fluidAmount > 0;
+		this.fluidAmount = fluidAmount;
+		this.wellLoc = wellLoc;
+		
+		MoveTask moveTask = new MoveTask(wellLoc);
+		LowerTask lowerTask = new LowerTask();
+		DispenseTask dispenseTask = new DispenseTask(fluidAmount);
+		RaiseTask raiseTask = new RaiseTask();
+		
+		taskToDo = new MultiTask(moveTask, lowerTask, dispenseTask, raiseTask);
+		
+		//if we are withdrawing fluid, we need to immediately prep the pump after withdrawing
+		if (fluidAmount < 0)
+			taskToDo = new MultiTask(moveTask, lowerTask, dispenseTask, new DispenseTask(750), raiseTask);
+	}
+	
+	/**
+	 * @param wellNum - number of the well
+	 * @param fluidAmount - amount of fluid to move
+	 */
+	public MLDRTask(int wellNum, int fluidAmount) {
+		isDispensing = fluidAmount > 0;
+		this.fluidAmount = fluidAmount;
+		this.wellLoc = PlateModel.getLocationFromNumber(wellNum);
+		
+		MoveTask moveTask = new MoveTask(wellNum);
+		LowerTask lowerTask = new LowerTask();
+		DispenseTask dispenseTask = new DispenseTask(fluidAmount);
+		RaiseTask raiseTask = new RaiseTask();
+		
+		taskToDo = new MultiTask(moveTask, lowerTask, dispenseTask, raiseTask);
+		
+		//if we are withdrawing fluid, we need to immediately prep the pump after withdrawing
+		if (fluidAmount < 0)
+			taskToDo = new MultiTask(moveTask, lowerTask, dispenseTask, new DispenseTask(750), raiseTask);
+	}
+	
+	@Override
+	public void execute(ArmState armState, OutputStream outputStream) {
+		taskToDo.execute(armState, outputStream);
+	}
+
+	/**
+	 * Calls the "MLDR" case of the given algo.
+	 * @param algo The IPhraseVisitor algo to use.
+	 * @param params vararg list of input parameters
+	 * @return the result of running the Chord case of the visitor.
+	 */
+	@Override
+	public Object executeVisitor(ITaskVisitor visitor, Object... params) {
+		return visitor.caseAt("MLDR", this, params);
+	}
+	
+	@Override
+	public void draw(Graphics g, double sF) {
+		g.setColor(Color.BLACK);
+		//if we're dispensing, draw an X
+		if (isDispensing) {
+			int xFactor = Math.abs(fluidAmount / 200);
+			Point destPoint = new Point((int) Math.round(wellLoc.getX()*sF), (int) Math.round(wellLoc.getY()*sF));
+			g.drawLine(destPoint.x - (int)(xFactor*sF), destPoint.y - (int)(xFactor*sF), destPoint.x + (int)(xFactor*sF), destPoint.y + (int)(xFactor*sF));
+			g.drawLine(destPoint.x - (int)(xFactor*sF), destPoint.y + (int)(xFactor*sF), destPoint.x + (int)(xFactor*sF), destPoint.y - (int)(xFactor*sF));
+		}
+		//if we're withdrawing, draw an O
+		else {
+			int xFactor = Math.abs(fluidAmount / 200);
+			Point destPoint = new Point((int) Math.round(wellLoc.getX()*sF), (int) Math.round(wellLoc.getY()*sF));
+			g.drawOval(destPoint.x - (int)(xFactor*sF), destPoint.y - (int)(xFactor*sF), (int)(xFactor*sF*2), (int)(xFactor*sF*2));
+		}
+	}
+	
+	/**
+	 * @return MultiTask that this task wraps
+	 */
+	public MultiTask getTask(){
+		return taskToDo;
+	}
+	
+	/**
+	 * TODO: should MLDR return the number of tasks multi subtask has, or just one (the multitask)
+	 */
+	public int getChildCount() {
+		return taskToDo.getChildCount();
+	}
+	
+	/**
+	 * Get the MultiTask's subtasks when we need a specific one.
+	 */
+	public IExecuteTask getChild(int index) {
+		return taskToDo.getChild(index);
+	}
+	
+	/**
+	 * Allows us to see this MLDRTask as a string.
+	 */
+	public String toString(){
+		return "MLDR Task";
+	}
+
+	/**
+	 * This is an abstract task, so this function will traverse down the path
+	 * until it gets to the leaf task.
+	 */
+	
+	///////////////these might need to implement their own method, but for now can just call multitask////////////
+	
+	@Override
+	public void traverseOrModify(Object[] taskPath, String toChange) {
+		taskToDo.traverseOrModify(taskPath, toChange);
+//		Object[] reducedPath = Arrays.copyOfRange(taskPath, 1, taskPath.length);
+//		IExecuteTask taskToEnter = (IExecuteTask) reducedPath[0];
+//		for (IExecuteTask task : taskToDo.getSubtasks()) {
+//			if (task == taskToEnter) {
+//				task.traverseOrModify(reducedPath, toChange);
+//			}
+//		}
+	}
+
+	@Override
+	public void traverseOrDelete(Object[] path) {
+		taskToDo.traverseOrDelete(path);
+	}
+
+	@Override
+	public void traverseOrInsert(Object[] path, IExecuteTask taskToAdd) {
+		taskToDo.traverseOrInsert(path, taskToAdd);
+	}
+
+}

@@ -1,0 +1,20 @@
+package view;
+
+import javax.swing.JPanel;
+import net.miginfocom.swing.MigLayout;
+import javax.swing.JButton;
+
+public class TaskCreationPanel extends JPanel {
+
+	/**
+	 * Create the panel.
+	 */
+	public TaskCreationPanel() {
+		setLayout(new MigLayout("", "[]", "[]"));
+		
+		JButton btnNewButton = new JButton("New button");
+		add(btnNewButton, "cell 0 0");
+
+	}
+
+}

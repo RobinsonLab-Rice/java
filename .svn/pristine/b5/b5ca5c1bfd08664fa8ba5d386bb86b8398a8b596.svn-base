@@ -1,0 +1,91 @@
+package view;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JPanel;
+
+import model.tasks.basictasks.DispenseTask;
+import model.tasks.basictasks.IExecuteTask;
+import model.tasks.basictasks.MLDRTask;
+import model.tasks.basictasks.MoveTask;
+import model.tasks.basictasks.MultiTask;
+import net.miginfocom.swing.MigLayout;
+
+import javax.swing.JButton;
+import javax.swing.JScrollPane;
+import javax.swing.JLabel;
+import javax.swing.JComboBox;
+import javax.swing.JSeparator;
+import javax.swing.JSplitPane;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
+
+public class TaskCreationPanel extends JPanel {
+	
+	private TaskTree taskTree;
+	
+	private TaskAdapter taskModelAdapter;
+
+	/**
+	 * Create the panel.
+	 */
+	public TaskCreationPanel(TaskAdapter taskModelAdapter) {
+		this.taskModelAdapter = taskModelAdapter;
+		MultiTask task = new MultiTask(new MLDRTask(2,50), new MLDRTask(5,-60));
+		taskTree = new TaskTree(new TaskModel(task));
+		taskTree.setEditable(true);
+		taskTree.model.addTreeModelListener(new MyTreeModelListener());
+		
+		setLayout(new MigLayout("", "[grow][grow]", "[grow][][]"));
+		
+		JSplitPane splitPane = new JSplitPane();
+		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		add(splitPane, "cell 0 0 2 1,grow");
+		
+		JPanel panel = new JPanel();
+		splitPane.setRightComponent(panel);
+		panel.setLayout(new MigLayout("", "[grow][grow]", "[][grow][]"));
+		
+		JLabel lblTaskToAdd = new JLabel("Task To Add");
+		panel.add(lblTaskToAdd, "cell 0 0,alignx trailing");
+		
+		final JComboBox<IExecuteTask> cmbTasks = new JComboBox<IExecuteTask>();
+		cmbTasks.addItem(new MLDRTask(2, 50));
+		
+		cmbTasks.addActionListener (new ActionListener () {
+		    public void actionPerformed(ActionEvent e) {
+		        cmbTasks.getSelectedItem();
+		    }
+		});
+		panel.add(cmbTasks, "cell 1 0,growx");
+		
+		JScrollPane pnlEditingTree = new JScrollPane();
+		panel.add(pnlEditingTree, "cell 0 1 2 1,grow");
+		
+		JButton btnInsertAfterSelected = new JButton("Insert After Selected");
+		btnInsertAfterSelected.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				taskTree.model.setNewTask(new MultiTask(new DispenseTask(500)));
+			}
+		});
+		panel.add(btnInsertAfterSelected, "cell 0 2,growx");
+		
+		JButton btnAppendToEnd = new JButton("Append To End");
+		panel.add(btnAppendToEnd, "cell 1 2,growx");
+		
+		JScrollPane pnlTaskTree = new JScrollPane(taskTree);
+		splitPane.setLeftComponent(pnlTaskTree);
+		
+		JButton btnExecuteSelected = new JButton("Execute Selected");
+		add(btnExecuteSelected, "cell 0 1,growx");
+		
+		JButton btnExecuteAll = new JButton("Execute All");
+		add(btnExecuteAll, "cell 1 1,growx");
+
+	}
+
+}

@@ -1,0 +1,5 @@
+Known TODO list:
+
+objectives:
+send task objects from matlab (not just stage numbers)
+ability to save plate specifications, experiment workflow

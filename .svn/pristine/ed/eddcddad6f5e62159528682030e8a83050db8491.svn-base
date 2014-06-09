@@ -1,0 +1,12 @@
+package model.tasks;
+
+/**
+ * Adapter for the task model to talk to main view.
+ * @author Christian
+ *
+ */
+public interface ViewAdapter {
+
+	public void updateView();
+	
+}

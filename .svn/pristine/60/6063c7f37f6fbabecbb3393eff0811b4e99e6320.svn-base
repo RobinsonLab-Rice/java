@@ -1,0 +1,60 @@
+package model.tasks.basictasks;
+
+import java.io.OutputStream;
+
+import model.plate.objects.ArmState;
+import model.tasks.ITaskVisitor;
+
+/**
+ * Dispense task, tells the robot to dispense the input amount of liquid.
+ * @author Christian
+ */
+public class DispenseTask extends ASerialTask {
+
+	/**
+	 * Auto generated serial ID.
+	 */
+	private static final long serialVersionUID = 919292764151689689L;
+	
+	/**
+	 * Volume of liquid to move, currently the time in ms before switching to air.
+	 */
+	private double volume;
+	
+	/**
+	 * Constructor, just sets the appropriate volume.
+	 * @param inputVolume - amount of volume to fill associated well with
+	 */
+	public DispenseTask(Double volume){
+		this.volume = volume;
+	}
+
+	/**
+	 * Called when the dispense task needs to execute. Sends a command to the Arduino
+	 * with time to flow liquid and time to flow air, in ms.
+	 */
+	public void execute(ArmState armState, OutputStream outputStream) {
+		//check to see if it will overflow, notify if so
+		if (armState.willOverflow(volume)){
+			//System.out.println("Well might overflow from " + volume + " uL!");
+		}
+		
+		//for now, send the command regardless
+		String cmdString = "dispense(" + -volume + ")";
+		this.writeString(cmdString, outputStream);
+		
+		//update internal tracker
+		armState.updateWellVolume(volume);
+	}
+	
+	/**
+	 * Calls the "Dispense" case of the given algo.
+	 * @param algo The IPhraseVisitor algo to use.
+	 * @param params vararg list of input parameters
+	 * @return the result of running the Chord case of the visitor.
+	 */
+	@Override
+	public Object executeVisitor(ITaskVisitor algo, Object... params) {
+	    return algo.caseAt("Dispense", this, params);
+	}
+}
