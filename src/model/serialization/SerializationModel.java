@@ -1,11 +1,6 @@
 package model.serialization;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,17 +39,11 @@ public class SerializationModel {
 	private String ext = ".txt";
 	
 	/**
-	 * Tool to save objects to json with.
-	 */
-	//private Gson gson;
-	
-	/**
 	 * On initialization, connects to given adapters.
 	 */
 	public SerializationModel(TaskAdapter taskModel, PlateAdapter plateModel){
 		this.taskModel = taskModel;
 		this.plateModel = plateModel;
-		//gson = new GsonBuilder().setPrettyPrinting().create();
 	}
 	
 	/**
@@ -187,18 +176,17 @@ public class SerializationModel {
 //	    return specs;
 		
 		FileInputStream fis = null;
-	    ObjectInputStream in = null;
+	    //ObjectInputStream in = null;
 	    
 	    PlateSpecifications specs = null;
 	 
 	    try {
 	    	fis = new FileInputStream("data/plates/" + filename + ext);
-	    	in = new ObjectInputStream(fis);
 	    	
-	    	JsonReader jr = new JsonReader(in);
+	    	JsonReader jr = new JsonReader(fis);
 	    	specs = (PlateSpecifications) jr.readObject();
 	    	
-	    	in.close();
+	    	fis.close();
 	    	
 	    	return specs;
 	    } 
@@ -212,18 +200,18 @@ public class SerializationModel {
 		String qualifiedName = "data/tasks/" + filename + ext;
 		
 		FileInputStream fis = null;
-	    ObjectInputStream in = null;
+	    //ObjectInputStream in = null;
 	    
 	    String json = "";
 	 
 	    try {
 	    	fis = new FileInputStream("data/tasks/" + filename + ext);
-	    	in = new ObjectInputStream(fis);
+	    	//in = new ObjectInputStream(fis);
 	    	
-	    	JsonReader jr = new JsonReader(in);
+	    	JsonReader jr = new JsonReader(fis);
 	    	IExecuteTask task = (IExecuteTask) jr.readObject();
 	    	
-	    	in.close();
+	    	fis.close();
 	    	
 	    	return task;
 	    } 
@@ -267,17 +255,14 @@ public class SerializationModel {
 	 */
 	public void saveItem(String qualifiedName, Object item){
 		FileOutputStream fos = null;
-		ObjectOutputStream oos = null;
 		
 		try {
 			fos = new FileOutputStream(qualifiedName);
-			oos = new ObjectOutputStream(fos);
 			Map args = new HashMap();
 			args.put(JsonWriter.PRETTY_PRINT, true);
-			JsonWriter jw = new JsonWriter(oos, args);
+			JsonWriter jw = new JsonWriter(fos, args);
 			jw.write(item);
 			jw.close();
-			oos.close();
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
