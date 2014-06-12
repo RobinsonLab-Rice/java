@@ -1,5 +1,6 @@
 package model.serialization;
 
+import java.awt.geom.Point2D;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +39,9 @@ public class SerializationModel {
 	 * Extension to save files with.
 	 */
 	private String ext = ".txt";
+
+    /* Saved copy of user settings, so we don't have to dig through the file system when each piece is wanted. */
+    private UserSettings userSettings;
 	
 	/**
 	 * On initialization, connects to given adapters.
@@ -45,6 +49,8 @@ public class SerializationModel {
 	public void start(Serialization2TaskAdapter taskModel, Serialization2PlateAdapter plateModel){
         this.taskModel = taskModel;
         this.plateModel = plateModel;
+
+        userSettings = (UserSettings) loadData("data/UserSettings" + ext);
 	}
 	
 	/**
@@ -110,109 +116,54 @@ public class SerializationModel {
 		dataFile.delete();
 	}
 
+    /**
+     * Uses JSON.io to read data from saved text files. Essentially a helper method for other accessors.
+     * @param qualifiedPath - complete path to the data
+     * @return de-serialized data (not yet cast to the correct object)
+     */
+    public Object loadData(String qualifiedPath) {
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(qualifiedPath);
+
+            JsonReader jr = new JsonReader(fis);
+            Object loaded = jr.readObject();
+
+            fis.close();
+
+            return loaded;
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
 	/**
 	 * Loads workflow with given filename, giving it to the task and plate models to load back into the program.
 	 * @param filename - name of file to load from, without folder or extension
 	 */
 	public void loadWorkflow(String filename) {
-//		FileInputStream fis = null;
-//	    ObjectInputStream in = null;
-//	 
-//	    try {
-//	    	fis = new FileInputStream("data/workflow/" + filename + ext);
-//	    	in = new ObjectInputStream(fis);
-//	    	plateModel.setPlateList((ArrayList<Plate>) in.readObject());
-//	    	taskModel.setTasks((MultiTask) in.readObject());
-//	    	in.close();
-//	    } 
-//	    catch (Exception ex) {
-//	    	ex.printStackTrace();
-//	    }
-		
-		FileInputStream fis = null;
-	    ObjectInputStream in = null;
-	 
-	    try {
-	    	fis = new FileInputStream("data/workflow/" + filename + ext);
-	    	in = new ObjectInputStream(fis);
-	    	
-	    	JsonReader jr = new JsonReader(in);
-	    	Workflow toLoad = (Workflow) jr.readObject();
-	    	plateModel.setPlateList(toLoad.plates);
-	    	taskModel.setTasks((MultiTask)toLoad.tasks);
-	    	
-	    	in.close();
-	    } 
-	    catch (Exception ex) {
-	    	ex.printStackTrace();
-	    }
+		Workflow loaded = (Workflow) loadData("data/workflow/" + filename + ext);
+        plateModel.setPlateList(loaded.plates);
+        taskModel.setTasks((MultiTask)loaded.tasks);
 	}
 	
 	/**
 	 * Loads plate with the given filename, returning it to the view to be put in correct fields.
-	 * @param name - filename to look for the specifications
+	 * @param filename - name of file to load from, without folder or extension
 	 */
 	public PlateSpecifications loadPlate(String filename){
-//		PlateSpecifications specs = null;
-//		
-//		FileInputStream fis = null;
-//	    ObjectInputStream in = null;
-//	 
-//	    try {
-//	    	fis = new FileInputStream("data/plates/" + name + ext);
-//	    	in = new ObjectInputStream(fis);
-//	    	specs = (PlateSpecifications) in.readObject();
-//	    	in.close();
-//	    } 
-//	    catch (Exception ex) {
-//	    	ex.printStackTrace();
-//	    }
-//	    return specs;
-		
-		FileInputStream fis = null;
-	    //ObjectInputStream in = null;
-	    
-	    PlateSpecifications specs = null;
-	 
-	    try {
-	    	fis = new FileInputStream("data/plates/" + filename + ext);
-	    	
-	    	JsonReader jr = new JsonReader(fis);
-	    	specs = (PlateSpecifications) jr.readObject();
-	    	
-	    	fis.close();
-	    	
-	    	return specs;
-	    } 
-	    catch (Exception ex) {
-	    	ex.printStackTrace();
-	    	return null;
-	    }
+		return (PlateSpecifications) loadData("data/plates/" + filename + ext);
 	}
-	
+
+    /**
+     * Loads task with given filename.
+     * @param filename - name of file to load from, without folder or extension
+     * @return
+     */
 	public IExecuteTask loadTask(String filename) {
-		String qualifiedName = "data/tasks/" + filename + ext;
-		
-		FileInputStream fis = null;
-	    //ObjectInputStream in = null;
-	    
-	    String json = "";
-	 
-	    try {
-	    	fis = new FileInputStream("data/tasks/" + filename + ext);
-	    	//in = new ObjectInputStream(fis);
-	    	
-	    	JsonReader jr = new JsonReader(fis);
-	    	IExecuteTask task = (IExecuteTask) jr.readObject();
-	    	
-	    	fis.close();
-	    	
-	    	return task;
-	    } 
-	    catch (Exception ex) {
-	    	ex.printStackTrace();
-	    	return null;
-	    }
+        return (IExecuteTask) loadData("data/tasks/" + filename + ext);
 	}
 	
 	/**
@@ -262,4 +213,9 @@ public class SerializationModel {
 			ex.printStackTrace();
 		}
 	}
+
+    /* Returns saved bounds that were loaded on program startup. */
+    public Point2D getSavedBounds() {
+        return userSettings.frameBounds;
+    }
 }

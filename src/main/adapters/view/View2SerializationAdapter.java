@@ -6,6 +6,8 @@ import model.serialization.SaveType;
 import model.serialization.SerializationModel;
 import model.tasks.basictasks.IExecuteTask;
 
+import java.awt.geom.Point2D;
+
 /**
  * Created by Christian on 6/12/2014.
  */
@@ -105,4 +107,7 @@ public class View2SerializationAdapter {
      * @return the PlateSpecifications object loaded from the saved file
      */
     public PlateSpecifications loadPlate(String filename) { return serializationModel.loadPlate(filename); }
+
+    /* Get the frame bounds from saved file. */
+    public Point2D getSavedBounds() { return serializationModel.getSavedBounds(); }
 }

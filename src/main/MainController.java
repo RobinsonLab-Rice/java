@@ -62,8 +62,6 @@ public class MainController {
      * them together. Each start function takes in adapters to other models to accomplish that.
 	 */
 	public void start(){
-		view.start( new View2PlateAdapter(plateModel), new View2SerializationAdapter(serializationModel),
-                    new View2SerialCommAdapter(serialModel), new View2TaskAdapter(taskModel));
 		externalCommModel.start(new ExternalComm2TaskAdapter(taskModel));
 		plateModel.start(new Plate2ViewAdapter(view), new Plate2TaskAdapter(taskModel));
 		serialModel.start(new Serial2ViewAdapter(view), new Serial2TaskAdapter(taskModel),
@@ -71,6 +69,8 @@ public class MainController {
 		serializationModel.start(new Serialization2TaskAdapter(taskModel), new Serialization2PlateAdapter(plateModel));
         taskModel.start(new Task2ViewAdapter(view), new Task2PlateAdapter(plateModel),
                     new Task2SerialCommAdapter(serialModel));
+        view.start( new View2PlateAdapter(plateModel), new View2SerializationAdapter(serializationModel),
+                new View2SerialCommAdapter(serialModel), new View2TaskAdapter(taskModel));
 	}
 	
 	/**
