@@ -1,7 +1,6 @@
 package main.adapters.view;
 
 import model.plate.PlateModel;
-import model.plate.objects.PlateNumbering;
 import model.plate.objects.PlateSpecifications;
 
 import java.awt.*;
@@ -21,13 +20,13 @@ public class View2PlateAdapter {
 
     /**
      * Tells the model to make a plate with the defined specs at the specified location.
-     *
-     * @param numberingOrder - Method of ordering wells on a plate
-     * @param platePos       - Bottom left corner of the plate.
-     * @param specs          - Set of specs that the view has compiled into one wrapper class.
+     * @param numberingOrder String conveying how the wells should be numbered (going across rows, down columns, etc.)
+     * @param xPos x coordinate of the plate's top left corner
+     * @param yPos y coordinate of the plate's top left corner
+     * @param specs specs of the plate, taken from the datasheet
      */
-    public void addPlate(PlateNumbering numberingOrder, Point2D platePos, PlateSpecifications specs) {
-        plateModel.addPlate(numberingOrder, platePos, specs);
+    public void addPlate(String numberingOrder, String xPos, String yPos, PlateSpecifications specs) {
+        plateModel.addPlate(numberingOrder, new Point2D.Double(Double.parseDouble(xPos), Double.parseDouble(yPos)), specs);
     }
 
     /**

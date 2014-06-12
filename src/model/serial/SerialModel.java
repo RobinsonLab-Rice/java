@@ -32,12 +32,12 @@ public class SerialModel implements SerialPortEventListener {
 	/**
 	 * Adapter from the task model to plate model.
 	 */
-	private Serial2TaskAdapter taskModelAdapter;
+	private Serial2TaskAdapter taskModel;
 	
 	/**
 	 * Adapter from the task model to plate model.
 	 */
-	private Serial2PlateAdapter plateModelAdapter;
+	private Serial2PlateAdapter plateModel;
 	
 	/**
 	 * Serial port the Arduino is found on.
@@ -57,16 +57,16 @@ public class SerialModel implements SerialPortEventListener {
 	/**
 	 * Constructor that links the model to view via its adapter.
 	 */
-	public SerialModel(Serial2ViewAdapter serial2ViewAdapter, Serial2TaskAdapter taskModelAdapter, Serial2PlateAdapter plateModelAdapter){
-		this.view = serial2ViewAdapter;
-		this.taskModelAdapter = taskModelAdapter;
-		this.plateModelAdapter = plateModelAdapter;
+	public SerialModel(){
 	}
 	
 	/**
 	 * Called by the controller, performs any start up tasks necessary for the model.
 	 */
-	public void start(){
+	public void start(Serial2ViewAdapter view, Serial2TaskAdapter taskModel, Serial2PlateAdapter plateModel){
+        this.view = view;
+        this.taskModel = taskModel;
+        this.plateModel = plateModel;
 		scanForPorts();
 	}
 	
@@ -158,10 +158,10 @@ public class SerialModel implements SerialPortEventListener {
 	public void processSerialInput(String serialInput){
 		System.out.println("From Arduino: " + serialInput);
 		if (serialInput.equals("Done")){
-			taskModelAdapter.executeNext();
+			taskModel.executeNext();
 		}
 		if (serialInput.equals("Finished Calibration")){
-			//plateModelAdapter.resetArmPosition();
+			//plateModel.resetArmPosition();
 		}
 	}
 	

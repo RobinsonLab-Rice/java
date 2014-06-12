@@ -44,32 +44,33 @@ public class MainController {
 	/* Makes controller that initializes models and the view, using adapters to link them together. */
 	public MainController(){
 
-        view = new MainPanel(new View2PlateAdapter(plateModel), new View2SerializationAdapter(serializationModel),
-                new View2SerialCommAdapter(serialModel), new View2TaskAdapter(taskModel));
+		externalCommModel = new ExternalCommModel();
 
-		externalCommModel = new ExternalCommModel(new ExternalComm2TaskAdapter(taskModel));
+		plateModel = new PlateModel();
 
-		plateModel = new PlateModel(new Plate2ViewAdapter(view), new Plate2TaskAdapter(taskModel));
-
-		serialModel = new SerialModel(new Serial2ViewAdapter(view), new Serial2TaskAdapter(taskModel),
-                new Serial2PlateAdapter(plateModel));
+		serialModel = new SerialModel();
 		
-		taskModel = new TaskModel(new Task2ViewAdapter(view), new Task2PlateAdapter(plateModel),
-                new Task2SerialCommAdapter(serialModel));
+		taskModel = new TaskModel();
 
-		serializationModel = new SerializationModel(new Serialization2TaskAdapter(taskModel), new Serialization2PlateAdapter(plateModel));
+		serializationModel = new SerializationModel();
+
+        view = new MainPanel();
 	}
 	
 	/**
-	 * First thing called from main, initializes model and view, linking them together, 
-	 * before controller backs away.
+	 * First thing called from main after models and views have been initialized. Since they are created, can now link
+     * them together. Each start function takes in adapters to other models to accomplish that.
 	 */
 	public void start(){
-		view.start();
-		externalCommModel.start();
-		plateModel.start();
-		serialModel.start();
-		serializationModel.start();
+		view.start( new View2PlateAdapter(plateModel), new View2SerializationAdapter(serializationModel),
+                    new View2SerialCommAdapter(serialModel), new View2TaskAdapter(taskModel));
+		externalCommModel.start(new ExternalComm2TaskAdapter(taskModel));
+		plateModel.start(new Plate2ViewAdapter(view), new Plate2TaskAdapter(taskModel));
+		serialModel.start(new Serial2ViewAdapter(view), new Serial2TaskAdapter(taskModel),
+                    new Serial2PlateAdapter(plateModel));
+		serializationModel.start(new Serialization2TaskAdapter(taskModel), new Serialization2PlateAdapter(plateModel));
+        taskModel.start(new Task2ViewAdapter(view), new Task2PlateAdapter(plateModel),
+                    new Task2SerialCommAdapter(serialModel));
 	}
 	
 	/**

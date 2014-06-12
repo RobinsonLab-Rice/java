@@ -11,7 +11,6 @@ import main.adapters.plate.Plate2ViewAdapter;
 import model.plate.objects.ArmState;
 import model.plate.objects.BorderFrame;
 import model.plate.objects.Plate;
-import model.plate.objects.PlateNumbering;
 import model.plate.objects.PlateSpecifications;
 import model.plate.objects.Well;
 
@@ -27,7 +26,7 @@ public class PlateModel {
 	/**
 	 * Adapter from plate model to main view.
 	 */
-	private Plate2ViewAdapter plate2ViewAdapter;
+	private Plate2ViewAdapter view;
 	
 	/**
 	 * Adapter from plate model to serial model.
@@ -62,13 +61,17 @@ public class PlateModel {
 	/**
 	 * Constructor that links the model to view and other models.
 	 */
-	public PlateModel(Plate2ViewAdapter plate2ViewAdapter, Plate2TaskAdapter serialAdapter){
+	public PlateModel(){
 		totalNumWells = 1;
 		dispatcher = new WellDispatcher();
-		this.plate2ViewAdapter = plate2ViewAdapter;
-		this.taskModel = serialAdapter;
 		plates = new ArrayList<Plate>();
 	}
+
+    /* On initialization, connects to given adapters. */
+    public void start(Plate2ViewAdapter view, Plate2TaskAdapter taskModel){
+        this.view = view;
+        this.taskModel = taskModel;
+    }
 	
 	/**
 	 * Sets the width/length of the area our arm can move over, as well as
@@ -79,25 +82,17 @@ public class PlateModel {
 	public void setBorderFrame(Point2D bounds, Component canvas){
 		armState = new ArmState(bounds, dispatcher);
 		border = new BorderFrame(bounds, canvas);
-		plate2ViewAdapter.updateView();
-	}
-	
-	
-	
-	/**
-	 * Called by the controller, performs any start up tasks necessary for the model.
-	 */
-	public void start(){
+		view.updateView();
 	}
 	
 	/**
 	 * Adds a plate to the current Iterable of plates.
 	 * @param numberingOrder - order to number all the wells on the plate
-	 * @param _platePos - where to position the (currently) top left corner of the plate
-	 * @param _specs - set of specifications for this particular plate, usually from data sheet
+	 * @param platePos - where to position the (currently) top left corner of the plate
+	 * @param specs - set of specifications for this particular plate, usually from data sheet
 	 */
-	public void addPlate(PlateNumbering numberingOrder, Point2D _platePos, PlateSpecifications _specs){
-		Plate plate = new Plate(_platePos, _specs, numberingOrder);
+	public void addPlate(String numberingOrder, Point2D platePos, PlateSpecifications specs){
+		Plate plate = new Plate(platePos, specs, numberingOrder);
 		addPlate(plate);
 	}
 	
@@ -108,7 +103,7 @@ public class PlateModel {
 	public void addPlate(Plate plate){
 		plates.add(plate);
 		totalNumWells = plate.addAllWells(dispatcher, totalNumWells);
-		plate2ViewAdapter.updateView();
+		view.updateView();
 	}
 	
 	/**
@@ -142,7 +137,7 @@ public class PlateModel {
 		totalNumWells = 1;
 		plates.clear();
 		dispatcher.deleteObservers();
-		plate2ViewAdapter.updateView();
+		view.updateView();
 	}
 	
 	/**
@@ -222,7 +217,7 @@ public class PlateModel {
 		for (Plate plate : plates){
 			addPlate(plate);
 		}
-		plate2ViewAdapter.updateView();
+		view.updateView();
 	}
 	
 	/**

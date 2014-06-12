@@ -42,16 +42,9 @@ public class SerializationModel {
 	/**
 	 * On initialization, connects to given adapters.
 	 */
-	public SerializationModel(Serialization2TaskAdapter taskModel, Serialization2PlateAdapter plateModel){
-		this.taskModel = taskModel;
-		this.plateModel = plateModel;
-	}
-	
-	/**
-	 * Called from controller on startup.
-	 */
-	public void start(){
-		
+	public void start(Serialization2TaskAdapter taskModel, Serialization2PlateAdapter plateModel){
+        this.taskModel = taskModel;
+        this.plateModel = plateModel;
 	}
 	
 	/**

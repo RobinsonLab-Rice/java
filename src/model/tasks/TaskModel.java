@@ -26,7 +26,7 @@ public class TaskModel {
 	/**
 	 * Adapter from the task model to plate model.
 	 */
-	private Task2PlateAdapter plateModelAdapter;
+	private Task2PlateAdapter plateModel;
 	
 	/**
 	 * Adapter from the task model to main view.
@@ -36,7 +36,7 @@ public class TaskModel {
 	/**
 	 * Adapter from the task model to serial model.
 	 */
-	private Task2SerialCommAdapter serialModelAdapter;
+	private Task2SerialCommAdapter serialCommModel;
 	
 	/**
 	 * ArrayList of stages (MultiTasks) that contain everything that will be done in the experiment.
@@ -52,16 +52,19 @@ public class TaskModel {
 	/**
 	 * Constructor for TaskModel, takes in adapters to allow the view and other models.
 	 */
-	public TaskModel(Task2ViewAdapter task2ViewAdapter, Task2PlateAdapter plateModelAdapter, Task2SerialCommAdapter serialModelAdapter){
-		this.plateModelAdapter = plateModelAdapter;
-		this.serialModelAdapter = serialModelAdapter;
-		this.view = task2ViewAdapter;
-
+	public TaskModel(){
 		taskQueue = new MultiTask();
 		decompiledTasks = new ArrayList<ASerialTask>();
 		decompileVisitor = new DecompileVisitor();
 		drawVisitor = new DrawVisitor();
 	}
+
+    /* On initialization, connects to given adapters. */
+    public void start(Task2ViewAdapter view, Task2PlateAdapter plateModel, Task2SerialCommAdapter serialModel) {
+        this.view = view;
+        this.plateModel = plateModel;
+        this.serialCommModel = serialModel;
+    }
 
 	/**
 	 * Adds the task to the execution queue by making a composite task which: moves to the source well, (optional) mixes the well,
@@ -71,13 +74,13 @@ public class TaskModel {
 	public void addToQueue(ExecutionParam taskParams, SetupParam setupParams, String source, String destination) {
 		
 		//get the location of the well with specified number
-		Point2D destinationPoint = plateModelAdapter.getLocationFromNumber(Integer.parseInt(destination));
+		Point2D destinationPoint = plateModel.getLocationFromNumber(Integer.parseInt(destination));
 		
 		if (source.equals("EXTERNAL")){
 			taskQueue.addTask(new MoveFromExternalTask(taskParams, destinationPoint));
 		}
 		else{
-			Point2D sourcePoint = plateModelAdapter.getLocationFromNumber(Integer.parseInt(source));
+			Point2D sourcePoint = plateModel.getLocationFromNumber(Integer.parseInt(source));
 			taskQueue.addTask(new MoveWellToWellTask(taskParams, sourcePoint, destinationPoint));
 		}
 		
@@ -88,8 +91,8 @@ public class TaskModel {
 	 * Queue up a task based on points clicked on the screen (and so must be a well to well task).
 	 */
 	public void addToQueue(ExecutionParam executionParams, SetupParam setupParams, Point source, Point destination){
-		Point2D destinationWell = plateModelAdapter.getLocationFromScreen(destination);
-		Point2D sourceWell = plateModelAdapter.getLocationFromScreen(source);
+		Point2D destinationWell = plateModel.getLocationFromScreen(destination);
+		Point2D sourceWell = plateModel.getLocationFromScreen(source);
 		
 		if (destinationWell == null | sourceWell == null){
 			System.out.println("Did not click on a well.");
@@ -106,7 +109,7 @@ public class TaskModel {
 	 * @param fluidAmount - amount of fluid to move
 	 */
 	public void addToQueue(int wellNum, int fluidAmount) {
-		Point2D wellLocation = plateModelAdapter.getLocationFromNumber(wellNum);
+		Point2D wellLocation = plateModel.getLocationFromNumber(wellNum);
 		MLDRTask taskToAdd = new MLDRTask(wellLocation, fluidAmount);
 		taskQueue.addTask(taskToAdd);
 		view.updateView();
@@ -127,7 +130,7 @@ public class TaskModel {
 	public void executeNext(){
 		Iterator<ASerialTask> iter = decompiledTasks.iterator();
 		if (iter.hasNext()){
-			iter.next().execute(plateModelAdapter.getArmState(), serialModelAdapter.getOutputStream());
+			iter.next().execute(plateModel.getArmState(), serialCommModel.getOutputStream());
 			iter.remove();
 		}
 		else{
@@ -169,7 +172,7 @@ public class TaskModel {
 		
 		//execute them all at once by printing them out
 		for (ASerialTask task : decompiledTasks){
-			task.execute(plateModelAdapter.getArmState(), serialModelAdapter.getOutputStream());
+			task.execute(plateModel.getArmState(), serialCommModel.getOutputStream());
 		}
 	}
 	

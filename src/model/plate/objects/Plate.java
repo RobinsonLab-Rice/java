@@ -30,14 +30,14 @@ public class Plate implements Serializable {
 	/**
 	 * Enum that specifies how to label wells with numbers.
 	 */
-	private PlateNumbering orderingType;
+	private String orderingType;
 	
 	/**
 	 * Easy constructor that sets the proper parameters.
 	 * @param platePos - location of the top left corner of the plate (in millimeters)
 	 * @param plateSpecs - object containing all necessary specifications of the physical plate
 	 */
-	public Plate(Point2D platePos, PlateSpecifications plateSpecs, PlateNumbering orderingType){
+	public Plate(Point2D platePos, PlateSpecifications plateSpecs, String orderingType){
 		TLcorner = platePos;
 		this.plateSpecs = plateSpecs;
 		this.orderingType = orderingType;
@@ -69,7 +69,7 @@ public class Plate implements Serializable {
 	public int addAllWells(WellDispatcher disp, int startingNumber){
 		int wellIndex = startingNumber;
 		switch (orderingType){
-			case ROW: {
+			case "ROW": {
 				for (int i = 0; i < plateSpecs.getNumRows(); i++){
 					for (int j = 0; j < plateSpecs.getNumCols(); j++){
 						addWell(disp, j, i, wellIndex);
@@ -78,7 +78,7 @@ public class Plate implements Serializable {
 				}
 				break;
 			}
-			case COLUMN: {
+			case "COLUMN": {
 				for (int i = 0; i < plateSpecs.getNumCols(); i++){
 					for (int j = 0; j < plateSpecs.getNumRows(); j++){
 						addWell(disp, i, j, wellIndex);

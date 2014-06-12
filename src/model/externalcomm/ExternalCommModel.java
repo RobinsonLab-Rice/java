@@ -27,22 +27,12 @@ public class ExternalCommModel {
 	OutputStream outputStream;
 	
 	String clientSentence;
-	
-	/**
-	 * Constructor for the external communications model, sets up necessary adapters to
-	 * talk to other models.
-	 * @param externalComm2TaskAdapter
-	 */
-	public ExternalCommModel(ExternalComm2TaskAdapter externalComm2TaskAdapter){
-		taskModel = externalComm2TaskAdapter;
-		try {
-			welcomeSocket = new ServerSocket(6789);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void start(){
+
+	public ExternalCommModel(){}
+
+    /* On initialization, connects to given adapters and starts the server. */
+	public void start(ExternalComm2TaskAdapter taskModel){
+        this.taskModel = taskModel;
 		startServer();
 	}
 	

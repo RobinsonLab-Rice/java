@@ -1,6 +1,5 @@
 package view;
 
-import model.plate.objects.PlateNumbering;
 import model.plate.objects.PlateSpecifications;
 
 import java.awt.*;
@@ -20,7 +19,7 @@ public interface IView2PlateAdapter {
      * @param platePos       - Bottom left corner of the plate.
      * @param specs          - Set of specs that the view has compiled into one wrapper class.
      */
-    public void addPlate(PlateNumbering numberingOrder, Point2D platePos, PlateSpecifications specs);
+    public void addPlate(String numberingOrder, Point2D platePos, PlateSpecifications specs);
 
     /**
      * Tells the model to paint everything it has (frame, plates, wells, etc).

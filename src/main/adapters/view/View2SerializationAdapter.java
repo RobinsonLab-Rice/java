@@ -97,4 +97,12 @@ public class View2SerializationAdapter {
     public IExecuteTask loadTask(String filename) {
         return serializationModel.loadTask(filename);
     }
+
+    /**
+     * Load a plate that has been previously saved to a text file.
+     *
+     * @param filename name of the file to load
+     * @return the PlateSpecifications object loaded from the saved file
+     */
+    public PlateSpecifications loadPlate(String filename) { return serializationModel.loadPlate(filename); }
 }
