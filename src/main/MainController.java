@@ -26,6 +26,8 @@ import model.serialization.SerializationModel;
 import model.tasks.TaskModel;
 import view.MainPanel;
 
+import javax.swing.*;
+
 /**
  * Controller for our MVC system. Makes instances of model and view
  * when the program is run, and connects them via their appropriate
@@ -77,7 +79,18 @@ public class MainController {
 	 * Launch the application, called right when program starts.
 	 */
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+        EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					new MainController().start();

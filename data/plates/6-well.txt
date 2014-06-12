@@ -14,5 +14,6 @@
   "numRows":2,
   "numCols":3,
   "wellVolume":10.0,
-  "wellDiameter":35.43
+  "wellDiameter":35.43,
+  "wellDepth":17
 }
