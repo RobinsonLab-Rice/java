@@ -14,7 +14,7 @@ import model.tasks.basictasks.IExecuteTask;
  * @author Christian
  *
  */
-public interface TaskAdapter<TFactoryItem> {
+public interface TaskAdapter {
 
 	/**
 	 * Adds the task, with its parameters, source, and destination to the execution queue.

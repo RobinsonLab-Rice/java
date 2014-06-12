@@ -55,7 +55,6 @@ public class SerialModel implements SerialPortEventListener {
 	
 	/**
 	 * Constructor that links the model to view via its adapter.
-	 * @param _adapter - adapter linking model to view
 	 */
 	public SerialModel(ViewAdapter viewAdapter, TaskAdapter taskModelAdapter, PlateAdapter plateModelAdapter){
 		this.view = viewAdapter;
@@ -73,8 +72,8 @@ public class SerialModel implements SerialPortEventListener {
 	/**
 	 * Scans for any serial ports that are available on the computer (ones that have things connected to them, usually).
 	 */
-	public void scanForPorts(){
-		@SuppressWarnings("unchecked")
+	public Iterable<String> scanForPorts(){
+
 		//we know the ports will all be CommPortIdentifiers
 		Enumeration<CommPortIdentifier> ports = CommPortIdentifier.getPortIdentifiers();
 		ArrayList<String> serialPorts = new ArrayList<String>();
@@ -87,8 +86,10 @@ public class SerialModel implements SerialPortEventListener {
             	serialPorts.add(currPort.getName());
             }
         }
-		//ship it off to the view to be put in a droplist!
-		view.addPortsToList(serialPorts);
+
+		//ship it off to the view to be put in a combobox!
+        return serialPorts;
+		//view.addPortsToList(serialPorts);
 	}
 	
 	/**

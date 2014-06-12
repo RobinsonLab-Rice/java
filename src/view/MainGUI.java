@@ -5,9 +5,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -17,8 +14,6 @@ import javax.swing.JLabel;
 import model.plate.objects.PlateNumbering;
 import model.plate.objects.PlateSpecifications;
 import model.serialization.SaveType;
-import model.tasks.ExecutionParam;
-import model.tasks.SetupParam;
 import model.tasks.basictasks.MultiTask;
 import net.miginfocom.swing.MigLayout;
 
@@ -33,10 +28,6 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import javax.swing.JTabbedPane;
-import javax.swing.JCheckBox;
-
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
 
 
 public class MainGUI<TFactoryItem> extends JFrame {
@@ -44,7 +35,7 @@ public class MainGUI<TFactoryItem> extends JFrame {
 	/**
 	 * Adapter to allow view to talk to model through specified methods.
 	 */
-	private PlateAdapter plateModelAdapter;
+	private IView2PlateAdapter plateModelAdapter;
 	
 	/**
 	 * Adapter to allow view to talk to serial model through specified methods.
@@ -59,7 +50,7 @@ public class MainGUI<TFactoryItem> extends JFrame {
 	/**
 	 * Adapter to allow view to talk to task model through specified methods.
 	 */
-	private SerializationAdapter serializationAdapter;
+	private IView2SerializationAdapter IView2SerializationAdapter;
 	
 	/**
 	 * Auto generated serial ID 
@@ -118,12 +109,12 @@ public class MainGUI<TFactoryItem> extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public MainGUI(PlateAdapter plateAdapter, SerialCommAdapter serialAdapter, 
-			TaskAdapter<TFactoryItem> taskAdapter, SerializationAdapter serializationAdapter) {
-		plateModelAdapter = plateAdapter;
+	public MainGUI(IView2PlateAdapter IView2PlateAdapter, SerialCommAdapter serialAdapter,
+			TaskAdapter<TFactoryItem> taskAdapter, IView2SerializationAdapter IView2SerializationAdapter) {
+		plateModelAdapter = IView2PlateAdapter;
 		serialModelAdapter = serialAdapter;
 		taskModelAdapter = taskAdapter;
-		this.serializationAdapter = serializationAdapter;
+		this.IView2SerializationAdapter = IView2SerializationAdapter;
 		initGUI();
 	}
 	
@@ -259,8 +250,8 @@ public class MainGUI<TFactoryItem> extends JFrame {
 		btnSaveSpecs = new JButton("Save Specs");
 		btnSaveSpecs.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				serializationAdapter.saveSpecs(txtPlateNickname.getText(), packagePlateSpecs());
-				updateDataCmb(serializationAdapter.updateDataList(SaveType.PLATE_SPEC), cmbSavedSpecs);
+				IView2SerializationAdapter.saveSpecs(txtPlateNickname.getText(), packagePlateSpecs());
+				updateDataCmb(IView2SerializationAdapter.updateDataList(SaveType.PLATE_SPEC), cmbSavedSpecs);
 			}
 		});
 		plateSetupPanel.add(btnSaveSpecs, "cell 0 13,growx");
@@ -270,7 +261,7 @@ public class MainGUI<TFactoryItem> extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (cmbSavedSpecs.getItemCount() > 0){
 					//get the plate spec currently selected in the combobox
-					PlateSpecifications loadedSpecs = serializationAdapter.loadSpecs((String) cmbSavedSpecs.getSelectedItem());
+					PlateSpecifications loadedSpecs = IView2SerializationAdapter.loadSpecs((String) cmbSavedSpecs.getSelectedItem());
 					//reload the data into the fields
 					txtTLCornerX.setText(Double.toString(loadedSpecs.getWellCorner().getX()));
 					txtTLCornerY.setText(Double.toString(loadedSpecs.getWellCorner().getY()));
@@ -289,8 +280,8 @@ public class MainGUI<TFactoryItem> extends JFrame {
 		btnDeleteSpecs = new JButton("Delete Specs");
 		btnDeleteSpecs.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				serializationAdapter.deleteData((String) cmbSavedSpecs.getSelectedItem(), SaveType.PLATE_SPEC);
-				updateDataCmb(serializationAdapter.updateDataList(SaveType.PLATE_SPEC), cmbSavedSpecs);
+				IView2SerializationAdapter.deleteData((String) cmbSavedSpecs.getSelectedItem(), SaveType.PLATE_SPEC);
+				updateDataCmb(IView2SerializationAdapter.updateDataList(SaveType.PLATE_SPEC), cmbSavedSpecs);
 			}
 		});
 		plateSetupPanel.add(btnDeleteSpecs, "cell 2 13,growx");
@@ -408,7 +399,7 @@ public class MainGUI<TFactoryItem> extends JFrame {
 		pnlDemoDeviceControl = new DemoDeviceControlPanel(taskModelAdapter, serialModelAdapter);
 		tabbedPane.addTab("Create Basic Tasks", null, pnlDemoDeviceControl, null);
 		
-		pnlTaskManagement = new TaskCreationPanel(taskModelAdapter, serializationAdapter);
+		pnlTaskManagement = new TaskCreationPanel(taskModelAdapter, IView2SerializationAdapter);
 		tabbedPane.addTab("Task Management", null, pnlTaskManagement, null);
 		
 		/**
@@ -455,7 +446,7 @@ public class MainGUI<TFactoryItem> extends JFrame {
 		 * Now that we know what we're going to draw everything on, draw a border representing the arm's bounds.
 		 */
 		plateModelAdapter.setFrame(new Point2D.Double(Double.parseDouble(BoundingWidthText.getText()), Double.parseDouble(BoundingHeightText.getText())), modelPanel);
-		updateDataCmb(serializationAdapter.updateDataList(SaveType.PLATE_SPEC), cmbSavedSpecs);
+		updateDataCmb(IView2SerializationAdapter.updateDataList(SaveType.PLATE_SPEC), cmbSavedSpecs);
 		pnlTaskManagement.start();
 		setVisible(true);
 	}

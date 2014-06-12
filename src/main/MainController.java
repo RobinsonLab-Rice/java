@@ -10,6 +10,10 @@ import java.util.ArrayList;
 
 import javax.swing.tree.TreePath;
 
+import main.adapters.view.View2PlateAdapter;
+import main.adapters.view.View2SerialCommAdapter;
+import main.adapters.view.View2SerializationAdapter;
+import main.adapters.view.View2TaskAdapter;
 import view.MainGUI;
 import model.externalcomm.ExternalCommModel;
 import model.plate.PlateModel;
@@ -26,6 +30,7 @@ import model.tasks.ITaskFactory;
 import model.tasks.TaskModel;
 import model.tasks.basictasks.IExecuteTask;
 import model.tasks.basictasks.MultiTask;
+import view.MainPanel;
 
 //WHATS UP CHRISTIAN AND RAHUL DONT DO DRUGS STAY IN SCHOOL BE COOL WATCH OUT FOR KARL
 /**
@@ -40,7 +45,9 @@ public class MainController {
 	private SerialModel serialModel;
 	private TaskModel taskModel;
 	private SerializationModel serializationModel;
-	private MainGUI<ITaskFactory> view;
+	//private MainGUI<ITaskFactory> view;
+    private MainPanel view;
+
 	
 	/**
 	 * Makes controller that initializes both models and the view, using anonymous inner classes to link them together. 
@@ -63,7 +70,7 @@ public class MainController {
 		plateModel = new PlateModel(new model.plate.ViewAdapter() {
 			@Override
 			public void updateView(){
-				view.update();
+				//view.update();
 			}
 		},	new model.plate.TaskAdapter(){
 			@Override
@@ -79,7 +86,8 @@ public class MainController {
 		serialModel = new SerialModel(new model.serial.ViewAdapter() {
 			@Override
 			public void addPortsToList(ArrayList<String> ports){
-				view.addPortsToList(ports);}
+				//view.addPortsToList(ports);
+				}
 			}, 
 			new model.serial.TaskAdapter(){
 			@Override
@@ -97,12 +105,12 @@ public class MainController {
 
 			@Override
 			public void updateView() {
-				view.update();
+				//view.update();
 			}
 
 			@Override
 			public void setTask(MultiTask taskQueue) {
-				view.setTask(taskQueue);
+				//view.setTask(taskQueue);
 			}
 		}, new model.tasks.PlateAdapter(){
 
@@ -134,127 +142,129 @@ public class MainController {
 		 * Initializes view. Functions described here
 		 * are ones that are called from the view to invoke some function in the model.
 		 */
-		view = new MainGUI<ITaskFactory>(new view.PlateAdapter() {
-			@Override
-			public void addPlate(PlateNumbering numberingOrder, Point2D _platePos, PlateSpecifications _specs){
-				plateModel.addPlate(numberingOrder, _platePos, _specs);
-			}
-			@Override
-			public void paint(Graphics g){
-				plateModel.paintAll(g);
-			}
-			@Override
-			public void setFrame(Point2D borderSize, Component canvas) {
-				plateModel.setBorderFrame(borderSize, canvas);
-			}
-			@Override
-			public void clearAllPlates(){
-				plateModel.clearAllPlates();
-			}
-        }, new view.SerialCommAdapter(){
-        	@Override
-        	public void connectToPort(String _portName){
-        		serialModel.connectToPort(_portName);
-        	}
-			@Override
-			public void scanForPorts() {
-				serialModel.scanForPorts();
-			}
-			@Override
-			public void sendText(String command) {
-				serialModel.sendText(command);
-			}
-        }, new view.TaskAdapter<ITaskFactory>(){
-        	
-			@Override
-			public void addToQueue(ExecutionParam executeParams, SetupParam setupParams, String source, String destination) {
-				taskModel.addToQueue(executeParams, setupParams, source, destination);
-			}
-			
-			@Override
-			public void addToQueue(ExecutionParam executeParams, SetupParam setupParams, Point source, Point destination) {
-				taskModel.addToQueue(executeParams, setupParams, source, destination);
-			}
-			
-			@Override
-			public void addToQueue(IExecuteTask taskToAdd) {
-				taskModel.addToQueue(taskToAdd);
-			}
-			
-			@Override
-			public void clearAllTasks(){
-				taskModel.clearAllTasks();
-			}
-
-			@Override
-			public void addSingleWellTask(int wellNum, int fluidAmount) {
-				taskModel.addToQueue(wellNum, fluidAmount);
-			}
-
-			@Override
-			public IExecuteTask getTasks() {
-				return taskModel.getTasks();
-			}
-
-			@Override
-			public void executeAll() {
-				taskModel.executeAll();
-			}
-
-			@Override
-			public void debugExecuteAll() {
-				taskModel.debugExecuteAll();
-			}
-
-			@Override
-			public void changeExecutionData(Object[] path, String newData) {
-				taskModel.changeExecutionData(path, newData);
-			}
-
-			@Override
-			public void deleteExecutionTask(Object[] path) {
-				taskModel.deleteExecutionTask(path);
-			}
-
-			@Override
-			public void insertAfterSelected(Object[] path, IExecuteTask taskToAdd) {
-				taskModel.insertAfterSelected(path, taskToAdd);
-			}
-		
-        }, new view.SerializationAdapter(){
-        	@Override
-			public void saveSpecs(String nickname, PlateSpecifications plateSpecs) {
-				serializationModel.savePlate(nickname, plateSpecs);
-			}
-			@Override
-			public PlateSpecifications loadSpecs(String nickname) {
-				return serializationModel.loadPlate(nickname);
-			}
-			@Override
-			public void loadWorkflow(String filename) {
-				serializationModel.loadWorkflow(filename);
-			}
-			@Override
-			public void saveWorkflow(String filename) {
-				serializationModel.saveWorkflow(filename);
-			}
-			@Override
-			public void deleteData(String filename, SaveType type) {
-				serializationModel.deleteData(filename, type);
-			}
-			@Override
-			public Iterable<String> updateDataList(SaveType type) {
-				return serializationModel.updateDataList(type);
-			}
-			@Override
-			public void saveExecutionTask(IExecuteTask task, String filename) {
-				serializationModel.saveTask(task, filename);
-			}
-			@Override
-			public IExecuteTask loadTask(String filename) {
-				return serializationModel.loadTask(filename);
-			}
-        });
+        view = new MainPanel(new View2PlateAdapter(plateModel), new View2SerializationAdapter(serializationModel),
+                new View2SerialCommAdapter(serialModel), new View2TaskAdapter(taskModel));
+//		view = new MainGUI<ITaskFactory>(new view.IView2PlateAdapter() {
+//			@Override
+//			public void addPlate(PlateNumbering numberingOrder, Point2D _platePos, PlateSpecifications _specs){
+//				plateModel.addPlate(numberingOrder, _platePos, _specs);
+//			}
+//			@Override
+//			public void paint(Graphics g){
+//				plateModel.paintAll(g);
+//			}
+//			@Override
+//			public void setFrame(Point2D borderSize, Component canvas) {
+//				plateModel.setBorderFrame(borderSize, canvas);
+//			}
+//			@Override
+//			public void clearAllPlates(){
+//				plateModel.clearAllPlates();
+//			}
+//        }, new view.SerialCommAdapter(){
+//        	@Override
+//        	public void connectToPort(String _portName){
+//        		serialModel.connectToPort(_portName);
+//        	}
+//			@Override
+//			public void scanForPorts() {
+//				serialModel.scanForPorts();
+//			}
+//			@Override
+//			public void sendText(String command) {
+//				serialModel.sendText(command);
+//			}
+//        }, new view.TaskAdapter<ITaskFactory>(){
+//
+//			@Override
+//			public void addToQueue(ExecutionParam executeParams, SetupParam setupParams, String source, String destination) {
+//				taskModel.addToQueue(executeParams, setupParams, source, destination);
+//			}
+//
+//			@Override
+//			public void addToQueue(ExecutionParam executeParams, SetupParam setupParams, Point source, Point destination) {
+//				taskModel.addToQueue(executeParams, setupParams, source, destination);
+//			}
+//
+//			@Override
+//			public void addToQueue(IExecuteTask taskToAdd) {
+//				taskModel.addToQueue(taskToAdd);
+//			}
+//
+//			@Override
+//			public void clearAllTasks(){
+//				taskModel.clearAllTasks();
+//			}
+//
+//			@Override
+//			public void addSingleWellTask(int wellNum, int fluidAmount) {
+//				taskModel.addToQueue(wellNum, fluidAmount);
+//			}
+//
+//			@Override
+//			public IExecuteTask getTasks() {
+//				return taskModel.getTasks();
+//			}
+//
+//			@Override
+//			public void executeAll() {
+//				taskModel.executeAll();
+//			}
+//
+//			@Override
+//			public void debugExecuteAll() {
+//				taskModel.debugExecuteAll();
+//			}
+//
+//			@Override
+//			public void changeExecutionData(Object[] path, String newData) {
+//				taskModel.changeExecutionData(path, newData);
+//			}
+//
+//			@Override
+//			public void deleteExecutionTask(Object[] path) {
+//				taskModel.deleteExecutionTask(path);
+//			}
+//
+//			@Override
+//			public void insertAfterSelected(Object[] path, IExecuteTask taskToAdd) {
+//				taskModel.insertAfterSelected(path, taskToAdd);
+//			}
+//
+//        }, new view.IView2SerializationAdapter(){
+//        	@Override
+//			public void saveSpecs(String nickname, PlateSpecifications plateSpecs) {
+//				serializationModel.savePlate(nickname, plateSpecs);
+//			}
+//			@Override
+//			public PlateSpecifications loadSpecs(String nickname) {
+//				return serializationModel.loadPlate(nickname);
+//			}
+//			@Override
+//			public void loadWorkflow(String filename) {
+//				serializationModel.loadWorkflow(filename);
+//			}
+//			@Override
+//			public void saveWorkflow(String filename) {
+//				serializationModel.saveWorkflow(filename);
+//			}
+//			@Override
+//			public void deleteData(String filename, SaveType type) {
+//				serializationModel.deleteData(filename, type);
+//			}
+//			@Override
+//			public Iterable<String> updateDataList(SaveType type) {
+//				return serializationModel.updateDataList(type);
+//			}
+//			@Override
+//			public void saveExecutionTask(IExecuteTask task, String filename) {
+//				serializationModel.saveTask(task, filename);
+//			}
+//			@Override
+//			public IExecuteTask loadTask(String filename) {
+//				return serializationModel.loadTask(filename);
+//			}
+//        });
 		
 		serializationModel = new SerializationModel(new model.serialization.TaskAdapter(){
 			@Override

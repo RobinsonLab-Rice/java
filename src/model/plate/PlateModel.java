@@ -58,8 +58,7 @@ public class PlateModel {
 	private int totalNumWells;
 	
 	/**
-	 * Constructor that links the model to view via its adapter.
-	 * @param _adapter - adapter linking model to view
+	 * Constructor that links the model to view and other models.
 	 */
 	public PlateModel(ViewAdapter viewAdapter, TaskAdapter serialAdapter){
 		totalNumWells = 1;

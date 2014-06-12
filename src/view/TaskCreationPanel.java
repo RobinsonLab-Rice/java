@@ -4,8 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
@@ -25,12 +23,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
-import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.JTextField;
 
@@ -44,7 +37,7 @@ public class TaskCreationPanel extends JPanel {
 	
 	private TaskAdapter taskModelAdapter;
 	
-	private SerializationAdapter serializationAdapter;
+	private IView2SerializationAdapter IView2SerializationAdapter;
 	
 	private JComboBox cmbSavedTasks;
 	private JComboBox cmbWorkflows;
@@ -54,9 +47,9 @@ public class TaskCreationPanel extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public TaskCreationPanel(final TaskAdapter taskModelAdapter, final SerializationAdapter serializationAdapter) {
+	public TaskCreationPanel(final TaskAdapter taskModelAdapter, final IView2SerializationAdapter IView2SerializationAdapter) {
 		this.taskModelAdapter = taskModelAdapter;
-		this.serializationAdapter = serializationAdapter;
+		this.IView2SerializationAdapter = IView2SerializationAdapter;
 		MultiTask startingTask = (MultiTask) taskModelAdapter.getTasks();
 		visualizationTree = new TaskTree(new VisualizationModel(startingTask, taskModelAdapter));
 		visualizationTree.setEditable(true);
@@ -89,7 +82,7 @@ public class TaskCreationPanel extends JPanel {
 		    			 
 		    			 save.addActionListener(new ActionListener() {
 		    				 public void actionPerformed(ActionEvent e) {
-		    					 serializationAdapter.saveExecutionTask((IExecuteTask)selPath.getLastPathComponent(), txtTaskName.getText());
+		    					 IView2SerializationAdapter.saveExecutionTask((IExecuteTask)selPath.getLastPathComponent(), txtTaskName.getText());
 		    					 updateCmb(SaveType.TASK, cmbSavedTasks);
 		    				 }
 		    			 });
@@ -126,7 +119,7 @@ public class TaskCreationPanel extends JPanel {
 		JButton btnSaveWorkflow = new JButton("Save Workflow");
 		btnSaveWorkflow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				serializationAdapter.saveWorkflow(txtWorkflow.getText());
+				IView2SerializationAdapter.saveWorkflow(txtWorkflow.getText());
 				updateCmb(SaveType.WORKFLOW, cmbWorkflows);
 			}
 		});
@@ -142,7 +135,7 @@ public class TaskCreationPanel extends JPanel {
 		JButton btnLoadWorkflow = new JButton("Load Workflow");
 		btnLoadWorkflow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				serializationAdapter.loadWorkflow((String)cmbWorkflows.getSelectedItem());
+				IView2SerializationAdapter.loadWorkflow((String)cmbWorkflows.getSelectedItem());
 			}
 		});
 		add(btnLoadWorkflow, "cell 1 2,growx");
@@ -199,7 +192,7 @@ public class TaskCreationPanel extends JPanel {
 		cmbSavedTasks.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				editingTree.model.setNewTask(serializationAdapter.loadTask((String)cmbSavedTasks.getSelectedItem()));
+				editingTree.model.setNewTask(IView2SerializationAdapter.loadTask((String)cmbSavedTasks.getSelectedItem()));
 			}
 		});
 		cmbSavedTasks.setToolTipText("User made tasks");
@@ -262,7 +255,7 @@ public class TaskCreationPanel extends JPanel {
 	}
 	
 	public void updateCmb(SaveType saveType, JComboBox cmb) {
-		Iterable<String> filenames = serializationAdapter.updateDataList(saveType);
+		Iterable<String> filenames = IView2SerializationAdapter.updateDataList(saveType);
 		cmb.removeAllItems();
 		for (String filename : filenames){
 			System.out.println("filename");

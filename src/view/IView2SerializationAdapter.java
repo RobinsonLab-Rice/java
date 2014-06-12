@@ -12,7 +12,7 @@ import model.tasks.basictasks.IExecuteTask;
  * @author Christian
  *
  */
-public interface SerializationAdapter {
+public interface IView2SerializationAdapter {
 	
 	/**
 	 * Tells plate model to save given plate specifications.
