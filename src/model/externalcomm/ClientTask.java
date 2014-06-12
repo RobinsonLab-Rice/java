@@ -1,15 +1,13 @@
 package model.externalcomm;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
 import com.cedarsoftware.util.io.JsonReader;
 
+import main.adapters.externalcomm.ExternalComm2TaskAdapter;
 import model.tasks.basictasks.IExecuteTask;
-import model.tasks.basictasks.MultiTask;
 
 public class ClientTask implements Runnable {
 	
@@ -17,9 +15,9 @@ public class ClientTask implements Runnable {
     
     private ObjectInputStream inputStream;
     
-    private TaskAdapter taskModel;
+    private ExternalComm2TaskAdapter taskModel;
     
-    public ClientTask(Socket clientSocket, TaskAdapter taskModel) {
+    public ClientTask(Socket clientSocket, ExternalComm2TaskAdapter taskModel) {
         this.clientSocket = clientSocket;
         this.taskModel = taskModel;
     }

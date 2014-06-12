@@ -9,11 +9,12 @@ import java.util.Enumeration;
 import java.util.TooManyListenersException;
 
 import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
+import main.adapters.serial.Serial2PlateAdapter;
+import main.adapters.serial.Serial2TaskAdapter;
+import main.adapters.serial.Serial2ViewAdapter;
 
 /**
  * Model that handles all communication with the micro-controller. Will reach into the other model to
@@ -26,17 +27,17 @@ public class SerialModel implements SerialPortEventListener {
 	/**
 	 * Adapter from serial model to the main view.
 	 */
-	private ViewAdapter view;
+	private Serial2ViewAdapter view;
 	
 	/**
 	 * Adapter from the task model to plate model.
 	 */
-	private TaskAdapter taskModelAdapter;
+	private Serial2TaskAdapter taskModelAdapter;
 	
 	/**
 	 * Adapter from the task model to plate model.
 	 */
-	private PlateAdapter plateModelAdapter;
+	private Serial2PlateAdapter plateModelAdapter;
 	
 	/**
 	 * Serial port the Arduino is found on.
@@ -56,8 +57,8 @@ public class SerialModel implements SerialPortEventListener {
 	/**
 	 * Constructor that links the model to view via its adapter.
 	 */
-	public SerialModel(ViewAdapter viewAdapter, TaskAdapter taskModelAdapter, PlateAdapter plateModelAdapter){
-		this.view = viewAdapter;
+	public SerialModel(Serial2ViewAdapter serial2ViewAdapter, Serial2TaskAdapter taskModelAdapter, Serial2PlateAdapter plateModelAdapter){
+		this.view = serial2ViewAdapter;
 		this.taskModelAdapter = taskModelAdapter;
 		this.plateModelAdapter = plateModelAdapter;
 	}

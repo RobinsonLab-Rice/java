@@ -14,11 +14,7 @@ public class View2PlateAdapter {
 
     private PlateModel plateModel;
 
-    /**
-     * Sets up model references necessary for this adapter.
-     *
-     * @param plateModel - reference to the plate model
-     */
+    /* Sets up model references necessary for this adapter. */
     public View2PlateAdapter(PlateModel plateModel) {
         this.plateModel = plateModel;
     }

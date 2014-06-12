@@ -6,6 +6,8 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
+import main.adapters.plate.Plate2TaskAdapter;
+import main.adapters.plate.Plate2ViewAdapter;
 import model.plate.objects.ArmState;
 import model.plate.objects.BorderFrame;
 import model.plate.objects.Plate;
@@ -25,12 +27,12 @@ public class PlateModel {
 	/**
 	 * Adapter from plate model to main view.
 	 */
-	private ViewAdapter viewAdapter;
+	private Plate2ViewAdapter plate2ViewAdapter;
 	
 	/**
 	 * Adapter from plate model to serial model.
 	 */
-	private TaskAdapter taskModel;
+	private Plate2TaskAdapter taskModel;
 	
 	/**
 	 * Dispatcher to talk to all wells.
@@ -60,10 +62,10 @@ public class PlateModel {
 	/**
 	 * Constructor that links the model to view and other models.
 	 */
-	public PlateModel(ViewAdapter viewAdapter, TaskAdapter serialAdapter){
+	public PlateModel(Plate2ViewAdapter plate2ViewAdapter, Plate2TaskAdapter serialAdapter){
 		totalNumWells = 1;
 		dispatcher = new WellDispatcher();
-		this.viewAdapter = viewAdapter;
+		this.plate2ViewAdapter = plate2ViewAdapter;
 		this.taskModel = serialAdapter;
 		plates = new ArrayList<Plate>();
 	}
@@ -77,7 +79,7 @@ public class PlateModel {
 	public void setBorderFrame(Point2D bounds, Component canvas){
 		armState = new ArmState(bounds, dispatcher);
 		border = new BorderFrame(bounds, canvas);
-		viewAdapter.updateView();
+		plate2ViewAdapter.updateView();
 	}
 	
 	
@@ -106,7 +108,7 @@ public class PlateModel {
 	public void addPlate(Plate plate){
 		plates.add(plate);
 		totalNumWells = plate.addAllWells(dispatcher, totalNumWells);
-		viewAdapter.updateView();
+		plate2ViewAdapter.updateView();
 	}
 	
 	/**
@@ -140,7 +142,7 @@ public class PlateModel {
 		totalNumWells = 1;
 		plates.clear();
 		dispatcher.deleteObservers();
-		viewAdapter.updateView();
+		plate2ViewAdapter.updateView();
 	}
 	
 	/**
@@ -220,7 +222,7 @@ public class PlateModel {
 		for (Plate plate : plates){
 			addPlate(plate);
 		}
-		viewAdapter.updateView();
+		plate2ViewAdapter.updateView();
 	}
 	
 	/**

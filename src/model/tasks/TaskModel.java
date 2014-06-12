@@ -6,8 +6,9 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import model.tasks.PlateAdapter;
-import model.tasks.SerialCommAdapter;
+import main.adapters.tasks.Task2PlateAdapter;
+import main.adapters.tasks.Task2SerialCommAdapter;
+import main.adapters.tasks.Task2ViewAdapter;
 import model.tasks.basictasks.ASerialTask;
 import model.tasks.basictasks.IExecuteTask;
 import model.tasks.basictasks.MLDRTask;
@@ -25,17 +26,17 @@ public class TaskModel {
 	/**
 	 * Adapter from the task model to plate model.
 	 */
-	private PlateAdapter plateModelAdapter;
+	private Task2PlateAdapter plateModelAdapter;
 	
 	/**
 	 * Adapter from the task model to main view.
 	 */
-	private ViewAdapter view;
+	private Task2ViewAdapter view;
 	
 	/**
 	 * Adapter from the task model to serial model.
 	 */
-	private SerialCommAdapter serialModelAdapter;
+	private Task2SerialCommAdapter serialModelAdapter;
 	
 	/**
 	 * ArrayList of stages (MultiTasks) that contain everything that will be done in the experiment.
@@ -49,19 +50,16 @@ public class TaskModel {
 	private ITaskVisitor drawVisitor;
 	
 	/**
-	 * Constructor for TaskModel, takes in adapters to allow the TaskModel to talk to the plate and serial model.
-	 * @param plateModelAdapter - adapter from the task model to plate model
-	 * @param serialModelAdapter - adapter from the task model to serial model
+	 * Constructor for TaskModel, takes in adapters to allow the view and other models.
 	 */
-	public TaskModel(ViewAdapter viewAdapter, PlateAdapter plateModelAdapter, SerialCommAdapter serialModelAdapter){
+	public TaskModel(Task2ViewAdapter task2ViewAdapter, Task2PlateAdapter plateModelAdapter, Task2SerialCommAdapter serialModelAdapter){
 		this.plateModelAdapter = plateModelAdapter;
 		this.serialModelAdapter = serialModelAdapter;
-		this.view = viewAdapter;
+		this.view = task2ViewAdapter;
+
 		taskQueue = new MultiTask();
 		decompiledTasks = new ArrayList<ASerialTask>();
-		
 		decompileVisitor = new DecompileVisitor();
-		
 		drawVisitor = new DrawVisitor();
 	}
 

@@ -1,5 +1,7 @@
 package model.externalcomm;
 
+import main.adapters.externalcomm.ExternalComm2TaskAdapter;
+
 import java.net.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,7 +18,7 @@ public class ExternalCommModel {
 	/**
 	 * Adapter from this model to the task model.
 	 */
-	TaskAdapter taskModel;
+	ExternalComm2TaskAdapter taskModel;
 	
 	ServerSocket welcomeSocket;
 	
@@ -29,10 +31,10 @@ public class ExternalCommModel {
 	/**
 	 * Constructor for the external communications model, sets up necessary adapters to
 	 * talk to other models.
-	 * @param taskAdapter
+	 * @param externalComm2TaskAdapter
 	 */
-	public ExternalCommModel(TaskAdapter taskAdapter){
-		taskModel = taskAdapter;
+	public ExternalCommModel(ExternalComm2TaskAdapter externalComm2TaskAdapter){
+		taskModel = externalComm2TaskAdapter;
 		try {
 			welcomeSocket = new ServerSocket(6789);
 		} catch (IOException e) {

@@ -1,4 +1,4 @@
-package model.plate;
+package model.plate.objects;
 
 import model.plate.objects.Plate;
 import model.tasks.basictasks.IExecuteTask;

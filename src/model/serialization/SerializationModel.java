@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import model.plate.Workflow;
-import model.plate.objects.Plate;
+import main.adapters.serialization.Serialization2PlateAdapter;
+import main.adapters.serialization.Serialization2TaskAdapter;
+import model.plate.objects.Workflow;
 import model.plate.objects.PlateSpecifications;
 import model.tasks.basictasks.IExecuteTask;
 import model.tasks.basictasks.MultiTask;
@@ -26,12 +27,12 @@ public class SerializationModel {
 	/**
 	 * Adapter to access task model.
 	 */
-	private TaskAdapter taskModel;
+	private Serialization2TaskAdapter taskModel;
 	
 	/**
 	 * Adapter to access plate model.
 	 */
-	private PlateAdapter plateModel;
+	private Serialization2PlateAdapter plateModel;
 	
 	/**
 	 * Extension to save files with.
@@ -41,7 +42,7 @@ public class SerializationModel {
 	/**
 	 * On initialization, connects to given adapters.
 	 */
-	public SerializationModel(TaskAdapter taskModel, PlateAdapter plateModel){
+	public SerializationModel(Serialization2TaskAdapter taskModel, Serialization2PlateAdapter plateModel){
 		this.taskModel = taskModel;
 		this.plateModel = plateModel;
 	}
