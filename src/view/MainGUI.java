@@ -261,7 +261,7 @@
 //			public void actionPerformed(ActionEvent e) {
 //				if (cmbSavedSpecs.getItemCount() > 0){
 //					//get the plate spec currently selected in the combobox
-//					PlateSpecifications loadedSpecs = IView2SerializationAdapter.loadSpecs((String) cmbSavedSpecs.getSelectedItem());
+//					PlateSpecifications loadedSpecs = IView2SerializationAdapter.loadPlateSpecs((String) cmbSavedSpecs.getSelectedItem());
 //					//reload the data into the fields
 //					txtTLCornerX.setText(Double.toString(loadedSpecs.getWellCorner().getX()));
 //					txtTLCornerY.setText(Double.toString(loadedSpecs.getWellCorner().getY()));

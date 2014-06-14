@@ -38,7 +38,7 @@ public class View2SerializationAdapter {
      *
      * @param nickname - name of the file specifications are actually saved in
      */
-    public PlateSpecifications loadSpecs(String nickname) {
+    public PlateSpecifications loadPlateSpecs(String nickname) {
         return serializationModel.loadPlate(nickname);
     }
 
@@ -99,14 +99,6 @@ public class View2SerializationAdapter {
     public IExecuteTask loadTask(String filename) {
         return serializationModel.loadTask(filename);
     }
-
-    /**
-     * Load a plate that has been previously saved to a text file.
-     *
-     * @param filename name of the file to load
-     * @return the PlateSpecifications object loaded from the saved file
-     */
-    public PlateSpecifications loadPlate(String filename) { return serializationModel.loadPlate(filename); }
 
     /* Get the frame bounds from saved file. */
     public Point2D getSavedBounds() { return serializationModel.getSavedBounds(); }
