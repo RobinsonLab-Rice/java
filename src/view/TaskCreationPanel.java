@@ -9,8 +9,11 @@ public class TaskCreationPanel extends JPanel {
     private JPanel taskCreatingPanel;
     private JComboBox comboBox1;
     private JButton button1;
-    private JTree tree1;
-    private JTree tree2;
+    private JTree executionTree;
+    private JButton debugExecuteBtn;
+    private JButton executeAllBtn;
+    private JButton edit2ExecuteBtn;
+    private JTree editTree;
 
     public void start(){
 
