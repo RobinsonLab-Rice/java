@@ -213,4 +213,12 @@ public class TaskModel {
 		taskQueue.traverseOrInsert(path, taskToAdd);
 		view.updateView();
 	}
+
+    /**
+     * Returns factories for both pre-made tasks and user defined ones.
+     * @return
+     */
+    public Iterable<ITaskFactory> getTaskFactories() {
+        return null;
+    }
 }

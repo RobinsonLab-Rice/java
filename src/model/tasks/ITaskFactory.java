@@ -13,4 +13,10 @@ public interface ITaskFactory {
      * @return An IExecuteTask instance.
      */
 	public IExecuteTask make();
+
+    /**
+     * Define how to print this task factory.
+     * @return
+     */
+    public String toString();
 }

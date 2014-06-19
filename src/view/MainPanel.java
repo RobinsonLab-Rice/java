@@ -45,7 +45,7 @@ public class MainPanel extends JFrame{
 
         /* Start the sub-views */
         plateSetupPanel.start(plateModel, serializationModel);
-        taskCreationPanel.start();
+        taskCreationPanel.start(taskModel);
 
         /* Do necessary communication with backend models */
         plateModel.setFrame(serializationModel.getSavedBounds(), modelPane);

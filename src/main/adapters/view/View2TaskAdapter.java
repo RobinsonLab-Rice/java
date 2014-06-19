@@ -1,6 +1,7 @@
 package main.adapters.view;
 
 import model.tasks.ExecutionParam;
+import model.tasks.ITaskFactory;
 import model.tasks.SetupParam;
 import model.tasks.TaskModel;
 import model.tasks.basictasks.IExecuteTask;
@@ -100,5 +101,12 @@ public class View2TaskAdapter {
 
     public void insertAfterSelected(Object[] path, IExecuteTask taskToAdd) {
 
+    }
+
+    /**
+     * Get all premade and/or user saved task factories.
+     */
+    public Iterable<ITaskFactory> getTaskFactories() {
+        return taskModel.getTaskFactories();
     }
 }
