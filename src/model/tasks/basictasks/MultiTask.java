@@ -2,14 +2,14 @@ package model.tasks.basictasks;
 
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
 
 import model.plate.objects.ArmState;
 import model.tasks.ITaskVisitor;
 
-public class MultiTask implements IExecuteTask{
+import javax.swing.tree.TreeNode;
+
+public class MultiTask implements IExecuteTask {
 
 	/**
 	 * Auto generated serial ID to be abe to save the task.
@@ -32,11 +32,7 @@ public class MultiTask implements IExecuteTask{
 			taskList.add(task);
 		}
 	}
-	
-	/**
-	 * For this multi-task, take in the well that it belongs to, then execute all sub-tasks it contains.
-	 * @param context - Well that this multi-task belongs to
-	 */
+
 	public void execute(ArmState armState, OutputStream outputStream) {
 		for (IExecuteTask task : taskList){
 			task.execute(armState, outputStream);
@@ -51,21 +47,8 @@ public class MultiTask implements IExecuteTask{
 	}
 	
 	/**
-	 * @return subtask corresponding to input value, or a NullTask if it did not exist.
-	 */
-	public IExecuteTask getSubtask(int taskPosition){
-		if (taskPosition > taskList.size()){
-			System.out.println("Trying to access a task out of bounds in this MultiTask.");
-			return new NullTask();
-		}
-		else{
-			return taskList.get(taskPosition);
-		}
-	}
-	
-	/**
 	 * Calls the "Multi" case of the given algo.
-	 * @param algo The IPhraseVisitor algo to use.
+	 * @param visitor The IPhraseVisitor algo to use.
 	 * @param params vararg list of input parameters
 	 * @return the result of running the Chord case of the visitor.
 	 */
@@ -80,15 +63,73 @@ public class MultiTask implements IExecuteTask{
 	public ArrayList<IExecuteTask> getSubtasks(){
 		return taskList;
 	}
-	
-	/**
+
+    /**
+     * @param childIndex index of the IExecuteTask to return
+     */
+    @Override
+    public TreeNode getChildAt(int childIndex) {
+        if (childIndex > taskList.size()){
+            System.out.println("Trying to access a task out of bounds in this MultiTask.");
+            return new NullTask();
+        }
+        else{
+            return taskList.get(childIndex);
+        }
+    }
+
+    /**
 	 * Returns number of tasks this MultiTask has.
 	 */
 	public int getChildCount() {
 		return taskList.size();
 	}
-	
-	/**
+
+    /**
+     * Returns the parent <code>TreeNode</code> of the receiver.
+     */
+    @Override
+    public TreeNode getParent() {
+        return null;
+    }
+
+    /**
+     * Returns the index of <code>node</code> in the receivers children.
+     * If the receiver does not contain <code>node</code>, -1 will be
+     * returned.
+     *
+     * @param node
+     */
+    @Override
+    public int getIndex(TreeNode node) {
+        return taskList.indexOf(node);
+    }
+
+    /**
+     * Returns true if the receiver allows children.
+     */
+    @Override
+    public boolean getAllowsChildren() {
+        return true;
+    }
+
+    /**
+     * Returns true if the receiver is a leaf.
+     */
+    @Override
+    public boolean isLeaf() {
+        return false;
+    }
+
+    /**
+     * Returns the children of the receiver as an <code>Enumeration</code>.
+     */
+    @Override
+    public Enumeration children() {
+        return Collections.enumeration(taskList);
+    }
+
+    /**
 	 * Get the subtask at the specified index.
 	 */
 	public IExecuteTask getChild(int index) {

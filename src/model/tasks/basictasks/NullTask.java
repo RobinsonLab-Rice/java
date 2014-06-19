@@ -10,7 +10,7 @@ import model.tasks.ITaskVisitor;
  * @author Christian
  *
  */
-public class NullTask extends ASerialTask{
+public class NullTask extends ALeafTask {
 
 	/**
 	 * Auto generated serial ID.

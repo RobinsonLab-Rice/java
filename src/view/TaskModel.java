@@ -5,21 +5,33 @@ import java.util.Vector;
 
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import model.tasks.basictasks.IExecuteTask;
 import model.tasks.basictasks.MultiTask;
 
-public abstract class TaskModel implements TreeModel {
+public abstract class TaskModel extends DefaultTreeModel {
 	
 	private Vector<TreeModelListener> treeModelListeners = new Vector<TreeModelListener>();
 
 	protected IExecuteTask rootTask;
 
-	public TaskModel(IExecuteTask rootTask) {
-		this.rootTask = rootTask;
-	}
+    /**
+     * Creates a tree in which any node can have children.
+     *
+     * @param root a TreeNode object that is the root of the tree
+     * @see #DefaultTreeModel(javax.swing.tree.TreeNode, boolean)
+     */
+    public TaskModel(TreeNode root) {
+        super(root);
+    }
+
+//	public TaskModel(IExecuteTask rootTask) {
+//		this.rootTask = rootTask;
+//	}
 	
 	public void setNewTask(IExecuteTask newRoot) {
 		rootTask = newRoot;

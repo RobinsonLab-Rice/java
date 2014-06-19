@@ -9,7 +9,7 @@ import model.tasks.ITaskVisitor;
  * Lower task, tells the nozzle servo to lower by the specified amount.
  * @author Christian
  */
-public class LowerTask extends ASerialTask {
+public class LowerTask extends ALeafTask {
 
 	private static final long serialVersionUID = 3963417044553710729L;
 

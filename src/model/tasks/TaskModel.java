@@ -9,12 +9,8 @@ import java.util.Iterator;
 import main.adapters.tasks.Task2PlateAdapter;
 import main.adapters.tasks.Task2SerialCommAdapter;
 import main.adapters.tasks.Task2ViewAdapter;
-import model.tasks.basictasks.ASerialTask;
-import model.tasks.basictasks.IExecuteTask;
-import model.tasks.basictasks.MLDRTask;
-import model.tasks.basictasks.MoveFromExternalTask;
-import model.tasks.basictasks.MoveWellToWellTask;
-import model.tasks.basictasks.MultiTask;
+import model.tasks.basictasks.*;
+import model.tasks.basictasks.ALeafTask;
 
 /**
  * Model that controls all creation and managing of tasks. Relays to plate model when wells need to be given tasks.
@@ -43,7 +39,7 @@ public class TaskModel {
 	 */
 	private MultiTask taskQueue;
 	
-	private ArrayList<ASerialTask> decompiledTasks;
+	private ArrayList<ALeafTask> decompiledTasks;
 	
 	private ITaskVisitor decompileVisitor;
 	
@@ -54,7 +50,7 @@ public class TaskModel {
 	 */
 	public TaskModel(){
 		taskQueue = new MultiTask();
-		decompiledTasks = new ArrayList<ASerialTask>();
+		decompiledTasks = new ArrayList<ALeafTask>();
 		decompileVisitor = new DecompileVisitor();
 		drawVisitor = new DrawVisitor();
 	}
@@ -65,43 +61,6 @@ public class TaskModel {
         this.plateModel = plateModel;
         this.serialCommModel = serialModel;
     }
-
-	/**
-	 * Adds the task to the execution queue by making a composite task which: moves to the source well, (optional) mixes the well,
-	 * lowers the nozzle, dispenses negative liquid, raises the nozzle, moves to the destination well, lowers, and dispenses positive
-	 * liquid.
-	 */
-	public void addToQueue(ExecutionParam taskParams, SetupParam setupParams, String source, String destination) {
-		
-		//get the location of the well with specified number
-		Point2D destinationPoint = plateModel.getLocationFromNumber(Integer.parseInt(destination));
-		
-		if (source.equals("EXTERNAL")){
-			taskQueue.addTask(new MoveFromExternalTask(taskParams, destinationPoint));
-		}
-		else{
-			Point2D sourcePoint = plateModel.getLocationFromNumber(Integer.parseInt(source));
-			taskQueue.addTask(new MoveWellToWellTask(taskParams, sourcePoint, destinationPoint));
-		}
-		
-		view.updateView();
-	}
-	
-	/**
-	 * Queue up a task based on points clicked on the screen (and so must be a well to well task).
-	 */
-	public void addToQueue(ExecutionParam executionParams, SetupParam setupParams, Point source, Point destination){
-		Point2D destinationWell = plateModel.getLocationFromScreen(destination);
-		Point2D sourceWell = plateModel.getLocationFromScreen(source);
-		
-		if (destinationWell == null | sourceWell == null){
-			System.out.println("Did not click on a well.");
-		}
-		else{
-			taskQueue.addTask(new MoveWellToWellTask(executionParams, sourceWell, destinationWell));
-			view.updateView();
-		}
-	}
 	
 	/**
 	 * Adds a MLDR task to the execution queue.
@@ -110,7 +69,7 @@ public class TaskModel {
 	 */
 	public void addToQueue(int wellNum, int fluidAmount) {
 		Point2D wellLocation = plateModel.getLocationFromNumber(wellNum);
-		MLDRTask taskToAdd = new MLDRTask(wellLocation, fluidAmount);
+		MultiTask taskToAdd = new MultiTask(new MoveTask(wellNum), new LowerTask(), new DispenseTask(fluidAmount), new RaiseTask());
 		taskQueue.addTask(taskToAdd);
 		view.updateView();
 	}
@@ -128,7 +87,7 @@ public class TaskModel {
 	 * Called by the serial model when word has been received that the Arduino is ready for the next command.
 	 */
 	public void executeNext(){
-		Iterator<ASerialTask> iter = decompiledTasks.iterator();
+		Iterator<ALeafTask> iter = decompiledTasks.iterator();
 		if (iter.hasNext()){
 			iter.next().execute(plateModel.getArmState(), serialCommModel.getOutputStream());
 			iter.remove();
@@ -171,7 +130,7 @@ public class TaskModel {
 		taskQueue.executeVisitor(decompileVisitor, decompiledTasks);
 		
 		//execute them all at once by printing them out
-		for (ASerialTask task : decompiledTasks){
+		for (ALeafTask task : decompiledTasks){
 			task.execute(plateModel.getArmState(), serialCommModel.getOutputStream());
 		}
 	}

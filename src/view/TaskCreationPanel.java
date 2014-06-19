@@ -3,8 +3,7 @@ package view;
 import main.adapters.view.View2TaskAdapter;
 import model.plate.objects.PlateSpecifications;
 import model.tasks.ITaskFactory;
-import model.tasks.basictasks.MLDRTask;
-import model.tasks.basictasks.MultiTask;
+import model.tasks.basictasks.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -20,8 +19,6 @@ public class TaskCreationPanel extends JPanel {
     private JButton debugExecuteBtn;
     private JButton executeAllBtn;
     private TaskTree taskTree;
-    private TaskTree executionTree;
-    private TaskTree editTree;
 
     private View2TaskAdapter taskModel;
 
@@ -32,7 +29,7 @@ public class TaskCreationPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 /* Get selected factory, make its task, and add that to the edit tree. */
-                editTree.model.setNewTask(savedTasksCmb.getItemAt(savedTasksCmb.getSelectedIndex()).make());
+                taskTree.model.setNewTask(savedTasksCmb.getItemAt(savedTasksCmb.getSelectedIndex()).make());
             }
         });
     }
@@ -41,11 +38,21 @@ public class TaskCreationPanel extends JPanel {
     public void start(View2TaskAdapter taskModel){
         this.taskModel = taskModel;
 
-        editTree = new TaskTree(new EditingModel(new MLDRTask(0,0)));
-        executionTree = new TaskTree(new ExecutionModel((MultiTask) taskModel.getTasks(), taskModel));
 
-        for (ITaskFactory factory : taskModel.getTaskFactories()) {
-            savedTasksCmb.addItem(factory);
-        }
+
+        //taskTree = new TaskTree(new ExecutionModel(test, taskModel));
+
+//        for (ITaskFactory factory : taskModel.getTaskFactories()) {
+//            savedTasksCmb.addItem(factory);
+//        }
+    }
+
+    public void createUIComponents(){
+        MoveTask testMove = new MoveTask(2);
+        MultiTask test = new MultiTask(new MultiTask(testMove, new DispenseTask(100)), new MoveTask(3), new LowerTask());
+        taskTree = new TaskTree(new ExecutionModel(test, taskModel));
+
+        testMove.changeData(4);
+        taskTree.model.nodeChanged(testMove);
     }
 }

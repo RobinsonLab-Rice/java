@@ -13,7 +13,7 @@ import model.tasks.ITaskVisitor;
  * @author Christian
  *
  */
-public class MoveTask extends ASerialTask {
+public class MoveTask extends ALeafTask {
 	
 	/**
 	 * Auto generated serial ID.
@@ -63,7 +63,7 @@ public class MoveTask extends ASerialTask {
 	
 	/**
 	 * Calls the "Move" case of the given algo.
-	 * @param algo The IPhraseVisitor algo to use.
+	 * @param visitor The IPhraseVisitor algo to use.
 	 * @param params vararg list of input parameters
 	 * @return the result of running the Chord case of the visitor.
 	 */
@@ -95,4 +95,9 @@ public class MoveTask extends ASerialTask {
 	public String toString() {
 		return "Move:" + wellNum;
 	}
+
+    //TODO: REMOVE THIS TEST!!!!!!//
+    public void changeData(int newDestination) {
+        wellNum = newDestination;
+    }
 }

@@ -6,12 +6,16 @@ import java.io.Serializable;
 import model.plate.objects.ArmState;
 import model.tasks.ITaskVisitor;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
+
 /**
  * Defines what task the robot should perform when attached to a Well context object.
  * @author Christian
  *
  */
-public interface IExecuteTask extends Serializable{
+public interface IExecuteTask extends Serializable, TreeNode {
 	
 	/**
 	 * Executes everything this task contains. If it is a higher level task, this

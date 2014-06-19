@@ -9,7 +9,7 @@ import model.tasks.ITaskVisitor;
  * Dispense task, tells the robot to dispense the input amount of liquid.
  * @author Christian
  */
-public class DispenseTask extends ASerialTask {
+public class DispenseTask extends ALeafTask {
 
 	/**
 	 * Auto generated serial ID.
