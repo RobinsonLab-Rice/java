@@ -6,6 +6,8 @@ import model.tasks.ITaskFactory;
 import model.tasks.basictasks.*;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -25,26 +27,38 @@ public class TaskCreationPanel extends JPanel {
     /* Constructor that initializes special component needs. */
     public TaskCreationPanel() {
 
+        /* Get selected factory, make its task, and add that to the edit tree. */
         moveToEditTreeBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                /* Get selected factory, make its task, and add that to the edit tree. */
                 taskTree.model.setRoot(savedTasksCmb.getItemAt(savedTasksCmb.getSelectedIndex()).make());
             }
         });
+
+        /* Tell backend model to execute the task queue in debug mode. */
+        debugExecuteBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                taskModel.debugExecuteAll();
+            }
+        });
+
+        taskTree.addMouseListener(new TreeRightClickListener(taskTree, taskModel));
     }
 
     /* Perform necessary startup procedures (populating dropboxes, etc.) */
     public void start(View2TaskAdapter taskModel){
         this.taskModel = taskModel;
-        this.taskTree = new TaskTree(taskModel.getTreeModel());
+        taskTree.setModel(taskModel.getTreeModel());
 
+        //taskTree.model.setRoot(taskModel.getTreeModel());
 //        for (ITaskFactory factory : taskModel.getTaskFactories()) {
 //            savedTasksCmb.addItem(factory);
 //        }
     }
 
     public void createUIComponents(){
+        this.taskTree = new TaskTree(new DefaultTreeModel(new NullTask()));
 //        MoveTask testMove = new MoveTask(2);
 //        MultiTask test = new MultiTask(new MultiTask(testMove, new DispenseTask(100)), new MoveTask(3), new LowerTask());
 //        taskTree = new TaskTree(new ExecutionModel(test, taskModel));

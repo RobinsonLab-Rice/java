@@ -68,19 +68,19 @@ public class DispenseTask extends ALeafTask {
 		return "Dispense:" + volume;
 	}
 
-	/**
-	 * This is a leaf task: the task path should contain only the dispense task,
-	 * so we can freely parse and change volume according to the toChange String.
-	 */
-	@Override
-	public void traverseOrModify(Object[] taskPath, String toChange) {
-		System.out.println(taskPath + ":" + taskPath.length);
-		if (taskPath.length != 1){
-			System.out.println("Something went wrong with dispense task, length of path is not 1.");
-		}
-		else {
-			//parse the string for a colon, set volume to be the double after the colon
-			volume = Double.parseDouble(toChange.split(":")[1]);
-		}
-	}
+//	/**
+//	 * This is a leaf task: the task path should contain only the dispense task,
+//	 * so we can freely parse and change volume according to the toChange String.
+//	 */
+//	@Override
+//	public void traverseOrModify(Object[] taskPath, String toChange) {
+//		System.out.println(taskPath + ":" + taskPath.length);
+//		if (taskPath.length != 1){
+//			System.out.println("Something went wrong with dispense task, length of path is not 1.");
+//		}
+//		else {
+//			//parse the string for a colon, set volume to be the double after the colon
+//			volume = Double.parseDouble(toChange.split(":")[1]);
+//		}
+//	}
 }

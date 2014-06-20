@@ -72,22 +72,22 @@ public class MoveTask extends ALeafTask {
 		return visitor.caseAt("Move", this, params);
 	}
 
-	/**
-	 * This is a leaf task: the task path should contain only the move task,
-	 * so we can freely parse and change move parameters according to the toChange String.
-	 */
-	@Override
-	public void traverseOrModify(Object[] taskPath, String toChange) {
-		System.out.println(taskPath + ":" + taskPath.length);
-		if (taskPath.length != 1){
-			System.out.println("Something went wrong with move task, length of path is not 1.");
-		}
-		else {
-			//parse the string for a colon, set volume to be the double after the colon
-			wellNum = Integer.parseInt(toChange.split(":")[1]);
-			destination = PlateModel.getLocationFromNumber(wellNum);
-		}
-	}
+//	/**
+//	 * This is a leaf task: the task path should contain only the move task,
+//	 * so we can freely parse and change move parameters according to the toChange String.
+//	 */
+//	@Override
+//	public void traverseOrModify(Object[] taskPath, String toChange) {
+//		System.out.println(taskPath + ":" + taskPath.length);
+//		if (taskPath.length != 1){
+//			System.out.println("Something went wrong with move task, length of path is not 1.");
+//		}
+//		else {
+//			//parse the string for a colon, set volume to be the double after the colon
+//			wellNum = Integer.parseInt(toChange.split(":")[1]);
+//			destination = PlateModel.getLocationFromNumber(wellNum);
+//		}
+//	}
 	
 	/**
 	 * Define how this task should be printed.

@@ -1,19 +1,17 @@
 package view;
 
-import model.tasks.TaskTreeModel;
-
-import javax.swing.Icon;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 
 public class TaskTree extends JTree {
 	
 	private static final long serialVersionUID = 7747201374454729420L;
 	
-	public TaskTreeModel model;
+	public DefaultTreeModel model;
  
-    public TaskTree(TaskTreeModel taskModel) {
+    public TaskTree(DefaultTreeModel taskModel) {
         super(taskModel);
         model = taskModel;
         getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -23,5 +21,9 @@ public class TaskTree extends JTree {
         renderer.setClosedIcon(personIcon);
         renderer.setOpenIcon(personIcon);
         setCellRenderer(renderer);
+        setDragEnabled(true);
+        setDropMode(DropMode.ON_OR_INSERT);
+        setTransferHandler(new TreeTransferHandler());
+        //getSelectionModel().setSelectionMode(TreeSelectionModel.CONTIGUOUS_TREE_SELECTION);
     }
 }

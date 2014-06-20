@@ -1,5 +1,6 @@
 package model.tasks.basictasks;
 
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import java.io.OutputStream;
 import java.io.IOException;
@@ -43,29 +44,6 @@ public abstract class ALeafTask implements IExecuteTask {
 	 */
 	public int getChildCount() {
 		return 0;
-	}
-	
-	/**
-	 * A serial task does not have a child, so this will never be called.
-	 */
-	public IExecuteTask getChild(int index) {
-		return null;
-	}
-	
-	/**
-	 * The parent of this task should be deleting it, not the task itself.
-	 */
-	@Override
-	public void traverseOrDelete(Object[] path) {
-		System.out.println("Something went wrong, a serial task is trying to delete itself.");
-	}
-
-	/**
-	 * Only abstract tasks can be inserted into, should never get here.
-	 */
-	@Override
-	public void traverseOrInsert(Object[] path, IExecuteTask taskToAdd) {
-		System.out.println("Something went wrong, we are inserting into a Serial task.");
 	}
 
     /**
@@ -125,6 +103,69 @@ public abstract class ALeafTask implements IExecuteTask {
 
     public void setParent(IExecuteTask parent) {
         this.parent = parent;
+    }
+
+    /* -----METHODS INHERITED FROM MUTABLETREENODE----- */
+
+    /**
+     * Adds <code>child</code> to the receiver at <code>index</code>.
+     * <code>child</code> will be messaged with <code>setParent</code>.
+     *
+     * @param child
+     * @param index
+     */
+    @Override
+    public void insert(MutableTreeNode child, int index) {
+        //cannot insert into a leaf
+    }
+
+    /**
+     * Removes the child at <code>index</code> from the receiver.
+     *
+     * @param index
+     */
+    @Override
+    public void remove(int index) {
+        //cannot remove from a leaf
+    }
+
+    /**
+     * Removes <code>node</code> from the receiver. <code>setParent</code>
+     * will be messaged on <code>node</code>.
+     *
+     * @param node
+     */
+    @Override
+    public void remove(MutableTreeNode node) {
+        //cannot remove from a leaf
+    }
+
+    /**
+     * Resets the user object of the receiver to <code>object</code>.
+     *
+     * @param object
+     */
+    @Override
+    public void setUserObject(Object object) {
+        //TODO: not sure what this does
+    }
+
+    /**
+     * Removes the receiver from its parent.
+     */
+    @Override
+    public void removeFromParent() {
+        parent.remove(this);
+    }
+
+    /**
+     * Sets the parent of the receiver to <code>newParent</code>.
+     *
+     * @param newParent
+     */
+    @Override
+    public void setParent(MutableTreeNode newParent) {
+        this.parent = (IExecuteTask) newParent;
     }
 	
 }

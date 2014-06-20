@@ -22,7 +22,7 @@ public class Serialization2TaskAdapter {
     }
 	
 	public void setTasks(MultiTask taskQueue){
-        taskModel.setTasks(taskQueue);
+        //taskModel.setTasks(taskQueue);
     }
 	
 }

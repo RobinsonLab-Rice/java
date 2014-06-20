@@ -39,13 +39,6 @@ public class LowerTask extends ALeafTask {
 	public Object executeVisitor(ITaskVisitor visitor, Object... params) {
 		return visitor.caseAt("Lower", this, params);
 	}
-
-	/**
-	 * Lower task doesn't have any parameters, do nothing.
-	 */
-	@Override
-	public void traverseOrModify(Object[] taskPath, String toChange) {
-	}
 	
 	/**
 	 * Define how this task should be printed.

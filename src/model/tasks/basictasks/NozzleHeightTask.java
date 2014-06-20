@@ -51,10 +51,4 @@ public class NozzleHeightTask extends ALeafTask {
 	public Object executeVisitor(ITaskVisitor visitor, Object... params) {
 		return visitor.caseAt("NozzleHeight", this, params);
 	}
-
-	@Override
-	public void traverseOrModify(Object[] taskPath, String toChange) {
-		// TODO Auto-generated method stub
-		
-	}
 }

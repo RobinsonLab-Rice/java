@@ -17,7 +17,7 @@ public class ExternalComm2TaskAdapter {
     public ExternalComm2TaskAdapter(TaskModel taskModel) { this.taskModel = taskModel; }
 
     public void appendTaskToQueue(IExecuteTask taskToAdd){
-        taskModel.addToQueue(taskToAdd);
+        //taskModel.addToQueue(taskToAdd);
     }
 	
 }

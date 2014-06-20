@@ -6,6 +6,8 @@ import model.tasks.SetupParam;
 import model.tasks.TaskModel;
 import model.tasks.basictasks.IExecuteTask;
 
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
 import java.awt.*;
 
 /**
@@ -69,7 +71,7 @@ public class View2TaskAdapter {
      * For debug purposes, execute all stages at once.
      */
     public void debugExecuteAll() {
-
+        taskModel.debugExecuteAll();
     }
 
     /**
@@ -108,5 +110,9 @@ public class View2TaskAdapter {
      */
     public Iterable<ITaskFactory> getTaskFactories() {
         return taskModel.getTaskFactories();
+    }
+
+    public DefaultTreeModel getTreeModel() {
+        return taskModel.getTreeModel();
     }
 }

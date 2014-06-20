@@ -15,7 +15,7 @@ import javax.swing.tree.TreeNode;
  * @author Christian
  *
  */
-public interface IExecuteTask extends Serializable, TreeNode {
+public interface IExecuteTask extends Serializable, MutableTreeNode {
 	
 	/**
 	 * Executes everything this task contains. If it is a higher level task, this
@@ -34,28 +34,16 @@ public interface IExecuteTask extends Serializable, TreeNode {
 	   */
 	public Object executeVisitor(ITaskVisitor visitor, Object... params);
 
-	/**
-	 * Returns the number of sub-tasks this task has. This will be 0 if the task is a serial task, and if it's
-	 * an abstract task it will vary.
-	 * @return number of children tasks
-	 */
-	public int getChildCount();
-	
-	/**
-	 * @return child at the particular index
-	 */
-	public IExecuteTask getChild(int index);
-	
-	/**
-	 * Either take the path down this task, or change the value of the current task.
-	 * @param taskPath - path to take down to the leaf
-	 * @param toChange - what to change in the leaf
-	 */
-	public void traverseOrModify(Object[] taskPath, String toChange);
-	
-	public void traverseOrDelete(Object[] path);
-	
-	public void traverseOrInsert(Object[] path, IExecuteTask taskToAdd);
+//	/**
+//	 * Returns the number of sub-tasks this task has. This will be 0 if the task is a serial task, and if it's
+//	 * an abstract task it will vary.
+//	 * @return number of children tasks
+//	 */
+//	public int getChildCount();
 
-    public void setParent(IExecuteTask parent);
+//	public void traverseOrModify(Object[] taskPath, String toChange);
+//
+//	public void traverseOrDelete(Object[] path);
+//
+//	public void traverseOrInsert(Object[] path, IExecuteTask taskToAdd);
 }

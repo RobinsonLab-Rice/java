@@ -40,12 +40,12 @@ public class RaiseTask extends ALeafTask {
 		return visitor.caseAt("Raise", this, params);
 	}
 
-	/**
-	 * Raise task doesn't have any parameters, doesn't change at all.
-	 */
-	@Override
-	public void traverseOrModify(Object[] taskPath, String toChange) {
-	}
+//	/**
+//	 * Raise task doesn't have any parameters, doesn't change at all.
+//	 */
+//	@Override
+//	public void traverseOrModify(Object[] taskPath, String toChange) {
+//	}
 	
 	/**
 	 * Define how this task should be printed.

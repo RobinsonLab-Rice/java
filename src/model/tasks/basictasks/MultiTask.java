@@ -7,6 +7,7 @@ import java.util.*;
 import model.plate.objects.ArmState;
 import model.tasks.ITaskVisitor;
 
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 public class MultiTask implements IExecuteTask {
@@ -23,7 +24,7 @@ public class MultiTask implements IExecuteTask {
 	
 	public MultiTask() {}
 
-    private IExecuteTask parent;
+    private MutableTreeNode parent;
 
 	/**
 	 * Creates a MultiTask out of some variable number of other tasks.
@@ -146,68 +147,66 @@ public class MultiTask implements IExecuteTask {
 		return "MultiTask";
 	}
 
-	/**
-	 * This is an abstract task, so this function will traverse down the path
-	 * until it gets to the leaf task.
-	 */
-	@Override
-	public void traverseOrModify(Object[] taskPath, String toChange) {
-		Object[] reducedPath = Arrays.copyOfRange(taskPath, 1, taskPath.length);
-		IExecuteTask taskToEnter = (IExecuteTask) reducedPath[0];
-		for (IExecuteTask task : taskList) {
-			if (task == taskToEnter) {
-				task.traverseOrModify(reducedPath, toChange);
-			}
-		}
-	}
+    /*-----METHODS INHERITED FROM MUTABLETREENODE-----*/
 
-	@Override
-	public void traverseOrDelete(Object[] path) {
-		//if we want to delete the first multitask, just delete all its children
-		if (path.length == 1) {
-			taskList.clear();
-			return;
-		}
-		Object[] reducedPath = Arrays.copyOfRange(path, 1, path.length);
-		IExecuteTask firstTask = (IExecuteTask) reducedPath[0];
-		//if there's only one task left in the path, delete it from our ArrayList
-		if (reducedPath.length == 1) {
-			taskList.remove(firstTask);
-		}
-		//else, recurse into the first element of the list
-		else {
-			for (IExecuteTask task : taskList) {
-				if (task == firstTask) {
-					task.traverseOrDelete(reducedPath);
-				}
-			}
-		}
-	}
-
-	@Override
-	public void traverseOrInsert(Object[] path, IExecuteTask taskToAdd) {
-		Object[] reducedPath = Arrays.copyOfRange(path, 1, path.length);
-		IExecuteTask firstTask = (IExecuteTask) reducedPath[0];
-		//if there's only one task left in the path, find it in the ArrayList and add taskToAdd after it
-		if (reducedPath.length == 1) {
-			int newTaskIndex = taskList.indexOf(firstTask) + 1;
-			//if we're appending to the end of the list
-			if (newTaskIndex == taskList.size() + 1) taskList.add(taskToAdd);
-			else taskList.add(newTaskIndex, taskToAdd);
-			
-		}
-		//else, recurse into the first element of the list
-		else {
-			for (IExecuteTask task : taskList) {
-				if (task == firstTask) {
-					task.traverseOrInsert(reducedPath, taskToAdd);
-				}
-			}
-		}
-	}
-
+    /**
+     * Adds <code>child</code> to the receiver at <code>index</code>.
+     * <code>child</code> will be messaged with <code>setParent</code>.
+     *
+     * @param child
+     * @param index
+     */
     @Override
-    public void setParent(IExecuteTask parent) {
-        this.parent = parent;
+    public void insert(MutableTreeNode child, int index) {
+        taskList.add(index, (IExecuteTask) child);
+    }
+
+    /**
+     * Removes the child at <code>index</code> from the receiver.
+     *
+     * @param index
+     */
+    @Override
+    public void remove(int index) {
+        taskList.remove(index);
+    }
+
+    /**
+     * Removes <code>node</code> from the receiver. <code>setParent</code>
+     * will be messaged on <code>node</code>.
+     *
+     * @param node
+     */
+    @Override
+    public void remove(MutableTreeNode node) {
+        taskList.remove(node);
+    }
+
+    /**
+     * Resets the user object of the receiver to <code>object</code>.
+     *
+     * @param object
+     */
+    @Override
+    public void setUserObject(Object object) {
+        this.taskList = (ArrayList<IExecuteTask>)object;
+    }
+
+    /**
+     * Removes the receiver from its parent.
+     */
+    @Override
+    public void removeFromParent() {
+        parent.remove(this);
+    }
+
+    /**
+     * Sets the parent of the receiver to <code>newParent</code>.
+     *
+     * @param newParent
+     */
+    @Override
+    public void setParent(MutableTreeNode newParent) {
+        this.parent = newParent;
     }
 }

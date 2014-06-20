@@ -32,13 +32,13 @@ public class NullTask extends ALeafTask {
 		return visitor.caseAt("Null", this, params);
 	}
 
-	/**
-	 * Null task, do nothing.
-	 */
-	@Override
-	public void traverseOrModify(Object[] taskPath, String toChange) {
-		// TODO Auto-generated method stub
-		
-	}
+//	/**
+//	 * Null task, do nothing.
+//	 */
+//	@Override
+//	public void traverseOrModify(Object[] taskPath, String toChange) {
+//		// TODO Auto-generated method stub
+//
+//	}
 	
 }

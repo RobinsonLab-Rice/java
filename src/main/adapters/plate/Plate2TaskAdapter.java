@@ -24,6 +24,6 @@ public class Plate2TaskAdapter {
 	 * @param sF cm to pixel scale factor to draw objects at
 	 */
 	public void drawTasks(Graphics g, double sF){
-        taskModel.drawTasks(g, sF);
+        //taskModel.drawTasks(g, sF);
     }
 }
