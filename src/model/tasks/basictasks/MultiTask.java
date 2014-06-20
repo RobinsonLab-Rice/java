@@ -23,12 +23,15 @@ public class MultiTask implements IExecuteTask {
 	
 	public MultiTask() {}
 
+    private IExecuteTask parent;
+
 	/**
 	 * Creates a MultiTask out of some variable number of other tasks.
 	 */
 	public MultiTask(IExecuteTask... taskArray){
 		taskList = new ArrayList<IExecuteTask>();
 		for (IExecuteTask task: taskArray){
+            task.setParent(this);
 			taskList.add(task);
 		}
 	}
@@ -90,7 +93,7 @@ public class MultiTask implements IExecuteTask {
      */
     @Override
     public TreeNode getParent() {
-        return null;
+        return parent;
     }
 
     /**
@@ -202,4 +205,9 @@ public class MultiTask implements IExecuteTask {
 			}
 		}
 	}
+
+    @Override
+    public void setParent(IExecuteTask parent) {
+        this.parent = parent;
+    }
 }

@@ -12,6 +12,8 @@ import main.adapters.tasks.Task2ViewAdapter;
 import model.tasks.basictasks.*;
 import model.tasks.basictasks.ALeafTask;
 
+import javax.swing.tree.TreeModel;
+
 /**
  * Model that controls all creation and managing of tasks. Relays to plate model when wells need to be given tasks.
  * @author Christian
@@ -35,9 +37,10 @@ public class TaskModel {
 	private Task2SerialCommAdapter serialCommModel;
 	
 	/**
-	 * ArrayList of stages (MultiTasks) that contain everything that will be done in the experiment.
+     * TreeModel that contains a multitask (the root of the tree). This multitask contains everything that will be
+     * done in the experiment.
 	 */
-	private MultiTask taskQueue;
+    private TreeModel taskQueue;
 	
 	private ArrayList<ALeafTask> decompiledTasks;
 	
@@ -49,7 +52,7 @@ public class TaskModel {
 	 * Constructor for TaskModel, takes in adapters to allow the view and other models.
 	 */
 	public TaskModel(){
-		taskQueue = new MultiTask();
+		taskQueue = new TaskTreeModel(new MultiTask());
 		decompiledTasks = new ArrayList<ALeafTask>();
 		decompileVisitor = new DecompileVisitor();
 		drawVisitor = new DrawVisitor();
@@ -179,5 +182,9 @@ public class TaskModel {
      */
     public Iterable<ITaskFactory> getTaskFactories() {
         return null;
+    }
+
+    public TreeModel getTreeModel() {
+        return this.taskQueue;
     }
 }

@@ -29,7 +29,7 @@ public class TaskCreationPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 /* Get selected factory, make its task, and add that to the edit tree. */
-                taskTree.model.setNewTask(savedTasksCmb.getItemAt(savedTasksCmb.getSelectedIndex()).make());
+                taskTree.model.setRoot(savedTasksCmb.getItemAt(savedTasksCmb.getSelectedIndex()).make());
             }
         });
     }
@@ -37,10 +37,7 @@ public class TaskCreationPanel extends JPanel {
     /* Perform necessary startup procedures (populating dropboxes, etc.) */
     public void start(View2TaskAdapter taskModel){
         this.taskModel = taskModel;
-
-
-
-        //taskTree = new TaskTree(new ExecutionModel(test, taskModel));
+        this.taskTree = new TaskTree(taskModel.getTreeModel());
 
 //        for (ITaskFactory factory : taskModel.getTaskFactories()) {
 //            savedTasksCmb.addItem(factory);
@@ -48,11 +45,8 @@ public class TaskCreationPanel extends JPanel {
     }
 
     public void createUIComponents(){
-        MoveTask testMove = new MoveTask(2);
-        MultiTask test = new MultiTask(new MultiTask(testMove, new DispenseTask(100)), new MoveTask(3), new LowerTask());
-        taskTree = new TaskTree(new ExecutionModel(test, taskModel));
-
-        testMove.changeData(4);
-        taskTree.model.nodeChanged(testMove);
+//        MoveTask testMove = new MoveTask(2);
+//        MultiTask test = new MultiTask(new MultiTask(testMove, new DispenseTask(100)), new MoveTask(3), new LowerTask());
+//        taskTree = new TaskTree(new ExecutionModel(test, taskModel));
     }
 }

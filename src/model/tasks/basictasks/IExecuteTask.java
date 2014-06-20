@@ -56,4 +56,6 @@ public interface IExecuteTask extends Serializable, TreeNode {
 	public void traverseOrDelete(Object[] path);
 	
 	public void traverseOrInsert(Object[] path, IExecuteTask taskToAdd);
+
+    public void setParent(IExecuteTask parent);
 }
