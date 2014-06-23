@@ -6,6 +6,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.sun.org.apache.xpath.internal.operations.Mult;
 import main.adapters.tasks.Task2PlateAdapter;
 import main.adapters.tasks.Task2SerialCommAdapter;
 import main.adapters.tasks.Task2ViewAdapter;
@@ -53,7 +54,7 @@ public class TaskModel {
 	 * Constructor for TaskModel, takes in adapters to allow the view and other models.
 	 */
 	public TaskModel(){
-		taskQueue = new DefaultTreeModel(new MultiTask(new MoveTask(2), new LowerTask(), new MoveTask(2)));
+		taskQueue = new DefaultTreeModel(new MultiTask(new MoveTask(2), new MultiTask(new LowerTask(), new DispenseTask(100)), new MoveTask(2)));
 		decompiledTasks = new ArrayList<ALeafTask>();
 		decompileVisitor = new DecompileVisitor();
 		drawVisitor = new DrawVisitor();

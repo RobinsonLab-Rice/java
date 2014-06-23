@@ -1,5 +1,9 @@
 package view;
 
+import com.cedarsoftware.util.io.JsonReader;
+import com.cedarsoftware.util.io.JsonWriter;
+import model.tasks.basictasks.IExecuteTask;
+
 import javax.swing.*;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -8,6 +12,7 @@ import javax.swing.tree.TreePath;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,9 +65,14 @@ class TreeTransferHandler extends TransferHandler {
             // exportDone after a successful drop.
             List<MutableTreeNode> copies = new ArrayList<MutableTreeNode>();
             List<MutableTreeNode> toRemove = new ArrayList<MutableTreeNode>();
-            MutableTreeNode node = (MutableTreeNode)paths[0].getLastPathComponent();
-            copies.add(node);
-            toRemove.add(node);
+
+            //copy every node
+            for (TreePath path : paths) {
+                MutableTreeNode node = (MutableTreeNode) path.getLastPathComponent();
+                copies.add(node);
+                toRemove.add(node);
+            }
+
             MutableTreeNode[] nodes = copies.toArray(new MutableTreeNode[copies.size()]);
             nodesToRemove = toRemove.toArray(new MutableTreeNode[toRemove.size()]);
             return new NodesTransferable(nodes);
@@ -72,12 +82,12 @@ class TreeTransferHandler extends TransferHandler {
 
     protected void exportDone(JComponent source, Transferable data, int action) {
         if((action & MOVE) == MOVE) {
-//            JTree tree = (JTree)source;
-//            DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
-//            // Remove nodes saved in nodesToRemove in createTransferable.
-//            for(int i = 0; i < nodesToRemove.length; i++) {
-//                model.removeNodeFromParent(nodesToRemove[i]);
-//            }
+            JTree tree = (JTree)source;
+            DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
+            // Remove nodes saved in nodesToRemove in createTransferable.
+            for(int i = 0; i < nodesToRemove.length; i++) {
+                model.removeNodeFromParent(nodesToRemove[i]);
+            }
         }
     }
 
@@ -116,15 +126,18 @@ class TreeTransferHandler extends TransferHandler {
             index = parent.getChildCount();
         }
 
-//        //remove data from current spot
-//        for(int i = 0; i < nodesToRemove.length; i++) {
-//            model.removeNodeFromParent(nodesToRemove[i]);
-//        }
-
-        //add data back in at destination
-        for(int i = 0; i < nodes.length; i++) {
-            model.removeNodeFromParent(nodes[i]);
-            model.insertNodeInto(nodes[i], parent, index);
+        //make a copy of the node and insert it into right place
+        for (int i = 0; i < nodes.length; i++) {
+            try {
+                //make a copy of the node, and set its parent to be correct (or else the hierachy falls apart)
+                IExecuteTask deepCopy = (IExecuteTask) JsonReader.jsonToJava(JsonWriter.objectToJson(nodes[i]));
+                deepCopy.setParent(parent);
+                model.insertNodeInto(deepCopy, parent, index++);
+            } catch (IOException e) {
+                System.out.println("Could not make a copy of the node we are moving.");
+                e.printStackTrace();
+                return false;
+            }
         }
         return true;
     }

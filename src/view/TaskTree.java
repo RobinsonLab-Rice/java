@@ -14,7 +14,6 @@ public class TaskTree extends JTree {
     public TaskTree(DefaultTreeModel taskModel) {
         super(taskModel);
         model = taskModel;
-        getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
         Icon personIcon = null;
         renderer.setLeafIcon(personIcon);
@@ -22,8 +21,10 @@ public class TaskTree extends JTree {
         renderer.setOpenIcon(personIcon);
         setCellRenderer(renderer);
         setDragEnabled(true);
-        setDropMode(DropMode.ON_OR_INSERT);
+        setDropMode(DropMode.INSERT);
+        getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+        //getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
         setTransferHandler(new TreeTransferHandler());
-        //getSelectionModel().setSelectionMode(TreeSelectionModel.CONTIGUOUS_TREE_SELECTION);
+
     }
 }
