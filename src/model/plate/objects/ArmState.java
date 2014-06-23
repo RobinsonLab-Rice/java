@@ -4,6 +4,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import model.plate.IWellCmd;
+import model.plate.PlateModel;
 import model.plate.WellDispatcher;
 
 /**
@@ -23,12 +24,17 @@ public class ArmState {
 	 * Should never give this reference away though, for coupling reasons.
 	 */
 	private WellDispatcher dispatcher;
+
+    /**
+     * Reference to the plate model.
+     */
+    private PlateModel plateModel;
 	
 	/**
 	 * Well the arm is currently over. Should change every time the location is set.
 	 * -1 corresponds to not being over any well.
 	 */
-	private int currentWell = -1;
+	//private int currentWell = -1;
 	
 	/**
 	 * Class that holds all information relevant to the arm's current state.
@@ -37,9 +43,11 @@ public class ArmState {
 	 * @param dispatcher - Dispatcher that talks to all wells. Safe to store since it will
 	 * 		never change.
 	 */
-	public ArmState(Point2D currentLocation, WellDispatcher dispatcher){
+	public ArmState(Point2D currentLocation, WellDispatcher dispatcher, PlateModel plateModel){
 		this.currentLocation = currentLocation;
 		this.dispatcher = dispatcher;
+        this.plateModel = plateModel;
+
 	}
 	
 	public double getX(){
@@ -49,21 +57,25 @@ public class ArmState {
 	public double getY(){
 		return currentLocation.getY();
 	}
+
+    public PlateModel getPlateModel() {
+        return plateModel;
+    }
 	
 	public void setLocation(double x, double y){
 		//update the current location
 		currentLocation = new Point2D.Double(x, y);
 		
-		//and update which well we are currently over
-		currentWell = -1;
-		dispatcher.notifyAll(
-			new IWellCmd(){
-				public void apply(Well context, WellDispatcher disp){
-					if (context.getAbsoluteLocation().distance(currentLocation) < context.getDiameter()/2)
-						currentWell = context.getNumber();
-				}
-			}
-		);
+//		//and update which well we are currently over
+//		currentWell = -1;
+//		dispatcher.notifyAll(
+//			new IWellCmd(){
+//				public void apply(Well context, WellDispatcher disp){
+//					if (context.getAbsoluteLocation().distance(currentLocation) < context.getDiameter()/2)
+//						currentWell = context.getIdentifier();
+//				}
+//			}
+//		);
 	}
 	
 	/**
@@ -74,36 +86,37 @@ public class ArmState {
 	 * @return boolean for whether or not the well will overflow
 	 */
 	public boolean willOverflow(final double volume){
-		//have to wrap the boolean in an ArrayList to circumvent anonymous inner class stuff
-		final ArrayList<Boolean> willOverflow = new ArrayList<Boolean>();
-		willOverflow.add(false);
-		dispatcher.notifyAll(
-			new IWellCmd(){
-				public void apply(Well context, WellDispatcher disp){
-					//if the well is the one we are on top of
-					if (context.getNumber() == currentWell){
-						//if adding volume would overflow it, or if removing volume would go below 0
-						if (context.getCurrentVolume() + volume > context.getMaxVolume() ||
-							context.getCurrentVolume() - volume < 0)
-							willOverflow.set(0, true);
-					}
-				}
-			}
-		);
-		return willOverflow.get(0);
+//		//have to wrap the boolean in an ArrayList to circumvent anonymous inner class stuff
+//		final ArrayList<Boolean> willOverflow = new ArrayList<Boolean>();
+//		willOverflow.add(false);
+//		dispatcher.notifyAll(
+//			new IWellCmd(){
+//				public void apply(Well context, WellDispatcher disp){
+//					//if the well is the one we are on top of
+//					if (context.getNumber() == currentWell){
+//						//if adding volume would overflow it, or if removing volume would go below 0
+//						if (context.getCurrentVolume() + volume > context.getMaxVolume() ||
+//							context.getCurrentVolume() - volume < 0)
+//							willOverflow.set(0, true);
+//					}
+//				}
+//			}
+//		);
+//		return willOverflow.get(0);
+        return false;
 	}
 	
 	public void updateWellVolume(final double volume){
-		dispatcher.notifyAll(
-			new IWellCmd(){
-				public void apply(Well context, WellDispatcher disp){
-					//if the well is the one we are on top of
-					if (context.getNumber() == currentWell){
-						//update its volume
-						context.changeCurrentVolume(volume);
-					}
-				}
-			}
-		);
+//		dispatcher.notifyAll(
+//			new IWellCmd(){
+//				public void apply(Well context, WellDispatcher disp){
+//					//if the well is the one we are on top of
+//					if (context.getNumber() == currentWell){
+//						//update its volume
+//						context.changeCurrentVolume(volume);
+//					}
+//				}
+//			}
+//		);
 	}
 }

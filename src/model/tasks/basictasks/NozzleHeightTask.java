@@ -51,4 +51,21 @@ public class NozzleHeightTask extends ALeafTask {
 	public Object executeVisitor(ITaskVisitor visitor, Object... params) {
 		return visitor.caseAt("NozzleHeight", this, params);
 	}
+
+    /**
+     * When somebody changes text on JTree, check if the data is correct and, if it is, set this task's parameters
+     * appropriately.
+     *
+     * @param object - parameters (as a String)
+     */
+    @Override
+    public void setUserObject(Object object) {
+        //if object can't be converted to double, throw an exception
+        try {
+            this.heightToSet = Double.parseDouble((String) object);
+        } catch (NumberFormatException e) {
+            System.out.println("Tried to change nozzleHeight something that wasn't a double.");
+            e.printStackTrace();
+        }
+    }
 }

@@ -26,6 +26,8 @@ public class MultiTask implements IExecuteTask {
 
     private MutableTreeNode parent;
 
+    private String name = "MultiTask";
+
 	/**
 	 * Creates a MultiTask out of some variable number of other tasks.
 	 */
@@ -144,7 +146,7 @@ public class MultiTask implements IExecuteTask {
 	 * String representation of a MultiTask, useful for drawing to screen.
 	 */
 	public String toString() {
-		return "MultiTask";
+		return name;
 	}
 
     /*-----METHODS INHERITED FROM MUTABLETREENODE-----*/
@@ -183,13 +185,13 @@ public class MultiTask implements IExecuteTask {
     }
 
     /**
-     * Resets the user object of the receiver to <code>object</code>.
+     * Whenever somebody changes visualized name, it changes the saved name in the model.
      *
-     * @param object
+     * @param object - new name of this multitask
      */
     @Override
     public void setUserObject(Object object) {
-        this.taskList = (ArrayList<IExecuteTask>)object;
+        this.name = (String) object;
     }
 
     /**

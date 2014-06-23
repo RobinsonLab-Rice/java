@@ -40,5 +40,16 @@ public class NullTask extends ALeafTask {
 //		// TODO Auto-generated method stub
 //
 //	}
+
+    /**
+     * When somebody changes text on JTree, check if the data is correct and, if it is, set this task's parameters
+     * appropriately.
+     *
+     * @param object - parameters (as a String)
+     */
+    @Override
+    public void setUserObject(Object object) {
+        //Doesn't do anything, null task!
+    }
 	
 }

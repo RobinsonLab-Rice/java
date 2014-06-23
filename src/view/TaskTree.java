@@ -4,13 +4,18 @@ import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 public class TaskTree extends JTree {
-	
-	private static final long serialVersionUID = 7747201374454729420L;
-	
-	public DefaultTreeModel model;
- 
+
+    private static final long serialVersionUID = 7747201374454729420L;
+
+    public DefaultTreeModel model;
+
     public TaskTree(DefaultTreeModel taskModel) {
         super(taskModel);
         model = taskModel;
@@ -20,11 +25,10 @@ public class TaskTree extends JTree {
         renderer.setClosedIcon(personIcon);
         renderer.setOpenIcon(personIcon);
         setCellRenderer(renderer);
+        setEditable(true);
         setDragEnabled(true);
         setDropMode(DropMode.INSERT);
         getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-        //getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
         setTransferHandler(new TreeTransferHandler());
-
     }
 }

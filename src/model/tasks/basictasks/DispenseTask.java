@@ -68,6 +68,23 @@ public class DispenseTask extends ALeafTask {
 		return "Dispense:" + volume;
 	}
 
+    /**
+     * When somebody changes text on JTree, check if the data is correct and, if it is, set this task's parameters
+     * appropriately.
+     *
+     * @param object - parameters (as a String)
+     */
+    @Override
+    public void setUserObject(Object object) {
+        //if object can't be converted to double, throw an exception
+        try {
+            this.volume = Double.parseDouble((String) object);
+        } catch (NumberFormatException e) {
+            System.out.println("Tried to change dispense something that wasn't a double.");
+            e.printStackTrace();
+        }
+    }
+
 //	/**
 //	 * This is a leaf task: the task path should contain only the dispense task,
 //	 * so we can freely parse and change volume according to the toChange String.

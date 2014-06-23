@@ -53,4 +53,15 @@ public class RaiseTask extends ALeafTask {
 	public String toString() {
 		return "Raise";
 	}
+
+    /**
+     * When somebody changes text on JTree, check if the data is correct and, if it is, set this task's parameters
+     * appropriately.
+     *
+     * @param object - parameters (as a String)
+     */
+    @Override
+    public void setUserObject(Object object) {
+        //Don't allow somebody to change this task.
+    }
 }

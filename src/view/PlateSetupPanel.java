@@ -25,6 +25,7 @@ public class PlateSetupPanel {
     private JButton makePlateBtn;
     private JButton clearAllPlatesBtn;
     private JPanel plateSetupPanel;
+    private JTextField plateNicknameTxt;
 
     /* Adapters to back-end models. */
     private View2PlateAdapter plateModel;
@@ -47,7 +48,7 @@ public class PlateSetupPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 PlateSpecifications specs = serializationModel.loadPlateSpecs(savedPlatesCmb.getSelectedItem().toString());
-                plateModel.addPlate(numberingOrderCmb.getSelectedItem().toString(), xPosTxt.getText(), yPosTxt.getText(), specs);
+                plateModel.addPlate(plateNicknameTxt.getText(), numberingOrderCmb.getSelectedItem().toString(), xPosTxt.getText(), yPosTxt.getText(), specs);
             }
         });
 

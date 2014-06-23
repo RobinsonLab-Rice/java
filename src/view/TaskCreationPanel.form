@@ -41,7 +41,7 @@
         <properties>
           <icon value="images/arrow_bottom_icon&amp;16.png"/>
           <text value=""/>
-          <toolTipText value="Copy selected to editing window."/>
+          <toolTipText value="Add selected task to end of execution tree."/>
         </properties>
       </component>
       <component id="99d3c" class="javax.swing.JButton" binding="debugExecuteBtn">

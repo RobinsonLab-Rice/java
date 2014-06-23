@@ -52,7 +52,7 @@ public class PlateModel {
 	 * Current location of the arm, in steps.
 	 */
 	private ArmState armState;
-	
+
 	/**
 	 * Total number of wells on the area now.
 	 */
@@ -80,29 +80,29 @@ public class PlateModel {
 	 * @param canvas - canvas to draw the bounding box on
 	 */
 	public void setBorderFrame(Point2D bounds, Component canvas){
-		armState = new ArmState(bounds, dispatcher);
+		armState = new ArmState(bounds, dispatcher, this);
 		border = new BorderFrame(bounds, canvas);
 		view.updateView();
 	}
 	
 	/**
 	 * Adds a plate to the current Iterable of plates.
+     * @param name - name to refer to this well by
 	 * @param numberingOrder - order to number all the wells on the plate
 	 * @param platePos - where to position the (currently) top left corner of the plate
 	 * @param specs - set of specifications for this particular plate, usually from data sheet
 	 */
-	public void addPlate(String numberingOrder, Point2D platePos, PlateSpecifications specs){
-		Plate plate = new Plate(platePos, specs, numberingOrder);
+	public void addPlate(String name, String numberingOrder, Point2D platePos, PlateSpecifications specs){
+		Plate plate = new Plate(name, platePos, specs, numberingOrder);
 		addPlate(plate);
 	}
 	
 	/**
-	 * Adds a new plate to the internal list, adds wells to the plate, and updates the view so this is shown.
+	 * Adds a new plate to the internal list and updates the view so this is shown.
 	 * @param plate - Plate object to add
 	 */
 	public void addPlate(Plate plate){
 		plates.add(plate);
-		totalNumWells = plate.addAllWells(dispatcher, totalNumWells);
 		view.updateView();
 	}
 	
@@ -112,21 +112,16 @@ public class PlateModel {
 	 */
 	public void paintAll(final Graphics g){
 		final double sF = border.getScaleFactor();
+
 		//tell the border to paint itself
 		border.drawBorderFrame(g);
+
 		//tell all plates to paint themselves
 		for (int i = 0; i < plates.size(); i++){
 			plates.get(i).paint(g, sF);
 		}
-		//tell dispatcher to get all wells to paint
-		dispatcher.notifyAll(
-			new IWellCmd(){
-				public void apply(Well context, WellDispatcher disp){
-					context.paint(g, sF);
-				}
-			}
-		);
-		//tell the serial model to draw whatever tasks it needs to
+
+		//tell the task model to draw whatever tasks it needs to
 		taskModel.drawTasks(g, sF);
 	}
 	
@@ -141,29 +136,17 @@ public class PlateModel {
 	}
 	
 	/**
-	 * Returns the well's location given its number.
-	 * @return location of the well, in cm from origin
+	 * Returns the well's location given its identifier.
+	 * @return absolute location of the well, in cm from origin
 	 */
-	public static Point2D getLocationFromNumber(final int wellNumber){
-		//find well with the input number through the dispatcher
-		final ArrayList<Point2D> returnPoint = new ArrayList<Point2D>();
-		//set a default value to return if nothing is found
-		returnPoint.add(new Point2D.Double(-1,-1));
-		dispatcher.notifyAll(
-			new IWellCmd(){
-				public void apply(Well context, WellDispatcher disp){
-					if (context.getNumber() == wellNumber){
-						//if we find a match, overwrite the default value
-						returnPoint.set(0, context.getAbsoluteLocation());
-					}
-				}
-			}
-		);
-		//if no well matches the number, tell the user and return a bad location
-		if (returnPoint.get(0).equals(new Point2D.Double(-1,-1))){
-			System.out.println("Could not find the well with specified number.");
-		}
-		return returnPoint.get(0);
+	public Point2D getLocationFromIdentifier(String plateName, String identifier){
+        //call method on input plate and return its result
+        for (Plate plate : plates){
+            if (plate.getName() == plateName)
+                return plate.getWellLocation(identifier);
+        }
+        System.out.println("Could not find plate with specified name.");
+        return null;
 	}
 
 	/**

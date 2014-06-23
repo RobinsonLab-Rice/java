@@ -31,12 +31,18 @@ public class DrawVisitor extends ATaskVisitor {
 				return null;
 			}
 		});
-		addCmd("Move", new ITaskVisitorCmd(){
+		addCmd("MoveToWell", new ITaskVisitorCmd(){
 			@Override
 			public Object apply(String id, IExecuteTask host, Object... params) {
 				return null;
 			}
 		});
+        addCmd("MoveToLoc", new ITaskVisitorCmd(){
+            @Override
+            public Object apply(String id, IExecuteTask host, Object... params) {
+                return null;
+            }
+        });
 		addCmd("NozzleHeight", new ITaskVisitorCmd(){
 			@Override
 			public Object apply(String id, IExecuteTask host, Object... params) {

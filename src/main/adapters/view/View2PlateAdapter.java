@@ -20,13 +20,14 @@ public class View2PlateAdapter {
 
     /**
      * Tells the model to make a plate with the defined specs at the specified location.
+     * @param name name to refer to this plate by
      * @param numberingOrder String conveying how the wells should be numbered (going across rows, down columns, etc.)
      * @param xPos x coordinate of the plate's top left corner
      * @param yPos y coordinate of the plate's top left corner
      * @param specs specs of the plate, taken from the datasheet
      */
-    public void addPlate(String numberingOrder, String xPos, String yPos, PlateSpecifications specs) {
-        plateModel.addPlate(numberingOrder, new Point2D.Double(Double.parseDouble(xPos), Double.parseDouble(yPos)), specs);
+    public void addPlate(String name, String numberingOrder, String xPos, String yPos, PlateSpecifications specs) {
+        plateModel.addPlate(name, numberingOrder, new Point2D.Double(Double.parseDouble(xPos), Double.parseDouble(yPos)), specs);
     }
 
     /**

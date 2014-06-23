@@ -50,7 +50,7 @@ public class PlateEditingPanel extends JFrame {
         });
 
         /* When save button is pressed, send the info and file name off to the serialization model. */
-        clearAllFieldsButton.addActionListener(new ActionListener() {
+        saveAsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 serializationModel.saveSpecs(fileNameTxt.getText(), packagePlateSpecs());

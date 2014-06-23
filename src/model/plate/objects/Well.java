@@ -14,7 +14,7 @@ import model.plate.WellDispatcher;
  * @author Christian
  *
  */
-public class Well implements Observer{
+public class Well implements Observer {
 	
 	/**
 	 * Location of the well (in cm), defined by its center, relative to the top left corner of its plate.
@@ -32,9 +32,10 @@ public class Well implements Observer{
 	private Plate parentPlate;
 	
 	/**
-	 * Number of this well.
+	 * Identifier for this well, can be a number, word, or alphanumeric marking.
+     * e.g. "1", "b", "A2"
 	 */
-	private int number;
+	private String identifier;
 	
 	/**
 	 * Volume of liquid currently in the well, in uL.
@@ -43,15 +44,16 @@ public class Well implements Observer{
 	
 	/**
 	 * Constructor for well, sets the necessary parameters.
-	 * @param _parentPlate - plate the well is on
-	 * @param _location - where on the plate this particular well is
-	 * @param _diameter - diameter of the well
+	 * @param parentPlate - plate the well is on
+	 * @param location - where on the plate this particular well is
+	 * @param diameter - diameter of the well
+     * @param identifier - string used to identify this well on the plate
 	 */
-	public Well(Plate _parentPlate, Point2D _location, double _diameter, int wellLabel){
-		parentPlate = _parentPlate;
-		relativeLocation = _location;
-		diameter = _diameter;
-		this.number = wellLabel;
+	public Well(Plate parentPlate, Point2D location, double diameter, String identifier){
+		this.parentPlate = parentPlate;
+		this.relativeLocation = location;
+		this.diameter = diameter;
+		this.identifier = identifier;
 	}
 	
 	/**
@@ -77,7 +79,7 @@ public class Well implements Observer{
 		//regardless, draw the well's label in the corner
 		g.setFont(g.getFont().deriveFont((float) (sF*diameter/2)));
 		screenLocY += Math.round(diameter*sF);
-		g.drawString(Integer.toString(number), screenLocX, screenLocY);
+		g.drawString(identifier, screenLocX, screenLocY);
 	}
 	
 	/**
@@ -100,8 +102,8 @@ public class Well implements Observer{
 	public Plate getParentPlate(){
 		return parentPlate;
 	}
-	public int getNumber(){
-		return number;
+	public String getIdentifier(){
+		return identifier;
 	}
 	
 	/**

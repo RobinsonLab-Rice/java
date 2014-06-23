@@ -141,16 +141,6 @@ public abstract class ALeafTask implements IExecuteTask {
     }
 
     /**
-     * Resets the user object of the receiver to <code>object</code>.
-     *
-     * @param object
-     */
-    @Override
-    public void setUserObject(Object object) {
-        //TODO: not sure what this does
-    }
-
-    /**
      * Removes the receiver from its parent.
      */
     @Override

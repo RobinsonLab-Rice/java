@@ -26,13 +26,20 @@ public class DecompileVisitor extends ATaskVisitor{
 				return null;
 			}
 		});
-		addCmd("Move", new ITaskVisitorCmd(){
+		addCmd("MoveToWell", new ITaskVisitorCmd(){
 			@Override
 			public Object apply(String id, IExecuteTask host, Object... params) {
-				((ArrayList<ALeafTask>) params[0]).add((MoveTask) host);
+				((ArrayList<ALeafTask>) params[0]).add((MoveToWellTask) host);
 				return null;
 			}
 		});
+        addCmd("MoveToLoc", new ITaskVisitorCmd(){
+            @Override
+            public Object apply(String id, IExecuteTask host, Object... params) {
+                ((ArrayList<ALeafTask>) params[0]).add((MoveToWellTask) host);
+                return null;
+            }
+        });
 		addCmd("NozzleHeight", new ITaskVisitorCmd(){
 			@Override
 			public Object apply(String id, IExecuteTask host, Object... params) {

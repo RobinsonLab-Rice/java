@@ -1,12 +1,8 @@
 package model.tasks;
 
-import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.sun.org.apache.xpath.internal.operations.Mult;
 import main.adapters.tasks.Task2PlateAdapter;
 import main.adapters.tasks.Task2SerialCommAdapter;
 import main.adapters.tasks.Task2ViewAdapter;
@@ -14,7 +10,6 @@ import model.tasks.basictasks.*;
 import model.tasks.basictasks.ALeafTask;
 
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
 
 /**
  * Model that controls all creation and managing of tasks. Relays to plate model when wells need to be given tasks.
@@ -54,7 +49,7 @@ public class TaskModel {
 	 * Constructor for TaskModel, takes in adapters to allow the view and other models.
 	 */
 	public TaskModel(){
-		taskQueue = new DefaultTreeModel(new MultiTask(new MoveTask(2), new MultiTask(new LowerTask(), new DispenseTask(100)), new MoveTask(2)));
+		taskQueue = new DefaultTreeModel(new MultiTask(new MoveToWellTask("test", "2"), new MultiTask(new LowerTask(), new DispenseTask(100)), new MoveToWellTask("test", "4")));
 		decompiledTasks = new ArrayList<ALeafTask>();
 		decompileVisitor = new DecompileVisitor();
 		drawVisitor = new DrawVisitor();
