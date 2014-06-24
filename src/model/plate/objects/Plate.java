@@ -103,7 +103,7 @@ public class Plate implements Serializable {
         dispatcher.notifyAll(
             new IWellCmd(){
                 public void apply(Well context, WellDispatcher disp){
-                    if (context.getIdentifier() == identifier){
+                    if (context.getIdentifier().equals(identifier)) {
                         //if we find a match, overwrite the default value
                         returnPoint.set(0, context.getAbsoluteLocation());
                     }

@@ -34,11 +34,6 @@ public class PlateModel {
 	private Plate2TaskAdapter taskModel;
 	
 	/**
-	 * Dispatcher to talk to all wells.
-	 */
-	private static WellDispatcher dispatcher;
-	
-	/**
 	 * All the plates that are currently on the screen.
 	 */
 	private ArrayList<Plate> plates;
@@ -52,19 +47,12 @@ public class PlateModel {
 	 * Current location of the arm, in steps.
 	 */
 	private ArmState armState;
-
-	/**
-	 * Total number of wells on the area now.
-	 */
-	private int totalNumWells;
 	
 	/**
 	 * Constructor that links the model to view and other models.
 	 */
 	public PlateModel(){
-		totalNumWells = 1;
-		dispatcher = new WellDispatcher();
-		plates = new ArrayList<Plate>();
+		plates = new ArrayList<>();
 	}
 
     /* On initialization, connects to given adapters. */
@@ -80,7 +68,7 @@ public class PlateModel {
 	 * @param canvas - canvas to draw the bounding box on
 	 */
 	public void setBorderFrame(Point2D bounds, Component canvas){
-		armState = new ArmState(bounds, dispatcher, this);
+		armState = new ArmState(bounds, this);
 		border = new BorderFrame(bounds, canvas);
 		view.updateView();
 	}
@@ -129,60 +117,52 @@ public class PlateModel {
 	 * Clears all plates from the model.
 	 */
 	public void clearAllPlates(){
-		totalNumWells = 1;
 		plates.clear();
-		dispatcher.deleteObservers();
 		view.updateView();
 	}
-	
-	/**
-	 * Returns the well's location given its identifier.
-	 * @return absolute location of the well, in cm from origin
-	 */
-	public Point2D getLocationFromIdentifier(String plateName, String identifier){
-        //call method on input plate and return its result
-        for (Plate plate : plates){
-            if (plate.getName() == plateName)
-                return plate.getWellLocation(identifier);
-        }
-        System.out.println("Could not find plate with specified name.");
-        return null;
-	}
 
 	/**
-	 * @return variable encompassing current arm state
-	 */
-	public ArmState getArmState() {
-		return armState;
-	}
-	
-	/**
-	 * @return dispatcher for all wells
-	 */
-	public WellDispatcher getWellDispatcher(){
-		return dispatcher;
-	}
-
-	/**
-	 * Uses dispatcher to find which well was clicked.
+	 * Find out which well was clicked on.
 	 * @param point - location on screen that was clicked, in pixels
 	 * @return location of well center, in cm
 	 */
 	public Point2D getLocationFromScreen(Point point) {
-		final Point2D clicked = new Point2D.Double(point.x/border.getScaleFactor(), point.y/border.getScaleFactor());
-		final ArrayList<Point2D> returnPoint = new ArrayList<Point2D>();
-		returnPoint.add(null);
-		dispatcher.notifyAll(
-			new IWellCmd(){
-				public void apply(Well context, WellDispatcher disp){
-					if (context.getAbsoluteLocation().distance(clicked) < context.getDiameter()/2){
-						returnPoint.set(0,context.getAbsoluteLocation());
-					}
-				}
-			}
-		);
-		return returnPoint.get(0);
+//		final Point2D clicked = new Point2D.Double(point.x/border.getScaleFactor(), point.y/border.getScaleFactor());
+//		final ArrayList<Point2D> returnPoint = new ArrayList<Point2D>();
+//		returnPoint.add(null);
+//		dispatcher.notifyAll(
+//			new IWellCmd(){
+//				public void apply(Well context, WellDispatcher disp){
+//					if (context.getAbsoluteLocation().distance(clicked) < context.getDiameter()/2){
+//						returnPoint.set(0,context.getAbsoluteLocation());
+//					}
+//				}
+//			}
+//		);
+//		return returnPoint.get(0);
+        return null;
 	}
+
+    /**
+     * Returns the well's location given its identifier.
+     * @return absolute location of the well, in cm from origin
+     */
+    public Point2D getLocationFromIdentifier(String plateName, String identifier){
+        //call method on input plate and return its result
+        for (Plate plate : plates){
+            if (plate.getName().equals(plateName))
+                return plate.getWellLocation(identifier);
+        }
+        System.out.println("Could not find plate with specified name.");
+        return null;
+    }
+
+    /**
+     * @return variable encompassing current arm state
+     */
+    public ArmState getArmState() {
+        return armState;
+    }
 	
 	/**
 	 * @return All the plates that are currently on the screen.
@@ -207,7 +187,6 @@ public class PlateModel {
 	 * Update the position of the internal arm tracker.
 	 * @param x - x coordinate in mm
 	 * @param y - y coordinate in mm
-	 * TODO: change from 0,0 to arm origin
 	 */
 	public void setInternalPosition(double x, double y) {
 		armState.setLocation(x, y);
