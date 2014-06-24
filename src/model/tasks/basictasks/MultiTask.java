@@ -1,11 +1,10 @@
 package model.tasks.basictasks;
 
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import model.plate.objects.ArmState;
-import model.tasks.ITaskVisitor;
+import model.tasks.taskvisitors.ITaskVisitor;
 
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;

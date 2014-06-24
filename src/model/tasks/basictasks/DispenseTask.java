@@ -3,7 +3,7 @@ package model.tasks.basictasks;
 import java.io.OutputStream;
 
 import model.plate.objects.ArmState;
-import model.tasks.ITaskVisitor;
+import model.tasks.taskvisitors.ITaskVisitor;
 
 /**
  * Dispense task, tells the robot to dispense the input amount of liquid.

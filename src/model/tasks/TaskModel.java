@@ -8,6 +8,9 @@ import main.adapters.tasks.Task2SerialCommAdapter;
 import main.adapters.tasks.Task2ViewAdapter;
 import model.tasks.basictasks.*;
 import model.tasks.basictasks.ALeafTask;
+import model.tasks.taskvisitors.DecompileVisitor;
+import model.tasks.taskvisitors.DrawVisitor;
+import model.tasks.taskvisitors.ITaskVisitor;
 
 import javax.swing.tree.DefaultTreeModel;
 
@@ -148,37 +151,19 @@ public class TaskModel {
 	public MultiTask getTasks(){
         return (MultiTask) taskQueue.getRoot();
 	}
-	
-//	/**
-//	 * @param taskQueue - ArrayList of stages (MultiTasks) that contain everything that will be done in experiment
-//	 */
-//	public void setTasks(MultiTask taskQueue){
-//		this.taskQueue.getRoot() = taskQueue;
-//		view.updateView();
-//		view.setTask(taskQueue);
-//	}
-
-//	public void changeExecutionData(Object[] path, String newData) {
-//		taskQueue.traverseOrModify(path, newData);
-//		view.updateView();
-//	}
-//
-//	public void deleteExecutionTask(Object[] path) {
-//		taskQueue.traverseOrDelete(path);
-//		view.updateView();
-//	}
-//
-//	public void insertAfterSelected(Object[] path, IExecuteTask taskToAdd) {
-//		taskQueue.traverseOrInsert(path, taskToAdd);
-//		view.updateView();
-//	}
 
     /**
      * Returns factories for both pre-made tasks and user defined ones.
      * @return
      */
     public Iterable<ITaskFactory> getTaskFactories() {
-        return null;
+        ArrayList<ITaskFactory> factories = new ArrayList<>();
+        factories.add(new PremadeTaskFactory(new MoveToWellTask("replaceMe", "0")));
+        factories.add(new PremadeTaskFactory(new MoveToLocTask(0.0, 0.0)));
+        factories.add(new PremadeTaskFactory(new DispenseTask(100)));
+        factories.add(new PremadeTaskFactory(new NozzleHeightTask(1350.0)));
+
+        return factories;
     }
 
     public DefaultTreeModel getTreeModel() {

@@ -1,7 +1,7 @@
 package model.tasks.basictasks;
 
 import model.plate.objects.ArmState;
-import model.tasks.ITaskVisitor;
+import model.tasks.taskvisitors.ITaskVisitor;
 
 import java.awt.geom.Point2D;
 import java.io.OutputStream;
@@ -23,6 +23,10 @@ public class MoveToLocTask extends ALeafTask {
      * Location to move to (absolute relative to origin).
      */
     private Point2D destination;
+
+    public MoveToLocTask(double x, double y) {
+        destination = new Point2D.Double(x, y);
+    }
 
     /**
      * Executes everything this task contains. If it is a higher level task, this

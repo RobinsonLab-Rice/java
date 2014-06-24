@@ -4,9 +4,8 @@ import java.awt.geom.Point2D;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 
-import model.plate.PlateModel;
 import model.plate.objects.ArmState;
-import model.tasks.ITaskVisitor;
+import model.tasks.taskvisitors.ITaskVisitor;
 
 /**
  * Move task, tells the arm to move to specified well.

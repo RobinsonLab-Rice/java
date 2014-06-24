@@ -3,7 +3,7 @@ package model.tasks.basictasks;
 import java.io.OutputStream;
 
 import model.plate.objects.ArmState;
-import model.tasks.ITaskVisitor;
+import model.tasks.taskvisitors.ITaskVisitor;
 
 /**
  * Lower task, tells the nozzle servo to lower by the specified amount.

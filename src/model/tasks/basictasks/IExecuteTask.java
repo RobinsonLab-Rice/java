@@ -4,11 +4,9 @@ import java.io.OutputStream;
 import java.io.Serializable;
 
 import model.plate.objects.ArmState;
-import model.tasks.ITaskVisitor;
+import model.tasks.taskvisitors.ITaskVisitor;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
 
 /**
  * Defines what task the robot should perform when attached to a Well context object.
