@@ -77,17 +77,16 @@ public class View2SerializationAdapter {
      * @return Iterable of each file name
      */
     public Iterable<String> updateDataList(SaveType type) {
-        return serializationModel.updateDataList(type);
+        return serializationModel.updateDataList(type, false);
     }
 
     /**
-     * Saves incoming task to the file system.
+     * Saves incoming task to the file system. Name is inferred from the task to save.
      *
      * @param task
-     * @param filename
      */
-    public void saveExecutionTask(IExecuteTask task, String filename) {
-        serializationModel.saveTask(task, filename);
+    public void saveExecutionTask(IExecuteTask task) {
+        serializationModel.saveTask(task);
     }
 
     /**

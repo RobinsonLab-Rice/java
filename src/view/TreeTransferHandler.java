@@ -132,6 +132,7 @@ class TreeTransferHandler extends TransferHandler {
                 //make a copy of the node, and set its parent to be correct (or else the hierachy falls apart)
                 IExecuteTask deepCopy = (IExecuteTask) JsonReader.jsonToJava(JsonWriter.objectToJson(nodes[i]));
                 deepCopy.setParent(parent);
+                deepCopy.resetParents();
                 model.insertNodeInto(deepCopy, parent, index++);
             } catch (IOException e) {
                 System.out.println("Could not make a copy of the node we are moving.");

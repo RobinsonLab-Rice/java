@@ -32,6 +32,11 @@ public interface IExecuteTask extends Serializable, MutableTreeNode {
 	   */
 	public Object executeVisitor(ITaskVisitor visitor, Object... params);
 
+    /**
+     * Reset the parents of this tree of tasks, useful for reloading tasks from JSON.
+     */
+    public void resetParents();
+
 //	/**
 //	 * Returns the number of sub-tasks this task has. This will be 0 if the task is a serial task, and if it's
 //	 * an abstract task it will vary.

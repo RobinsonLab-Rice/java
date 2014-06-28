@@ -45,7 +45,7 @@ public class MainPanel extends JFrame{
 
         /* Start the sub-views */
         plateSetupPanel.start(plateModel, serializationModel);
-        taskCreationPanel.start(taskModel);
+        taskCreationPanel.start(taskModel, serializationModel);
 
         /* Do necessary communication with backend models */
         plateModel.setFrame(serializationModel.getSavedBounds(), modelPane);
@@ -90,10 +90,10 @@ public class MainPanel extends JFrame{
     public static class GUIHelper {
 
         /* Update the given combobox with the iterable of strings. */
-        public static void updateCmb(Iterable<String> filenames, JComboBox<String> cmb){
+        public static void updateCmb(Iterable items, JComboBox cmb){
             cmb.removeAllItems();
-    		for (String filename : filenames){
-    			cmb.addItem(filename);
+    		for (Object item : items){
+    			cmb.addItem(item);
     		}
         }
     }

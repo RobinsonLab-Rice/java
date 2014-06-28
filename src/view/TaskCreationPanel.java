@@ -2,6 +2,7 @@ package view;
 
 import com.cedarsoftware.util.io.JsonReader;
 import com.cedarsoftware.util.io.JsonWriter;
+import main.adapters.view.View2SerializationAdapter;
 import main.adapters.view.View2TaskAdapter;
 import model.plate.objects.PlateSpecifications;
 import model.tasks.ITaskFactory;
@@ -10,8 +11,7 @@ import model.tasks.basictasks.*;
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.io.IOException;
 
 /**
@@ -26,6 +26,7 @@ public class TaskCreationPanel extends JPanel {
     private TaskTree taskTree;
 
     private View2TaskAdapter taskModel;
+    private View2SerializationAdapter serializationModel;
 
     /* Constructor that initializes special component needs. */
     public TaskCreationPanel() {
@@ -49,14 +50,31 @@ public class TaskCreationPanel extends JPanel {
                 taskModel.debugExecuteAll();
             }
         });
-
-        taskTree.addMouseListener(new TreeRightClickListener(taskTree, taskModel));
     }
 
     /* Perform necessary startup procedures (populating dropboxes, etc.) */
-    public void start(View2TaskAdapter taskModel){
+    public void start(View2TaskAdapter taskModel, View2SerializationAdapter serializationModel){
         this.taskModel = taskModel;
-        taskTree.setModel(taskModel.getTreeModel());
+        this.serializationModel = serializationModel;
+
+        taskTree.setModel(this.taskModel.getTreeModel());
+
+        /* Set the class to be used for right clicking on the jtree. */
+        taskTree.addMouseListener(new TreeRightClickListener(savedTasksCmb, taskTree, taskModel, serializationModel));
+
+        taskTree.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getExtendedKeyCode() == KeyEvent.VK_BACK_SPACE) {
+                    IExecuteTask toDelete = (IExecuteTask) taskTree.getSelectionPath().getLastPathComponent();
+                    ((DefaultTreeModel)taskTree.getModel()).removeNodeFromParent(toDelete);
+                }
+            }
+        });
+        taskTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK), "copy");
+        taskTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK), "paste");
+        taskTree.getActionMap().put("copy", TreeTransferHandler.getCopyAction());
+        taskTree.getActionMap().put("paste", TreeTransferHandler.getPasteAction());
 
         //taskTree.model.setRoot(taskModel.getTreeModel());
         for (ITaskFactory factory : taskModel.getTaskFactories()) {

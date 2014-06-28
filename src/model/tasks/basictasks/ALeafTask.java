@@ -18,7 +18,7 @@ public abstract class ALeafTask implements IExecuteTask {
 	 */
 	private static final long serialVersionUID = -8336180786535595266L;
 
-    private IExecuteTask parent;
+    private transient IExecuteTask parent;
 
 	/**
 	 * Writes string to the serial output buffer.
@@ -156,6 +156,13 @@ public abstract class ALeafTask implements IExecuteTask {
     @Override
     public void setParent(MutableTreeNode newParent) {
         this.parent = (IExecuteTask) newParent;
+    }
+
+    /**
+     * Leaf tasks don't have any children, nothing to do.
+     */
+    public void resetParents() {
+        return;
     }
 	
 }

@@ -20,12 +20,13 @@ public class MultiTask implements IExecuteTask {
 	 * ArrayList of tasks this MultiTask contains.
 	 */
 	private ArrayList<IExecuteTask> taskList = new ArrayList<IExecuteTask>();
-	
-	public MultiTask() {}
 
-    private MutableTreeNode parent;
+    private transient MutableTreeNode parent;
 
     private String name = "MultiTask";
+
+    public MultiTask() {
+    }
 
 	/**
 	 * Creates a MultiTask out of some variable number of other tasks.
@@ -209,5 +210,15 @@ public class MultiTask implements IExecuteTask {
     @Override
     public void setParent(MutableTreeNode newParent) {
         this.parent = newParent;
+    }
+
+    /**
+     * Whenever this task is loaded from JSON, go down the tree and set parents appropriately.
+     */
+    public void resetParents() {
+        for (IExecuteTask child : taskList) {
+            child.setParent(this);
+            child.resetParents();
+        }
     }
 }

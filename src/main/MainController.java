@@ -14,6 +14,7 @@ import main.adapters.serialization.Serialization2PlateAdapter;
 import main.adapters.serialization.Serialization2TaskAdapter;
 import main.adapters.tasks.Task2PlateAdapter;
 import main.adapters.tasks.Task2SerialCommAdapter;
+import main.adapters.tasks.Task2SerializationAdapter;
 import main.adapters.tasks.Task2ViewAdapter;
 import main.adapters.view.View2PlateAdapter;
 import main.adapters.view.View2SerialCommAdapter;
@@ -70,7 +71,7 @@ public class MainController {
                     new Serial2PlateAdapter(plateModel));
 		serializationModel.start(new Serialization2TaskAdapter(taskModel), new Serialization2PlateAdapter(plateModel));
         taskModel.start(new Task2ViewAdapter(view), new Task2PlateAdapter(plateModel),
-                    new Task2SerialCommAdapter(serialModel));
+                    new Task2SerialCommAdapter(serialModel), new Task2SerializationAdapter(serializationModel));
         view.start( new View2PlateAdapter(plateModel), new View2SerializationAdapter(serializationModel),
                 new View2SerialCommAdapter(serialModel), new View2TaskAdapter(taskModel));
 	}

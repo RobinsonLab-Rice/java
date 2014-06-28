@@ -58,7 +58,7 @@ public class SerializationModel {
 	 * piece of saved data in that folder.
 	 * @return Iterable of previously saved data
 	 */
-	public Iterable<String> updateDataList(SaveType type){
+	public Iterable<String> updateDataList(SaveType type, boolean returnFullName){
 		//define our filter
 		FilenameFilter filter = new FilenameFilter(){
 			@Override
@@ -95,7 +95,8 @@ public class SerializationModel {
 		
 		//add every file in our list to the returned ArrayList
 		for (String file : list) {
-			returnList.add(FilenameUtils.removeExtension(file));
+            if (returnFullName) returnList.add(dir + "/" + file);
+            else returnList.add(FilenameUtils.removeExtension(file));
 		}
 		
 		return returnList;
@@ -163,7 +164,9 @@ public class SerializationModel {
      * @return
      */
 	public IExecuteTask loadTask(String filename) {
-        return (IExecuteTask) loadData("data/tasks/" + filename + ext);
+        IExecuteTask task = (IExecuteTask) loadData("data/tasks/" + filename + ext);
+        task.resetParents();
+        return task;
 	}
 	
 	/**
@@ -176,12 +179,13 @@ public class SerializationModel {
 	}
 	
 	/**
-	 * Uses JSON to save the IExecuteTask to data/tasks/filename
+	 * Uses JSON to save the IExecuteTask to data/tasks/name. Only multitasks can be saved, so the
+     * name to save the task as is just taken to be the name of the multitask.
+     *
 	 * @param task - incoming task to persist
-	 * @param filename - name of file to save task to
 	 */
-	public void saveTask(IExecuteTask task, String filename) {
-		String qualifiedName = "data/tasks/" + filename + ext;
+	public void saveTask(IExecuteTask task) {
+		String qualifiedName = "data/tasks/" + task.toString() + ext;
 		saveItem(qualifiedName, task);
 	}
 	
@@ -213,6 +217,20 @@ public class SerializationModel {
 			ex.printStackTrace();
 		}
 	}
+
+    /**
+     * Gets the saved data (plates, tasks, workflow, etc) of type saveType.
+     * @param saveType enum of different possible types of data
+     * @return iterable of the saved data
+     */
+    public Iterable<Object> getSavedData(SaveType saveType) {
+        ArrayList<Object> savedData = new ArrayList<>();
+        //for each file name found in updateDataList, call loadData on that and get the resulting saved object
+        for (String location : updateDataList(saveType, true)) {
+            savedData.add(loadData(location));
+        }
+        return savedData;
+    }
 
     /* Returns saved bounds that were loaded on program startup. */
     public Point2D getSavedBounds() {

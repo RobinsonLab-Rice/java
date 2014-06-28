@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import main.adapters.tasks.Task2PlateAdapter;
 import main.adapters.tasks.Task2SerialCommAdapter;
+import main.adapters.tasks.Task2SerializationAdapter;
 import main.adapters.tasks.Task2ViewAdapter;
 import model.tasks.basictasks.*;
 import model.tasks.basictasks.ALeafTask;
@@ -35,6 +36,11 @@ public class TaskModel {
 	 * Adapter from the task model to serial model.
 	 */
 	private Task2SerialCommAdapter serialCommModel;
+
+    /**
+     * Adapter from task model to serialization model.
+     */
+    private Task2SerializationAdapter serializationModel;
 	
 	/**
      * TreeModel that contains a multitask (the root of the tree). This multitask contains everything that will be
@@ -59,10 +65,12 @@ public class TaskModel {
 	}
 
     /* On initialization, connects to given adapters. */
-    public void start(Task2ViewAdapter view, Task2PlateAdapter plateModel, Task2SerialCommAdapter serialModel) {
+    public void start(Task2ViewAdapter view, Task2PlateAdapter plateModel,
+                      Task2SerialCommAdapter serialModel, Task2SerializationAdapter serializationModel) {
         this.view = view;
         this.plateModel = plateModel;
         this.serialCommModel = serialModel;
+        this.serializationModel = serializationModel;
     }
 	
 //	/**
@@ -158,10 +166,17 @@ public class TaskModel {
      */
     public Iterable<ITaskFactory> getTaskFactories() {
         ArrayList<ITaskFactory> factories = new ArrayList<>();
-        factories.add(new PremadeTaskFactory(new MoveToWellTask("replaceMe", "0")));
-        factories.add(new PremadeTaskFactory(new MoveToLocTask(0.0, 0.0)));
-        factories.add(new PremadeTaskFactory(new DispenseTask(100)));
-        factories.add(new PremadeTaskFactory(new NozzleHeightTask(1350.0)));
+
+        //add in premade tasks
+        factories.add(new TaskFactory(new MoveToWellTask("replaceMe", "0")));
+        factories.add(new TaskFactory(new MoveToLocTask(0.0, 0.0)));
+        factories.add(new TaskFactory(new DispenseTask(100)));
+        factories.add(new TaskFactory(new NozzleHeightTask(1350.0)));
+
+        //add in user made tasks
+        for (IExecuteTask task : serializationModel.getSavedTasks()){
+            factories.add(new TaskFactory(task));
+        }
 
         return factories;
     }
