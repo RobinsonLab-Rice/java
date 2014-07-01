@@ -62,6 +62,7 @@ public class TaskCreationPanel extends JPanel {
         /* Set the class to be used for right clicking on the jtree. */
         taskTree.addMouseListener(new TreeRightClickListener(savedTasksCmb, taskTree, taskModel, serializationModel));
 
+        /* Add keyboard shortcuts to the JTree. */
         taskTree.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -71,12 +72,13 @@ public class TaskCreationPanel extends JPanel {
                 }
             }
         });
-        taskTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK), "copy");
-        taskTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK), "paste");
-        taskTree.getActionMap().put("copy", TreeTransferHandler.getCopyAction());
-        taskTree.getActionMap().put("paste", TreeTransferHandler.getPasteAction());
 
-        //taskTree.model.setRoot(taskModel.getTreeModel());
+        //TODO: fix this and get keyboard shortcuts for copy and paste, if desired
+//        taskTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK), "copy");
+//        taskTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK), "paste");
+//        taskTree.getActionMap().put("copy", TransferHandler.getCopyAction());
+//        taskTree.getActionMap().put("paste", TransferHandler.getPasteAction());
+
         for (ITaskFactory factory : taskModel.getTaskFactories()) {
             savedTasksCmb.addItem(factory);
         }

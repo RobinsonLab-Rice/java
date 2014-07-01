@@ -17,6 +17,11 @@ public class NullTask extends ALeafTask {
 	 */
 	private static final long serialVersionUID = 5306551209172287141L;
 
+    /**
+     * Null task, shouldn't execute anything.
+     * @param armState - current position of the arm, when this task is executed
+     * @param outputStream - ouput stream tasks will execute through
+     */
 	public void execute(ArmState armState, OutputStream outputStream) {
 		
 	}
@@ -31,15 +36,6 @@ public class NullTask extends ALeafTask {
 	public Object executeVisitor(ITaskVisitor visitor, Object... params) {
 		return visitor.caseAt("Null", this, params);
 	}
-
-//	/**
-//	 * Null task, do nothing.
-//	 */
-//	@Override
-//	public void traverseOrModify(Object[] taskPath, String toChange) {
-//		// TODO Auto-generated method stub
-//
-//	}
 
     /**
      * When somebody changes text on JTree, check if the data is correct and, if it is, set this task's parameters

@@ -16,11 +16,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Custom transfer handler for the IExecuteTask JTree in TaskCreationPanel.
+ */
 class TreeTransferHandler extends TransferHandler {
     DataFlavor nodesFlavor;
     DataFlavor[] flavors = new DataFlavor[1];
     MutableTreeNode[] nodesToRemove;
 
+    /**
+     * Define that this transfer handler is made for nodes, specifying the appropriate data flavor for that.
+     */
     public TreeTransferHandler() {
         try {
             String mimeType = DataFlavor.javaJVMLocalObjectMimeType +
@@ -34,6 +40,11 @@ class TreeTransferHandler extends TransferHandler {
         }
     }
 
+    /**
+     * Decides whether or not we support the type of import in support.
+     * @param support destination and type of movement requested
+     * @return boolean for whether or not this can import input support
+     */
     public boolean canImport(TransferSupport support) {
         if(!support.isDrop()) {
             return false;
@@ -56,6 +67,9 @@ class TreeTransferHandler extends TransferHandler {
         return true;
     }
 
+    /**
+     * Create a transferable of all selected nodes when drag is initiated, creating a deep copy of them.
+     */
     protected Transferable createTransferable(JComponent c) {
         JTree tree = (JTree)c;
         TreePath[] paths = tree.getSelectionPaths();
@@ -80,6 +94,11 @@ class TreeTransferHandler extends TransferHandler {
         return null;
     }
 
+    /**
+     * Called when data has been successfully moved. If the data transfer was a copy action, delete
+     * the original item.
+     */
+    @Override
     protected void exportDone(JComponent source, Transferable data, int action) {
         if((action & MOVE) == MOVE) {
             JTree tree = (JTree)source;
@@ -91,10 +110,18 @@ class TreeTransferHandler extends TransferHandler {
         }
     }
 
+    /**
+     * @return COPY_OR_MOVE, this jtree can do both
+     */
     public int getSourceActions(JComponent c) {
         return COPY_OR_MOVE;
     }
 
+    /**
+     * Called when a drag is initiated, packages up data to later drop it.
+     * @param support checked at the beginning of transfer, return false if it cannot be imported
+     * @return boolean for whether or not the transfer was successful
+     */
     public boolean importData(TransferSupport support) {
         if(!canImport(support)) {
             return false;
@@ -143,10 +170,16 @@ class TreeTransferHandler extends TransferHandler {
         return true;
     }
 
+    /**
+     * @return string of class name
+     */
     public String toString() {
         return getClass().getName();
     }
 
+    /**
+     * Helper class making a transferable out of MutableTreeNodes (which tasks implement).
+     */
     public class NodesTransferable implements Transferable {
         MutableTreeNode[] nodes;
 

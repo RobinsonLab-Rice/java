@@ -172,6 +172,7 @@ public class TaskModel {
         factories.add(new TaskFactory(new MoveToLocTask(0.0, 0.0)));
         factories.add(new TaskFactory(new DispenseTask(100)));
         factories.add(new TaskFactory(new NozzleHeightTask(1350.0)));
+        factories.add(new TaskFactory(new MultiTask()));
 
         //add in user made tasks
         for (IExecuteTask task : serializationModel.getSavedTasks()){

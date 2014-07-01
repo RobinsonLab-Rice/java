@@ -4,6 +4,7 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Enumeration;
 
 /**
@@ -11,18 +12,18 @@ import java.util.Enumeration;
  * the base functionality for execute for all other tasks to be nothing.
  * @author Christian
  */
-public abstract class ALeafTask implements IExecuteTask {
+public abstract class ALeafTask extends AExecuteTask {
 	
 	/**
 	 * Auto generated serial ID.
 	 */
 	private static final long serialVersionUID = -8336180786535595266L;
 
-    private transient IExecuteTask parent;
-
-	/**
-	 * Writes string to the serial output buffer.
-	 */
+    /**
+     * Writes string to the serial output buffer. Handles exceptions and cases where no stream is selected.
+     * @param string String to write to the buffer
+     * @param stream Output stream to write to
+     */
 	protected void writeString(String string, OutputStream stream){
 		if (stream == null){
 			System.out.println("No stream selected, but would have sent: " + string);
@@ -38,74 +39,15 @@ public abstract class ALeafTask implements IExecuteTask {
 			}
 		}
 	}
-	
-	/**
-	 * Serial tasks, by definition, don't have any children.
-	 */
-	public int getChildCount() {
-		return 0;
-	}
 
     /**
-     * Returns the parent <code>TreeNode</code> of the receiver.
+     * Leaf tasks don't have any children, nothing to do.
      */
-    @Override
-    public TreeNode getParent() {
-        return parent;
+    public void resetParents() {
+        return;
     }
 
-    /**
-     * Returns the index of <code>node</code> in the receivers children.
-     * If the receiver does not contain <code>node</code>, -1 will be
-     * returned.
-     *
-     * @param node
-     */
-    @Override
-    public int getIndex(TreeNode node) {
-        return -1;
-    }
-
-    /**
-     * Returns true if the receiver allows children.
-     */
-    @Override
-    public boolean getAllowsChildren() {
-        return false;
-    }
-
-    /**
-     * Returns true if the receiver is a leaf.
-     */
-    @Override
-    public boolean isLeaf() {
-        return true;
-    }
-
-    /**
-     * Returns the children of the receiver as an <code>Enumeration</code>.
-     */
-    @Override
-    public Enumeration children() {
-        return null;
-    }
-
-    /**
-     * Returns the child <code>TreeNode</code> at index
-     * <code>childIndex</code>.
-     *
-     * @param childIndex
-     */
-    @Override
-    public TreeNode getChildAt(int childIndex) {
-        return null;
-    }
-
-    public void setParent(IExecuteTask parent) {
-        this.parent = parent;
-    }
-
-    /* -----METHODS INHERITED FROM MUTABLETREENODE----- */
+    /* ---METHODS INHERITED FROM TREENODE--- */
 
     /**
      * Adds <code>child</code> to the receiver at <code>index</code>.
@@ -140,29 +82,62 @@ public abstract class ALeafTask implements IExecuteTask {
         //cannot remove from a leaf
     }
 
+    /* -----METHODS INHERITED FROM MUTABLETREENODE----- */
+
     /**
-     * Removes the receiver from its parent.
+     * Returns the children of the receiver as an <code>Enumeration</code>.
      */
     @Override
-    public void removeFromParent() {
-        parent.remove(this);
+    public Enumeration children() {
+        return Collections.emptyEnumeration();
     }
 
     /**
-     * Sets the parent of the receiver to <code>newParent</code>.
+     * @return false: leaf tasks, by definition, do not allow children.
+     */
+    @Override
+    public boolean getAllowsChildren() {
+        return false;
+    }
+
+    /**
+     * Returns a NullTask, since leaf tasks do not have children.
      *
-     * @param newParent
+     * @param childIndex
      */
     @Override
-    public void setParent(MutableTreeNode newParent) {
-        this.parent = (IExecuteTask) newParent;
-    }
-
-    /**
-     * Leaf tasks don't have any children, nothing to do.
-     */
-    public void resetParents() {
-        return;
+    public TreeNode getChildAt(int childIndex) {
+        return new NullTask();
     }
 	
+	/**
+	 * @return 0: leaf tasks, by definition, don't have any children.
+	 */
+	public int getChildCount() {
+		return 0;
+	}
+
+    /**
+     * @return -1: leaf tasks do not have children
+     */
+    @Override
+    public int getIndex(TreeNode node) {
+        return -1;
+    }
+
+    /**
+     * Returns the parent <code>TreeNode</code> of the receiver.
+     */
+    @Override
+    public TreeNode getParent() {
+        return parent;
+    }
+
+    /**
+     * Returns true if the receiver is a leaf.
+     */
+    @Override
+    public boolean isLeaf() {
+        return true;
+    }
 }

@@ -1,6 +1,8 @@
 package model.tasks.taskvisitors;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 
 import model.tasks.basictasks.*;
 import model.tasks.basictasks.ALeafTask;
@@ -12,7 +14,7 @@ public class DecompileVisitor extends ATaskVisitor {
 			@Override
 			public Object apply(String id, IExecuteTask host, Object... params) {
 				MultiTask multiHost = (MultiTask) host;
-				ArrayList<IExecuteTask> subtasks = multiHost.getSubtasks();
+				ArrayList<IExecuteTask> subtasks = Collections.list(multiHost.children());
 				for (IExecuteTask task : subtasks){
 					task.executeVisitor(DecompileVisitor.this, params[0]);
 				}

@@ -37,16 +37,4 @@ public interface IExecuteTask extends Serializable, MutableTreeNode {
      */
     public void resetParents();
 
-//	/**
-//	 * Returns the number of sub-tasks this task has. This will be 0 if the task is a serial task, and if it's
-//	 * an abstract task it will vary.
-//	 * @return number of children tasks
-//	 */
-//	public int getChildCount();
-
-//	public void traverseOrModify(Object[] taskPath, String toChange);
-//
-//	public void traverseOrDelete(Object[] path);
-//
-//	public void traverseOrInsert(Object[] path, IExecuteTask taskToAdd);
 }

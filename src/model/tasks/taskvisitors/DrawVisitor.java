@@ -1,6 +1,7 @@
 package model.tasks.taskvisitors;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import model.tasks.basictasks.IExecuteTask;
 import model.tasks.basictasks.MultiTask;
@@ -17,7 +18,7 @@ public class DrawVisitor extends ATaskVisitor {
 			@Override
 			public Object apply(String id, IExecuteTask host, Object... params) {
 				MultiTask multiHost = (MultiTask) host;
-				ArrayList<IExecuteTask> subtasks = multiHost.getSubtasks();
+				ArrayList<IExecuteTask> subtasks = Collections.list(multiHost.children());
 				for (IExecuteTask task : subtasks){
 					task.executeVisitor(DrawVisitor.this, params);
 				}

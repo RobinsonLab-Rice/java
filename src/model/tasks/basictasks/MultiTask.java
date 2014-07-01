@@ -9,47 +9,41 @@ import model.tasks.taskvisitors.ITaskVisitor;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 
-public class MultiTask implements IExecuteTask {
+/**
+ * Task made up of other tasks, useful to compartmentalize your experiment or save complex tasks for later use.
+ */
+public class MultiTask extends AExecuteTask {
 
-	/**
-	 * Auto generated serial ID to be abe to save the task.
-	 */
+	/* Auto generated serial ID to be abe to save the task. */
 	private static final long serialVersionUID = 2695551386880973088L;
 	
-	/**
-	 * ArrayList of tasks this MultiTask contains.
-	 */
+	/* ArrayList of tasks this MultiTask contains. */
 	private ArrayList<IExecuteTask> taskList = new ArrayList<IExecuteTask>();
 
-    private transient MutableTreeNode parent;
-
+    /* Name of this task, also shows what the text file it is saved to will be. */
     private String name = "MultiTask";
 
+    /* Empty constructor, does nothing. */
     public MultiTask() {
     }
 
-	/**
-	 * Creates a MultiTask out of some variable number of other tasks.
-	 */
+	/* Creates a MultiTask out of some variable number of other tasks. */
 	public MultiTask(IExecuteTask... taskArray){
-		taskList = new ArrayList<IExecuteTask>();
 		for (IExecuteTask task: taskArray){
             task.setParent(this);
 			taskList.add(task);
 		}
 	}
 
+    /**
+     * Calls all subtasks to execute themselves.
+     * @param armState - current position of the arm, when this task is executed
+     * @param outputStream - output stream tasks will execute through
+     */
 	public void execute(ArmState armState, OutputStream outputStream) {
 		for (IExecuteTask task : taskList){
 			task.execute(armState, outputStream);
 		}
-	}
-	
-	/**
-	 * Adds the input task to the end of this MultiTask.
-	 */
-	public void addTask(IExecuteTask taskToAdd){
-		this.taskList.add(taskToAdd);
 	}
 	
 	/**
@@ -62,13 +56,41 @@ public class MultiTask implements IExecuteTask {
 	public Object executeVisitor(ITaskVisitor visitor, Object... params) {
 		return visitor.caseAt("Multi", this, params);
 	}
-	
-	/**
-	 * @return subtasks of this multi task
-	 */
-	public ArrayList<IExecuteTask> getSubtasks(){
-		return taskList;
-	}
+
+    /**
+     * Whenever this task is loaded from JSON, go down the tree and set parents appropriately.
+     */
+    public void resetParents() {
+        for (IExecuteTask child : taskList) {
+            child.setParent(this);
+            child.resetParents();
+        }
+    }
+
+    /**
+     * String representation of a MultiTask, useful for drawing to screen.
+     */
+    public String toString() {
+        return name;
+    }
+
+    /* ---METHODS INHERITED FROM TREENODE--- */
+
+    /**
+     * Returns the children of the receiver as an <code>Enumeration</code>.
+     */
+    @Override
+    public Enumeration children() {
+        return Collections.enumeration(taskList);
+    }
+
+    /**
+     * Returns true if the receiver allows children.
+     */
+    @Override
+    public boolean getAllowsChildren() {
+        return true;
+    }
 
     /**
      * @param childIndex index of the IExecuteTask to return
@@ -85,19 +107,11 @@ public class MultiTask implements IExecuteTask {
     }
 
     /**
-	 * Returns number of tasks this MultiTask has.
+	 * @return number of tasks this MultiTask has.
 	 */
 	public int getChildCount() {
 		return taskList.size();
 	}
-
-    /**
-     * Returns the parent <code>TreeNode</code> of the receiver.
-     */
-    @Override
-    public TreeNode getParent() {
-        return parent;
-    }
 
     /**
      * Returns the index of <code>node</code> in the receivers children.
@@ -112,11 +126,11 @@ public class MultiTask implements IExecuteTask {
     }
 
     /**
-     * Returns true if the receiver allows children.
+     * Returns the parent <code>TreeNode</code> of the receiver.
      */
     @Override
-    public boolean getAllowsChildren() {
-        return true;
+    public TreeNode getParent() {
+        return parent;
     }
 
     /**
@@ -127,29 +141,7 @@ public class MultiTask implements IExecuteTask {
         return false;
     }
 
-    /**
-     * Returns the children of the receiver as an <code>Enumeration</code>.
-     */
-    @Override
-    public Enumeration children() {
-        return Collections.enumeration(taskList);
-    }
-
-    /**
-	 * Get the subtask at the specified index.
-	 */
-	public IExecuteTask getChild(int index) {
-		return taskList.get(index);
-	}
-	
-	/**
-	 * String representation of a MultiTask, useful for drawing to screen.
-	 */
-	public String toString() {
-		return name;
-	}
-
-    /*-----METHODS INHERITED FROM MUTABLETREENODE-----*/
+    /* ---METHODS INHERITED FROM MUTABLETREENODE--- */
 
     /**
      * Adds <code>child</code> to the receiver at <code>index</code>.
@@ -166,59 +158,37 @@ public class MultiTask implements IExecuteTask {
     /**
      * Removes the child at <code>index</code> from the receiver.
      *
-     * @param index
+     * @param index position of element to remove from this multitask
      */
     @Override
     public void remove(int index) {
-        taskList.remove(index);
+        if (index > -1 && index < taskList.size())
+            taskList.remove(index);
+        else {
+            System.out.println("Cannot remove task with index " + index + "from MultiTask " + name);
+        }
     }
 
     /**
      * Removes <code>node</code> from the receiver. <code>setParent</code>
      * will be messaged on <code>node</code>.
      *
-     * @param node
+     * @param node node to remove from this multitask
      */
     @Override
     public void remove(MutableTreeNode node) {
-        taskList.remove(node);
+        if (taskList.contains(node))
+            taskList.remove(node);
+        else System.out.println("Cannot remove task " + node + "from MultiTask " + name);
     }
 
     /**
-     * Whenever somebody changes visualized name, it changes the saved name in the model.
+     * Whenever somebody changes visualized multitask name, it changes the saved name in the model.
      *
      * @param object - new name of this multitask
      */
     @Override
     public void setUserObject(Object object) {
         this.name = (String) object;
-    }
-
-    /**
-     * Removes the receiver from its parent.
-     */
-    @Override
-    public void removeFromParent() {
-        parent.remove(this);
-    }
-
-    /**
-     * Sets the parent of the receiver to <code>newParent</code>.
-     *
-     * @param newParent
-     */
-    @Override
-    public void setParent(MutableTreeNode newParent) {
-        this.parent = newParent;
-    }
-
-    /**
-     * Whenever this task is loaded from JSON, go down the tree and set parents appropriately.
-     */
-    public void resetParents() {
-        for (IExecuteTask child : taskList) {
-            child.setParent(this);
-            child.resetParents();
-        }
     }
 }
