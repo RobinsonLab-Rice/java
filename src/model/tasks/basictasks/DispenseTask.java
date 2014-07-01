@@ -48,7 +48,7 @@ public class DispenseTask extends ALeafTask {
 	 * Calls the "Dispense" case of the given algo.
 	 * @param algo The IPhraseVisitor algo to use.
 	 * @param params vararg list of input parameters
-	 * @return the result of running the Chord case of the visitor.
+	 * @return the result of running the visitor
 	 */
 	@Override
 	public Object executeVisitor(ITaskVisitor algo, Object... params) {
