@@ -36,12 +36,12 @@ import javax.swing.*;
  */
 public class MainController {
 
-	private ExternalCommModel externalCommModel;
-	private PlateModel plateModel;
-	private SerialModel serialModel;
-	private TaskModel taskModel;
-	private SerializationModel serializationModel;
-    private MainPanel view;
+	public ExternalCommModel externalCommModel;
+	public PlateModel plateModel;
+    public SerialModel serialModel;
+    public TaskModel taskModel;
+    public SerializationModel serializationModel;
+    public MainPanel view;
 
 	
 	/* Makes controller that initializes models and the view, using adapters to link them together. */

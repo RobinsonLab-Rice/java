@@ -165,7 +165,7 @@ public class TaskModel {
      * @return
      */
     public Iterable<ITaskFactory> getTaskFactories() {
-        ArrayList<ITaskFactory> factories = new ArrayList<>();
+        ArrayList<ITaskFactory> factories = new ArrayList<ITaskFactory>();
 
         //add in premade tasks
         factories.add(new TaskFactory(new MoveToWellTask("replaceMe", "0")));
@@ -182,6 +182,9 @@ public class TaskModel {
         return factories;
     }
 
+    /**
+     * @return TreeModel that encompasses our current task heirarchy
+     */
     public DefaultTreeModel getTreeModel() {
         return this.taskQueue;
     }

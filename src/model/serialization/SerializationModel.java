@@ -224,7 +224,7 @@ public class SerializationModel {
      * @return iterable of the saved data
      */
     public Iterable<Object> getSavedData(SaveType saveType) {
-        ArrayList<Object> savedData = new ArrayList<>();
+        ArrayList<Object> savedData = new ArrayList<Object>();
         //for each file name found in updateDataList, call loadData on that and get the resulting saved object
         for (String location : updateDataList(saveType, true)) {
             savedData.add(loadData(location));

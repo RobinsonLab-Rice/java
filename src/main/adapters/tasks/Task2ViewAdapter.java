@@ -18,9 +18,5 @@ public class Task2ViewAdapter {
     public void updateView(){
         view.update();
     }
-
-	public void setTask(MultiTask taskQueue){
-        view.setTask(taskQueue);
-    }
 	
 }

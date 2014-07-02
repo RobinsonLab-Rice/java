@@ -37,13 +37,4 @@ public class Task2PlateAdapter {
         return plateModel.getArmState();
     }
 
-    /**
-     * Get location of well when given its location in screen pixels.
-     * @param point - location of the well in pixels
-     * @return location of the well in real world coordinates (cm)
-     */
-	public Point2D getLocationFromScreen(Point point){
-        return plateModel.getLocationFromScreen(point);
-    }
-
 }

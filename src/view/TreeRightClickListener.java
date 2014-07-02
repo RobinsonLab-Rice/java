@@ -74,7 +74,11 @@ public class TreeRightClickListener extends MouseAdapter {
                 /* Delete selected item from backend model (and tree). */
                 delete.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        ((DefaultTreeModel)taskTree.getModel()).removeNodeFromParent((IExecuteTask) selPath.getLastPathComponent());
+                    IExecuteTask toDelete = (IExecuteTask) taskTree.getSelectionPath().getLastPathComponent();
+                    if (toDelete.getParent() == null)   //no parent means it is the root
+                        ((DefaultTreeModel) taskTree.getModel()).setRoot(new MultiTask());
+                    else                                //for all other nodes, remove them from parent
+                        ((DefaultTreeModel) taskTree.getModel()).removeNodeFromParent(toDelete);
                     }
                 });
 

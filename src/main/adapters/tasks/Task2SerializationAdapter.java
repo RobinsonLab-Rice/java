@@ -19,7 +19,7 @@ public class Task2SerializationAdapter {
     }
 
     public Iterable<IExecuteTask> getSavedTasks() {
-        ArrayList<IExecuteTask> taskArrayList = new ArrayList<>();
+        ArrayList<IExecuteTask> taskArrayList = new ArrayList<IExecuteTask>();
         for (Object task : serializationModel.getSavedData(SaveType.TASK)){
             taskArrayList.add((IExecuteTask) task);
         }

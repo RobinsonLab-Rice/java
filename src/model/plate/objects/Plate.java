@@ -43,7 +43,7 @@ public class Plate implements Serializable {
     /**
      * Dispatcher used to talk to individual wells, should not be serialized to JSON.
      */
-    private transient WellDispatcher dispatcher;
+    public transient WellDispatcher dispatcher;
 	
 	/**
 	 * Easy constructor that sets the proper parameters.
@@ -137,38 +137,36 @@ public class Plate implements Serializable {
 	 * Creates all wells on this plate and adds them to the plate's dispatcher.
 	 */
 	private void addAllWells(WellDispatcher disp, String orderingType){
-		switch (orderingType){
-            case "ALPHANUMERIC": {
-                for (int i = 0; i < plateSpecs.getNumRows(); i++){
-                    for (int j = 0; j < plateSpecs.getNumCols(); j++){
-                        char rowLetter = (char) (i + 65); //label rows, starting at A
-                        String colNumber = Integer.toString(j + 1);
-                        addWell(disp, j, i, rowLetter + colNumber);
-                    }
+        int wellIndex = 1;
+        if (orderingType == "ALPHANUMERIC") {
+            for (int i = 0; i < plateSpecs.getNumRows(); i++){
+                for (int j = 0; j < plateSpecs.getNumCols(); j++){
+                    char rowLetter = (char) (i + 65); //label rows, starting at A
+                    String colNumber = Integer.toString(j + 1);
+                    addWell(disp, j, i, rowLetter + colNumber, wellIndex);
+                    wellIndex++;
                 }
             }
-			case "ROW": {
-                int wellIndex = 1;
-				for (int i = 0; i < plateSpecs.getNumRows(); i++){
-					for (int j = 0; j < plateSpecs.getNumCols(); j++){
-						addWell(disp, j, i, Integer.toString(wellIndex));
-						wellIndex++;
-					}
-				}
-				break;
-			}
-			case "COLUMN": {
-                int wellIndex = 1;
-				for (int i = 0; i < plateSpecs.getNumCols(); i++){
-					for (int j = 0; j < plateSpecs.getNumRows(); j++){
-						addWell(disp, i, j, Integer.toString(wellIndex));
-						wellIndex++;
-					}
-				}
-				break;
-			}
-			default: System.out.println("Did not recognize numbering order, did not add wells.");
-		}
+        }
+        else if (orderingType == "ROW") {
+            for (int i = 0; i < plateSpecs.getNumRows(); i++){
+                for (int j = 0; j < plateSpecs.getNumCols(); j++){
+                    addWell(disp, j, i, Integer.toString(wellIndex), wellIndex);
+                    wellIndex++;
+                }
+            }
+        }
+        else if (orderingType == "COLUMN") {
+            for (int i = 0; i < plateSpecs.getNumCols(); i++){
+                for (int j = 0; j < plateSpecs.getNumRows(); j++){
+                    addWell(disp, i, j, Integer.toString(wellIndex), wellIndex);
+                    wellIndex++;
+                }
+            }
+        }
+        else {
+            System.out.println("Did not recognize numbering order, did not add wells.");
+        }
 	}
 	
 	/**
@@ -177,12 +175,13 @@ public class Plate implements Serializable {
 	 * @param i - row the well is in
 	 * @param j - column the well is in
      * @param identifier - how to identify this well
+     * @param wellNumber - what number this well is on the plate
 	 */
-	private void addWell(WellDispatcher disp, int i, int j, String identifier){
+	private void addWell(WellDispatcher disp, int i, int j, String identifier, int wellNumber){
 		Point2D unroundedLocation = new Point2D.Double(
 				plateSpecs.getWellCorner().getX() + i*plateSpecs.getWellSpacing(),
 				plateSpecs.getWellCorner().getY() + j*plateSpecs.getWellSpacing());
-		disp.addObserver(new Well(this, unroundedLocation, plateSpecs.getWellDiameter(), identifier));
+		disp.addObserver(new Well(this, unroundedLocation, plateSpecs.getWellDiameter(), identifier, wellNumber));
 	}
 	
 	/**

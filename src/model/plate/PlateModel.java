@@ -3,6 +3,7 @@ package model.plate;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
@@ -47,12 +48,15 @@ public class PlateModel {
 	 * Current location of the arm, in steps.
 	 */
 	private ArmState armState;
+
+
+    private ArrayList<Well> selectedWells = new ArrayList<Well>();
 	
 	/**
 	 * Constructor that links the model to view and other models.
 	 */
 	public PlateModel(){
-		plates = new ArrayList<>();
+		plates = new ArrayList<Plate>();
 	}
 
     /* On initialization, connects to given adapters. */
@@ -124,23 +128,25 @@ public class PlateModel {
 	/**
 	 * Find out which well was clicked on.
 	 * @param point - location on screen that was clicked, in pixels
-	 * @return location of well center, in cm
+	 * @return well located on input point
 	 */
-	public Point2D getLocationFromScreen(Point point) {
-//		final Point2D clicked = new Point2D.Double(point.x/border.getScaleFactor(), point.y/border.getScaleFactor());
-//		final ArrayList<Point2D> returnPoint = new ArrayList<Point2D>();
-//		returnPoint.add(null);
-//		dispatcher.notifyAll(
-//			new IWellCmd(){
-//				public void apply(Well context, WellDispatcher disp){
-//					if (context.getAbsoluteLocation().distance(clicked) < context.getDiameter()/2){
-//						returnPoint.set(0,context.getAbsoluteLocation());
-//					}
-//				}
-//			}
-//		);
-//		return returnPoint.get(0);
-        return null;
+	public Well getWellFromScreenLocation(Point point) {
+		final Point2D clicked = new Point2D.Double(point.x/border.getScaleFactor(), point.y/border.getScaleFactor());
+		final ArrayList<Well> returnPoint = new ArrayList<Well>();
+		returnPoint.add(null);
+        //go through all plates' dispatcher and see if any wells fall in clicked point
+        for (Plate plate : plates) {
+            plate.dispatcher.notifyAll(
+                new IWellCmd(){
+                    public void apply(Well context, WellDispatcher disp){
+                        if (context.getAbsoluteLocation().distance(clicked) < context.getDiameter()/2){
+                            returnPoint.set(0, context);
+                        }
+                    }
+                }
+            );
+        }
+		return returnPoint.get(0);
 	}
 
     /**
@@ -191,4 +197,121 @@ public class PlateModel {
 	public void setInternalPosition(double x, double y) {
 		armState.setLocation(x, y);
 	}
+
+    /**
+     * When mouse is clicked, parse the location and modifiers to select wells appropriately.
+     * @param e MouseEvent containing all mouse info
+     */
+    public void mouseClicked(MouseEvent e) {
+        //get well that was clicked on
+        Well justSelected = getWellFromScreenLocation(e.getPoint());
+
+        if (justSelected == null) return;
+
+        //if click was a ctrl-click, toggle the well's selection
+        if (e.isMetaDown()) {
+            doMetaClick(justSelected);
+        }
+        //remove all wells but the last one, select all wells between last one and selected one
+        else if (e.isShiftDown()) {
+            doShiftClick(justSelected);
+        }
+        //neither down, treat it as a regular click, deleting all selected wells and adding this single one
+        else {
+            doRegularClick(justSelected);
+        }
+        view.updateView();
+    }
+
+    /**
+     * Perform necessary operations for clicking with ctrl or command pressed down.
+     * @param justSelected - well that was just selected by the user
+     */
+    public void doMetaClick(Well justSelected) {
+        if (justSelected.isSelected) {
+            justSelected.isSelected = false;
+            selectedWells.remove(justSelected);
+        }
+        else {
+            justSelected.isSelected = true;
+            selectedWells.add(justSelected);
+        }
+    }
+
+    /**
+     * Perform necessary operations for clicking with shift pressed down.
+     * @param justSelected - well that was just selected by the user
+     */
+    public void doShiftClick(final Well justSelected) {
+        //if no wells are currently selected, just select all up to the selected one
+        if (selectedWells.isEmpty()) {
+            justSelected.getParentPlate().dispatcher.notifyAll(
+                new IWellCmd(){
+                    public void apply(Well context, WellDispatcher disp){
+                        if (context.getWellNumber() <= justSelected.getWellNumber()) {
+                            selectedWells.add(context);
+                            context.isSelected = true;
+                        }
+                    }
+                }
+            );
+        }
+        else {
+            /**
+             * If we have selected wells already, de-select them all and select those between just-selected one and
+             * last one selected previously.
+             */
+
+            //de-select all and save last one
+            final Well lastWell = deselectAllWells();
+
+            //select all in between them
+            justSelected.getParentPlate().dispatcher.notifyAll(
+                new IWellCmd(){
+                    public void apply(Well context, WellDispatcher disp){
+                        if (justSelected.getWellNumber() < lastWell.getWellNumber()){ //just-selected well is smaller
+                            //add well in if its number is after just-selected and before last selected
+                            if (justSelected.getWellNumber() <= context.getWellNumber()  && context.getWellNumber() <= lastWell.getWellNumber()){
+                                context.isSelected = true;
+                                selectedWells.add(context);
+                            }
+                        }
+                        else { //last previously selected well is smaller
+                            //check opposite
+                            if (lastWell.getWellNumber() <= context.getWellNumber()  && context.getWellNumber() <= justSelected.getWellNumber()){
+                                context.isSelected = true;
+                                selectedWells.add(context);
+                            }
+                        }
+                    }
+                }
+            );
+        }
+    }
+
+    /**
+     * Perform necessary operations for clicking without any modifiers.
+     * @param justSelected - well that was just selected by the user
+     */
+    public void doRegularClick(Well justSelected) {
+        deselectAllWells();
+        //add the clicked well
+        justSelected.isSelected = true;
+        selectedWells.add(justSelected);
+    }
+
+    /**
+     * De-select all wells, returning the last one in the arraylist.
+     *
+     * @return last well to be removed
+     */
+    public Well deselectAllWells() {
+        Well lastWell = null;
+        for (Well savedWell : selectedWells) {
+            savedWell.isSelected = false;
+            lastWell = savedWell;
+        }
+        selectedWells.clear();
+        return lastWell;
+    }
 }

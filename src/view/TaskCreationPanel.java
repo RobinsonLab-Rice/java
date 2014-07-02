@@ -24,6 +24,8 @@ public class TaskCreationPanel extends JPanel {
     private JButton debugExecuteBtn;
     private JButton executeAllBtn;
     private TaskTree taskTree;
+    private JTextField defaultPlate;
+    private JTextField defaultDispense;
 
     private View2TaskAdapter taskModel;
     private View2SerializationAdapter serializationModel;
@@ -68,7 +70,10 @@ public class TaskCreationPanel extends JPanel {
             public void keyPressed(KeyEvent e) {
                 if (e.getExtendedKeyCode() == KeyEvent.VK_BACK_SPACE) {
                     IExecuteTask toDelete = (IExecuteTask) taskTree.getSelectionPath().getLastPathComponent();
-                    ((DefaultTreeModel)taskTree.getModel()).removeNodeFromParent(toDelete);
+                    if (toDelete.getParent() == null)   //no parent means it is the root
+                        ((DefaultTreeModel) taskTree.getModel()).setRoot(new MultiTask());
+                    else                                //for all other nodes, remove them from parent
+                        ((DefaultTreeModel) taskTree.getModel()).removeNodeFromParent(toDelete);
                 }
             }
         });
@@ -86,5 +91,19 @@ public class TaskCreationPanel extends JPanel {
 
     public void createUIComponents(){
         this.taskTree = new TaskTree(new DefaultTreeModel(new NullTask()));
+    }
+
+    /**
+     * @return default value to dispense when creating a dispense task
+     */
+    public double getDefaultDispense() {
+        return Double.parseDouble(defaultDispense.getText());
+    }
+
+    /**
+     * @return default plate to set when creating a move task
+     */
+    public String getDefaultPlate() {
+        return defaultPlate.getText();
     }
 }

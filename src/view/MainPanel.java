@@ -9,6 +9,8 @@ import model.tasks.basictasks.MultiTask;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +39,7 @@ public class MainPanel extends JFrame{
 
     /* Called after bindings have completed, set up frame to actually be displayed. */
     public void start(View2PlateAdapter plateModel, View2SerializationAdapter serializationModel, View2SerialCommAdapter serialCommModel, View2TaskAdapter taskModel) {
+
         /* Set the adapters */
         this.plateModel = plateModel;
         this.serializationModel = serializationModel;
@@ -50,6 +53,8 @@ public class MainPanel extends JFrame{
         /* Do necessary communication with backend models */
         plateModel.setFrame(serializationModel.getSavedBounds(), modelPane);
 
+        modelPane.addMouseListener(new MovementAreaMouseAdapter(plateModel, taskModel));
+
         /* Configure this main panel to start up */
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setContentPane(this.contentPane);
@@ -62,10 +67,6 @@ public class MainPanel extends JFrame{
     /* When a request is made, update all windows. */
     public void update() {
         contentPane.repaint();
-    }
-
-    //TODO: this
-    public void setTask(MultiTask task) {
     }
 
     /* Create GUI components that need more than the default constructor. */

@@ -69,6 +69,37 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="fest-swing-1" level="project" />
+    <orderEntry type="library" name="fest-assert-1" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/junit-4.10.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES />
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$USER_HOME$/Downloads/json-io-2.6.0-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$USER_HOME$/Downloads/uispec4j-2.4-jdk16.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$USER_HOME$/Downloads/uispec4j-2.4-jdk6-sources.zip!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
 </module>
 

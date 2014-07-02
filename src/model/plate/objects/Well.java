@@ -41,19 +41,31 @@ public class Well implements Observer {
 	 * Volume of liquid currently in the well, in uL.
 	 */
 	private double currentVolume;
-	
+
+    /**
+     * Ordered number of this well.
+     */
+    private int wellNumber;
+
+    /**
+     * Boolean for whether or not the well is highlighted in the GUI.
+     */
+    public boolean isSelected;
+
 	/**
 	 * Constructor for well, sets the necessary parameters.
 	 * @param parentPlate - plate the well is on
 	 * @param location - where on the plate this particular well is
 	 * @param diameter - diameter of the well
      * @param identifier - string used to identify this well on the plate
+     * @param wellNumber - ordered number of this well
 	 */
-	public Well(Plate parentPlate, Point2D location, double diameter, String identifier){
+	public Well(Plate parentPlate, Point2D location, double diameter, String identifier, int wellNumber){
 		this.parentPlate = parentPlate;
 		this.relativeLocation = location;
 		this.diameter = diameter;
 		this.identifier = identifier;
+        this.wellNumber = wellNumber;
 	}
 	
 	/**
@@ -72,11 +84,19 @@ public class Well implements Observer {
 	public void paint(Graphics g, double sF){
 		int screenLocX = (int)Math.round((parentPlate.getTLcorner().getX() + relativeLocation.getX()-diameter/2)*sF);
 		int screenLocY = (int)Math.round((parentPlate.getTLcorner().getY() + relativeLocation.getY()-diameter/2)*sF);
-		
+
+        //draw well's outline
 		g.setColor(Color.BLACK);
 		g.drawOval(screenLocX, screenLocY, (int)Math.round(diameter*sF), (int)Math.round(diameter*sF));
-		
+
+        //highlight well if it is selected
+        if (isSelected){
+            g.setColor(Color.LIGHT_GRAY);
+            g.fillOval(screenLocX, screenLocY, (int)Math.round(diameter*sF), (int)Math.round(diameter*sF));
+        }
+
 		//regardless, draw the well's label in the corner
+        g.setColor(Color.BLACK);
 		g.setFont(g.getFont().deriveFont((float) (sF*diameter/2)));
 		screenLocY += Math.round(diameter*sF);
 		g.drawString(identifier, screenLocX, screenLocY);
@@ -127,4 +147,11 @@ public class Well implements Observer {
 	public double getMaxVolume(){
 		return parentPlate.getMaxWellVolume();
 	}
+
+    /**
+     * @return ordered number of this well
+     */
+    public int getWellNumber(){
+        return wellNumber;
+    }
 }

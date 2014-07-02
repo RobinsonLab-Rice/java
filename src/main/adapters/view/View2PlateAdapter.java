@@ -4,6 +4,7 @@ import model.plate.PlateModel;
 import model.plate.objects.PlateSpecifications;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
 /**
@@ -54,5 +55,13 @@ public class View2PlateAdapter {
      */
     public void clearAllPlates() {
         plateModel.clearAllPlates();
+    }
+
+    /**
+     * Pass along mouse clicked info to plate model to handle selecting wells.
+     * @param e MouseEvent containing all mouse info
+     */
+    public void mouseClicked(MouseEvent e) {
+        plateModel.mouseClicked(e);
     }
 }
