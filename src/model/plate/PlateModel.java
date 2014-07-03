@@ -241,6 +241,7 @@ public class PlateModel {
             }
             else taskModel.makeMoveTask(selectedWells, endWell, dispenseAmounts, shouldReverse);
         }
+        view.updateView();
     }
 
     /**

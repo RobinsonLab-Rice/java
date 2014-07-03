@@ -26,7 +26,9 @@ public class TaskCreationPanel extends JPanel {
     private TaskTree taskTree;
     private JTextField defaultPlate;
     private JTextField defaultDispense;
+    private JButton redrawBtn;
 
+    private MainPanel mainView;
     private View2TaskAdapter taskModel;
     private View2SerializationAdapter serializationModel;
 
@@ -45,6 +47,14 @@ public class TaskCreationPanel extends JPanel {
             }
         });
 
+        /* When redraw button is clicked, */
+        redrawBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainView.update();
+            }
+        });
+
         /* Tell backend model to execute the task queue in debug mode. */
         debugExecuteBtn.addActionListener(new ActionListener() {
             @Override
@@ -55,7 +65,8 @@ public class TaskCreationPanel extends JPanel {
     }
 
     /* Perform necessary startup procedures (populating dropboxes, etc.) */
-    public void start(View2TaskAdapter taskModel, View2SerializationAdapter serializationModel){
+    public void start(MainPanel mainView, View2TaskAdapter taskModel, View2SerializationAdapter serializationModel){
+        this.mainView = mainView;
         this.taskModel = taskModel;
         this.serializationModel = serializationModel;
 

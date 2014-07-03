@@ -61,7 +61,7 @@ public class TaskModel {
 	 * Constructor for TaskModel, takes in adapters to allow the view and other models.
 	 */
 	public TaskModel(){
-		taskQueue = new DefaultTreeModel(new MultiTask(new MoveToWellTask("test", "2"), new MultiTask(new LowerTask(), new DispenseTask(100)), new MoveToWellTask("test", "4")));
+		taskQueue = new DefaultTreeModel(new MultiTask());
 		decompiledTasks = new ArrayList<ALeafTask>();
 		decompileVisitor = new DecompileVisitor();
 		drawVisitor = new DrawVisitor();
@@ -217,9 +217,14 @@ public class TaskModel {
         //else, make a task for every movement and wrap it in a multitask one level up
         else {
             finalTask = new MultiTask("Move" + startWells.size() + "WellsTo1");
+            //by default, go to each start well, withdraw, then dispense all in the end well
+            double finalDeposit = 0;
             for (int i = 0; i < startWells.size(); i++) {
-                finalTask.addTaskToEnd(makeSingleWellToWellTask(startWells.get(i), endWell, dispenseAmounts.get(i)));
+                finalTask.addTaskToEnd(makeSingleTransaction(startWells.get(i), -dispenseAmounts.get(i)));
+                finalDeposit += dispenseAmounts.get(i);
+                //finalTask.addTaskToEnd(makeSingleWellToWellTask(startWells.get(i), endWell, dispenseAmounts.get(i)));
             }
+            finalTask.addTaskToEnd(makeSingleTransaction(endWell, finalDeposit));
         }
 
         //if use requested to reverse the tasks, do that
@@ -234,18 +239,24 @@ public class TaskModel {
      * Helper function for making a multitask that moves fluid amount from the start to end well.
      */
     public MultiTask makeSingleWellToWellTask(Well start, Well end, Double amount) {
-        return new MultiTask("MoveFluidWellToWell",
-                new MultiTask("MoveAndWithdraw",
-                        new MoveToWellTask(start),
-                        new LowerTask(),
-                        new DispenseTask(-amount),
-                        new RaiseTask()
-                ),
-                new MultiTask("MoveAndDeposit",
-                        new MoveToWellTask(end),
-                        new LowerTask(),
-                        new DispenseTask(amount),
-                        new RaiseTask()
-                ));
+        return new MultiTask("MoveFluidWellToWell", makeSingleTransaction(start, -amount), makeSingleTransaction(end, amount));
+    }
+
+    /**
+     * Make a task that either withdraws or deposit to the specified well
+     * @param well - well object to move to
+     * @param amount - amount of fluid to move, withdraw for negative amounts, deposit for positive
+     * @return multitask encapsulating these basic tasks
+     */
+    public MultiTask makeSingleTransaction(Well well, Double amount) {
+        String name;
+        if (amount < 0) name = "MoveAndWithdraw";
+        else name = "MoveAndDeposit";
+        return new MultiTask(name,
+                new MoveToWellTask(well),
+                new LowerTask(),
+                new DispenseTask(amount),
+                new RaiseTask()
+        );
     }
 }
