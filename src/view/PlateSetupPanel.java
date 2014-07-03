@@ -48,7 +48,12 @@ public class PlateSetupPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 PlateSpecifications specs = serializationModel.loadPlateSpecs(savedPlatesCmb.getSelectedItem().toString());
-                plateModel.addPlate(plateNicknameTxt.getText(), numberingOrderCmb.getSelectedItem().toString(), xPosTxt.getText(), yPosTxt.getText(), specs);
+                boolean result = plateModel.addPlate(plateNicknameTxt.getText(), numberingOrderCmb.getSelectedItem().toString(), xPosTxt.getText(), yPosTxt.getText(), specs);
+                //if we could not add the plate, tell the user
+                if (result == false) {
+                    JOptionPane.showMessageDialog(makePlateBtn, "Possibly same name as previously made plate, or in same location.",
+                            "Could not add plate", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 

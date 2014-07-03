@@ -70,8 +70,8 @@ public class PlateEditingPanel extends JFrame {
         wellPosXTxt.setText(Double.toString(specs.getWellCorner().getX()));
         wellPosYTxt.setText(Double.toString(specs.getWellCorner().getY()));
         wellToWellDiameterTxt.setText(Double.toString(specs.getWellSpacing()));
-        numRowsTxt.setText(Double.toString(specs.getNumRows()));
-        numColsTxt.setText(Double.toString(specs.getNumCols()));
+        numRowsTxt.setText(Integer.toString(specs.getNumRows()));
+        numColsTxt.setText(Integer.toString(specs.getNumCols()));
         widthTxt.setText(Double.toString(specs.getBorderDimensions().getY()));
         lengthTxt.setText(Double.toString(specs.getBorderDimensions().getX()));
         wellDiameterTxt.setText(Double.toString(specs.getWellDiameter()));

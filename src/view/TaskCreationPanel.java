@@ -26,7 +26,6 @@ public class TaskCreationPanel extends JPanel {
     private TaskTree taskTree;
     private JTextField defaultPlate;
     private JTextField defaultDispense;
-    private JButton redrawBtn;
 
     private MainPanel mainView;
     private View2TaskAdapter taskModel;
@@ -44,14 +43,6 @@ public class TaskCreationPanel extends JPanel {
                 taskToAdd.setParent(root);
                 root.insert(taskToAdd, root.getChildCount());
                 ((DefaultTreeModel)taskTree.getModel()).nodeStructureChanged(root);
-            }
-        });
-
-        /* When redraw button is clicked, */
-        redrawBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mainView.update();
             }
         });
 

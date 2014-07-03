@@ -61,7 +61,7 @@ public class TaskModel {
 	 * Constructor for TaskModel, takes in adapters to allow the view and other models.
 	 */
 	public TaskModel(){
-		taskQueue = new DefaultTreeModel(new MultiTask());
+		taskQueue = new DefaultTreeModel(new MultiTask("Experiment Name"));
 		decompiledTasks = new ArrayList<ALeafTask>();
 		decompileVisitor = new DecompileVisitor();
 		drawVisitor = new DrawVisitor();

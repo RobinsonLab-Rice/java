@@ -46,7 +46,7 @@
       </component>
       <component id="1f402" class="javax.swing.JButton" binding="executeAllBtn">
         <constraints>
-          <grid row="7" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="7" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Execute All"/>
@@ -117,19 +117,11 @@
       </component>
       <component id="99d3c" class="javax.swing.JButton" binding="debugExecuteBtn">
         <constraints>
-          <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Debug Execute"/>
           <toolTipText value="Executes everything by sending it all at once, not waiting for Arduino to respond."/>
-        </properties>
-      </component>
-      <component id="6396" class="javax.swing.JButton" binding="redrawBtn">
-        <constraints>
-          <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Redraw"/>
         </properties>
       </component>
     </children>

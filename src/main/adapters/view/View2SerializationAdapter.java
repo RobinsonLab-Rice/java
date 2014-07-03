@@ -29,8 +29,8 @@ public class View2SerializationAdapter {
      * @param nickname   - name to later refer to this specification as
      * @param plateSpecs - object encompassing all datasheet information
      */
-    public void saveSpecs(String nickname, PlateSpecifications plateSpecs) {
-        serializationModel.savePlate(nickname, plateSpecs);
+    public boolean saveSpecs(String nickname, PlateSpecifications plateSpecs) {
+        return serializationModel.savePlate(nickname, plateSpecs);
     }
 
     /**

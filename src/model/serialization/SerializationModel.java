@@ -18,6 +18,8 @@ import org.apache.commons.io.FilenameUtils;
 import com.cedarsoftware.util.io.JsonReader;
 import com.cedarsoftware.util.io.JsonWriter;
 
+import javax.swing.*;
+
 /**
  * Model that handles all serialization (saving to and loading data from files).
  * @author christianhenry
@@ -193,18 +195,35 @@ public class SerializationModel {
 	 * Uses JSON to save the PlateSpecifications to data/plates/filename
 	 * @param plateSpecs - incoming plate specs to persist
 	 * @param filename - name of file to save task to
+     * @return whether or not the save was successful
 	 */
-	public void savePlate(String filename, PlateSpecifications plateSpecs){
+	public boolean savePlate(String filename, PlateSpecifications plateSpecs){
 		String qualifiedName = "data/plates/" + filename + ext;
-		saveItem(qualifiedName, plateSpecs);
+		return saveItem(qualifiedName, plateSpecs);
 	}
 	
 	/**
 	 * Common method to save any item to specified location.
+     * @return whether or not the save was successful
 	 */
-	public void saveItem(String qualifiedName, Object item){
+	public boolean saveItem(String qualifiedName, Object item){
 		FileOutputStream fos = null;
-		
+
+        //if the item already exists, ask the user if they really want to continue
+        if (loadData(qualifiedName) != null) {
+            int result = JOptionPane.showOptionDialog(null,
+                    "Saved item with that name already exists. Overwrite it?",
+                    "Overwrite existing?",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,     //do not use a custom Icon
+                    new String[] {"Save Anyway", "Cancel"},  //the titles of buttons
+                    "Save Anyway"); //default button title
+            if (result != JOptionPane.YES_OPTION) {
+                return false;
+            }
+        }
+
 		try {
 			fos = new FileOutputStream(qualifiedName);
 			Map args = new HashMap();
@@ -215,7 +234,9 @@ public class SerializationModel {
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
+            return false;
 		}
+        return true;
 	}
 
     /**

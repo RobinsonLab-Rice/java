@@ -5,7 +5,7 @@
     "x":23.16,
     "y":24.76
   },
-  "wellSpacing":39.12,
+  "wellSpacing":39.0,
   "borderDimensions":{
     "@type":"java.awt.geom.Point2D$Double",
     "x":127.76,
@@ -15,5 +15,5 @@
   "numCols":3,
   "wellVolume":10.0,
   "wellDiameter":35.43,
-  "wellDepth":17
+  "wellDepth":17.0
 }
