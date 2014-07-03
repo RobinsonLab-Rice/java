@@ -2,9 +2,11 @@ package main.adapters.tasks;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 
 import model.plate.PlateModel;
 import model.plate.objects.ArmState;
+import model.plate.objects.Plate;
 
 /**
  * Adapter that allows the task model to talk to the plate model through specified methods only.
@@ -35,6 +37,13 @@ public class Task2PlateAdapter {
 	 */
 	public ArmState getArmState(){
         return plateModel.getArmState();
+    }
+
+    /**
+     * @return reference to plate arraylist
+     */
+    public Iterable<Plate> getPlates() {
+        return plateModel.getPlateList();
     }
 
 }

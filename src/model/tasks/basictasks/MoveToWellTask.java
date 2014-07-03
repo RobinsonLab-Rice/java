@@ -2,7 +2,9 @@ package model.tasks.basictasks;
 
 import java.awt.geom.Point2D;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import model.plate.objects.ArmState;
 import model.plate.objects.Well;
@@ -87,6 +89,16 @@ public class MoveToWellTask extends ALeafTask {
 	public Object executeVisitor(ITaskVisitor visitor, Object... params) {
 		return visitor.caseAt("MoveToWell", this, params);
 	}
+
+    /**
+     * @return arm location after executing this task
+     */
+    public ArrayList<String> getDestination() {
+        ArrayList<String> destination = new ArrayList<String>();
+        destination.add(plate);
+        destination.add(identifier);
+        return destination;
+    }
 	
 	/**
 	 * Define how this task should be printed.

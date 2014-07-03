@@ -54,6 +54,13 @@ public class DispenseTask extends ALeafTask {
 	public Object executeVisitor(ITaskVisitor algo, Object... params) {
 	    return algo.caseAt("Dispense", this, params);
 	}
+
+    /**
+     * @return amount to dispense
+     */
+    public double getVolume() {
+        return volume;
+    }
 	
 	public String toString() {
 		return "Dispense:" + volume;

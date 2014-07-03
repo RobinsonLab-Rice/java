@@ -1,5 +1,7 @@
 package model.tasks;
 
+import java.awt.*;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -147,12 +149,12 @@ public class TaskModel {
 		}
 	}
 	
-//	/**
-//	 * Draw all tasks by slapping the draw visitor onto them.
-//	 */
-//	public void drawTasks(Graphics g, double sF) {
-//		taskQueue.executeVisitor(drawVisitor, g, sF);
-//	}
+	/**
+	 * Draw all tasks by slapping the draw visitor onto them.
+	 */
+	public void drawTasks(Graphics g, double sF) {
+        ((IExecuteTask) taskQueue.getRoot()).executeVisitor(drawVisitor, g, sF, new Point2D.Double(0, 0), plateModel.getPlates());
+	}
 	
 	/**
 	 * @return ArrayList of stages (MultiTasks) that contain everything that will be done in experiment

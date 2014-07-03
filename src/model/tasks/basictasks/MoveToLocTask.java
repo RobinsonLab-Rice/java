@@ -68,6 +68,13 @@ public class MoveToLocTask extends ALeafTask {
     }
 
     /**
+     * @return arm location after executing this task
+     */
+    public Point2D getDestination() {
+        return destination;
+    }
+
+    /**
      * When somebody changes text on JTree, check if the data is correct and, if it is, set this task's parameters
      * appropriately.
      *
