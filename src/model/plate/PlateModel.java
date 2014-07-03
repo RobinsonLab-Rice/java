@@ -82,21 +82,23 @@ public class PlateModel {
 	 * @param numberingOrder - order to number all the wells on the plate
 	 * @param platePos - where to position the (currently) top left corner of the plate
 	 * @param specs - set of specifications for this particular plate, usually from data sheet
+     * @return whether or not adding the plate was successful
 	 */
-	public void addPlate(String name, String numberingOrder, Point2D platePos, PlateSpecifications specs){
+	public boolean addPlate(String name, String numberingOrder, Point2D platePos, PlateSpecifications specs){
 		Plate plate = new Plate(name, platePos, specs, numberingOrder);
-		addPlate(plate);
+		return addPlate(plate);
 	}
 	
 	/**
-	 * Adds a new plate to the internal list and updates the view so this is shown.
+	 * Adds a new plate to the internal list and updates the view so this is shown. Disallows creating plates with same
+     * name or exact same location, returning false.
 	 * @param plate - Plate object to add
      * @return whether or not adding the plate was successful
 	 */
 	public boolean addPlate(Plate plate){
         boolean addSuccessful = true;
         for (Plate loopPlate : plates) {
-            if (loopPlate.getName() == plate.getName()) addSuccessful = false;
+            if (loopPlate.getName().equals(plate.getName()) || loopPlate.getTLcorner().equals(plate.getTLcorner()) ) addSuccessful = false;
         }
         if (addSuccessful == true) {
             plates.add(plate);
