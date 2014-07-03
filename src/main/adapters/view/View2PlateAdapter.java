@@ -26,9 +26,10 @@ public class View2PlateAdapter {
      * @param xPos x coordinate of the plate's top left corner
      * @param yPos y coordinate of the plate's top left corner
      * @param specs specs of the plate, taken from the datasheet
+     * @return whether or not adding the plate was successful
      */
-    public void addPlate(String name, String numberingOrder, String xPos, String yPos, PlateSpecifications specs) {
-        plateModel.addPlate(name, numberingOrder, new Point2D.Double(Double.parseDouble(xPos), Double.parseDouble(yPos)), specs);
+    public boolean addPlate(String name, String numberingOrder, String xPos, String yPos, PlateSpecifications specs) {
+        return plateModel.addPlate(name, numberingOrder, new Point2D.Double(Double.parseDouble(xPos), Double.parseDouble(yPos)), specs);
     }
 
     /**
@@ -55,6 +56,14 @@ public class View2PlateAdapter {
      */
     public void clearAllPlates() {
         plateModel.clearAllPlates();
+    }
+
+    /**
+     * Delete first plate at specified location.
+     * @param location point (in pixels) of plate location
+     */
+    public void deletePlate(Point location) {
+        plateModel.deletePlate(location);
     }
 
     /**

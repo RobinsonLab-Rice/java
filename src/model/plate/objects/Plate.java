@@ -2,6 +2,7 @@ package model.plate.objects;
 
 import java.awt.Graphics;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -202,5 +203,12 @@ public class Plate implements Serializable {
      * @return this plate's name
      */
     public String getName() { return name; }
+
+    /**
+     * @return dimensions of this plate, as a rectangle
+     */
+    public Point2D getDimensions() {
+        return plateSpecs.getBorderDimensions();
+    }
 }
 

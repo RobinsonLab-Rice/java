@@ -78,52 +78,22 @@ public class MovementAreaMouseAdapter extends MouseAdapter {
     /**
      * Bring up the popup right click menu.
      */
-    public void doPopup(MouseEvent e) {
+    public void doPopup(final MouseEvent e) {
         JPopupMenu menu = new JPopupMenu() {
 
             JMenuItem deletePlate, withdraw, deposit;
 
             {
                 deletePlate = new JMenuItem("Delete Plate");
-                withdraw = new JMenuItem("Withdraw from Selected");
-                deposit = new JMenuItem("Deposit to Selected");
-//
-//                /* Only allow saving on multitasks. Saves it as the multitask's current name. */
-//                save.addActionListener(new ActionListener() {
-//                    public void actionPerformed(ActionEvent e) {
-//                        //save the task to file system
-//                        serializationModel.saveExecutionTask((IExecuteTask) selPath.getLastPathComponent());
-//                        //update the combobox of tasks so this is shown
-////                        savedTasksCmb.removeAllItems();
-////                        for (ITaskFactory factory : taskModel.getTaskFactories()){
-////                            savedTasksCmb.addItem(factory);
-////                        }
-//                        MainPanel.GUIHelper.updateCmb(taskModel.getTaskFactories(), savedTasksCmb);
-//                    }
-//                });
-//
-//                /* Delete selected item from backend model (and tree). */
-//                delete.addActionListener(new ActionListener() {
-//                    public void actionPerformed(ActionEvent e) {
-//                        IExecuteTask toDelete = (IExecuteTask) taskTree.getSelectionPath().getLastPathComponent();
-//                        if (toDelete.getParent() == null)   //no parent means it is the root
-//                            ((DefaultTreeModel) taskTree.getModel()).setRoot(new MultiTask());
-//                        else                                //for all other nodes, remove them from parent
-//                            ((DefaultTreeModel) taskTree.getModel()).removeNodeFromParent(toDelete);
-//                    }
-//                });
-//
-//                //make a different menu for multitasks and other tasks
-//                if (selPath.getLastPathComponent() instanceof MultiTask){
-//                    add(save);
-//                    add(delete);
-//                }
-//                else {
-//                    add(delete);
-//                }
+
+                /* Only allow saving on multitasks. Saves it as the multitask's current name. */
+                deletePlate.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent a) {
+                        //delete plate we clicked on
+                        plateModel.deletePlate(e.getPoint());
+                    }
+                });
                 add(deletePlate);
-                add(deposit);
-                add(withdraw);
             }
         };
         menu.show(e.getComponent(), e.getX(), e.getY());

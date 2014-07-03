@@ -1,10 +1,9 @@
 package model.plate;
 
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 import main.adapters.plate.Plate2TaskAdapter;
@@ -92,10 +91,18 @@ public class PlateModel {
 	/**
 	 * Adds a new plate to the internal list and updates the view so this is shown.
 	 * @param plate - Plate object to add
+     * @return whether or not adding the plate was successful
 	 */
-	public void addPlate(Plate plate){
-		plates.add(plate);
-		view.updateView();
+	public boolean addPlate(Plate plate){
+        boolean addSuccessful = true;
+        for (Plate loopPlate : plates) {
+            if (loopPlate.getName() == plate.getName()) addSuccessful = false;
+        }
+        if (addSuccessful == true) {
+            plates.add(plate);
+            view.updateView();
+        }
+		return addSuccessful;
 	}
 	
 	/**
@@ -124,6 +131,25 @@ public class PlateModel {
 		plates.clear();
 		view.updateView();
 	}
+
+    /**
+     * Delete plate at input location.
+     * @param location Point plate is located (in pixels)
+     */
+    public void deletePlate(Point location) {
+        for (Plate plate : plates) {
+            //construct a rectangle for the plate's border
+            Point2D TLcorner = plate.getTLcorner();
+            Point2D dimensions = plate.getDimensions();
+            Rectangle2D boundingBox = new Rectangle2D.Double(TLcorner.getX(), TLcorner.getY(), dimensions.getX(), dimensions.getY());
+            //if the point, scaled, is in the plate border, delete it
+            if (boundingBox.contains(location.getX()/border.getScaleFactor(), location.getY()/border.getScaleFactor())){
+                plates.remove(plate);
+                break;
+            }
+        }
+        view.updateView();
+    }
 
 	/**
 	 * Find out which well was clicked on.
