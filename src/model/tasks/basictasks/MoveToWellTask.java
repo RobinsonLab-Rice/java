@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 
 import model.plate.objects.ArmState;
+import model.plate.objects.Well;
 import model.tasks.taskvisitors.ITaskVisitor;
 
 /**
@@ -40,6 +41,15 @@ public class MoveToWellTask extends ALeafTask {
         this.plate = plate;
 		this.identifier = identifier;
 	}
+
+    /**
+     * Allow user to move to a specific well object, info will be generated.
+     * @param destination - well object to move to
+     */
+    public MoveToWellTask(Well destination) {
+        this.plate = destination.getParentPlate().getName();
+        this.identifier = destination.getIdentifier();
+    }
 
 	/**
 	 * When a move task is executed, it compares its destination to the current arm location, sending the difference (in cm)

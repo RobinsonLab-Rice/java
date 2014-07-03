@@ -7,6 +7,7 @@ import main.adapters.tasks.Task2PlateAdapter;
 import main.adapters.tasks.Task2SerialCommAdapter;
 import main.adapters.tasks.Task2SerializationAdapter;
 import main.adapters.tasks.Task2ViewAdapter;
+import model.plate.objects.Well;
 import model.tasks.basictasks.*;
 import model.tasks.basictasks.ALeafTask;
 import model.tasks.taskvisitors.DecompileVisitor;
@@ -187,5 +188,62 @@ public class TaskModel {
      */
     public DefaultTreeModel getTreeModel() {
         return this.taskQueue;
+    }
+
+    /**
+     * Make a multitask for moving input wells to end well. If dispenseAmounts is empty, it is assumed that we should use
+     * the default amount set in the GUI.
+     * @param startWells - variable number of wells to pick fluid up from
+     * @param endWell - single well to dispense fluid to
+     * @param dispenseAmounts - arraylist of amounts to dispense to each well, should be same size as startwells (unless empty)
+     * @param shouldReverse - boolean for whether the direction of tasks should be reversed, resulting in a one-to-many task
+     */
+    public void makeMoveTask(ArrayList<Well> startWells, Well endWell, ArrayList<Double> dispenseAmounts, boolean shouldReverse) {
+        //if dispense amount is empty, fill it to same length as startWells with default amount
+        if (dispenseAmounts.size() == 0) {
+            Double defaultAmount = view.getDefaultDispense();
+            for (int i = 0; i < startWells.size(); i++) {
+                dispenseAmounts.add(defaultAmount);
+            }
+        }
+
+        MultiTask finalTask = null;
+        //if we're just moving one well to the destination, we don't need to make an overarching multitask for it.
+        if (startWells.size() == 1){
+            finalTask = makeSingleWellToWellTask(startWells.get(0), endWell, dispenseAmounts.get(0));
+        }
+        //else, make a task for every movement and wrap it in a multitask one level up
+        else {
+            finalTask = new MultiTask("Move" + startWells.size() + "WellsTo1");
+            for (int i = 0; i < startWells.size(); i++) {
+                finalTask.addTaskToEnd(makeSingleWellToWellTask(startWells.get(i), endWell, dispenseAmounts.get(i)));
+            }
+        }
+
+        //if use requested to reverse the tasks, do that
+        if (shouldReverse) {} //TODO: implement a reverse method
+
+        //finally, stick this constructed task on the end and tell the view to update itself
+        ((MultiTask) taskQueue.getRoot()).addTaskToEnd(finalTask);
+        taskQueue.nodeStructureChanged((MultiTask) taskQueue.getRoot());
+    }
+
+    /**
+     * Helper function for making a multitask that moves fluid amount from the start to end well.
+     */
+    public MultiTask makeSingleWellToWellTask(Well start, Well end, Double amount) {
+        return new MultiTask("MoveFluidWellToWell",
+                new MultiTask("MoveAndWithdraw",
+                        new MoveToWellTask(start),
+                        new LowerTask(),
+                        new DispenseTask(-amount),
+                        new RaiseTask()
+                ),
+                new MultiTask("MoveAndDeposit",
+                        new MoveToWellTask(end),
+                        new LowerTask(),
+                        new DispenseTask(amount),
+                        new RaiseTask()
+                ));
     }
 }

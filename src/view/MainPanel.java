@@ -32,6 +32,7 @@ public class MainPanel extends JFrame{
     private View2SerializationAdapter serializationModel;
     private View2SerialCommAdapter serialCommModel;
     private View2TaskAdapter taskModel;
+    private Double defaultDispense;
 
     /* Constructor that initializes adapters so the GUI can talk to the back-end models. */
     public MainPanel() {
@@ -85,6 +86,13 @@ public class MainPanel extends JFrame{
 			    plateModel.paint(g);  	    // call back to the model to paint the aperture
 			}
 		};
+    }
+
+    /**
+     * @return default amount to dispense, from task creation panel
+     */
+    public Double getDefaultDispense() {
+        return taskCreationPanel.getDefaultDispense();
     }
 
     /* Helper class that contains convenience methods for this and other views. */

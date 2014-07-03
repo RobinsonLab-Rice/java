@@ -27,6 +27,11 @@ public class MultiTask extends AExecuteTask {
     public MultiTask() {
     }
 
+    /* If user wants to add in tasks after the fact, they can still set name in constructor. */
+    public MultiTask(String name) {
+        this.name = name;
+    }
+
 	/* Creates a MultiTask out of some variable number of other tasks. */
 	public MultiTask(IExecuteTask... taskArray){
 		for (IExecuteTask task: taskArray){
@@ -34,6 +39,15 @@ public class MultiTask extends AExecuteTask {
 			taskList.add(task);
 		}
 	}
+
+    /* Creates a MultiTask out of some variable number of other tasks. */
+    public MultiTask(String name, IExecuteTask... taskArray){
+        this.name = name;
+        for (IExecuteTask task: taskArray){
+            task.setParent(this);
+            taskList.add(task);
+        }
+    }
 
     /**
      * Calls all subtasks to execute themselves.
@@ -65,6 +79,15 @@ public class MultiTask extends AExecuteTask {
             child.setParent(this);
             child.resetParents();
         }
+    }
+
+    /**
+     * Appends input task to end of this multitask's list.
+     */
+    public void addTaskToEnd(IExecuteTask task) {
+        taskList.add(task);
+        task.setParent(this);
+        task.resetParents();
     }
 
     /**

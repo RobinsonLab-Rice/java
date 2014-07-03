@@ -199,18 +199,59 @@ public class PlateModel {
 	}
 
     /**
+     * When mouse is clicked, dragged, and released, parse the location and modifiers of the two locations to
+     * select wells appropriately.
+     * @param start
+     * @param end
+     */
+    public void clickAndDrag(MouseEvent start, MouseEvent end) {
+
+        Well startWell = getWellFromScreenLocation(start.getPoint());
+        Well endWell = getWellFromScreenLocation(end.getPoint());
+
+        //if neither location was on a well, do nothing
+        if (startWell == null || endWell == null) return;
+        //if start and end well are the same, count this click and drag as a regular mouseClicked
+        else if (startWell == endWell) selectWell(end, endWell);
+        /**
+         * Else, they are different wells and we should make a task for movement between them.
+         */
+        else {
+            ArrayList<Double> dispenseAmounts = new ArrayList<Double>();
+
+            //add in option for user to reverse the flow of liquid by holding down alt
+            boolean shouldReverse = false;
+            if (end.isAltDown()) shouldReverse = true;
+
+            //also if ctrl/cmd was held down on this drag, popup the dialog for a custom move amount. in the process,
+            //change dispenseAmounts accordingly
+            if (end.isControlDown() || end.isMetaDown()) {
+                //TODO: ask GUI for user input on new dispense amounts
+            }
+
+            /**
+             * There are a few cases for actually moving:
+             * 1) start well was not selected, so we just move that single well to the single end well
+             * 2) start well was selected, so we make moves for ALL selected wells to the end well
+             */
+            if (!startWell.isSelected) {
+                ArrayList<Well> startWellWrapper = new ArrayList<Well>();
+                startWellWrapper.add(startWell);
+                taskModel.makeMoveTask(startWellWrapper, endWell, dispenseAmounts, shouldReverse);
+            }
+            else taskModel.makeMoveTask(selectedWells, endWell, dispenseAmounts, shouldReverse);
+        }
+    }
+
+    /**
      * When mouse is clicked, parse the location and modifiers to select wells appropriately.
      * @param e MouseEvent containing all mouse info
      */
-    public void mouseClicked(MouseEvent e) {
-        //get well that was clicked on
-        Well justSelected = getWellFromScreenLocation(e.getPoint());
-
-        if (justSelected == null) return;
+    public void selectWell(MouseEvent e, Well justSelected) {
 
         //if click was a ctrl-click, toggle the well's selection
-        if (e.isMetaDown()) {
-            doMetaClick(justSelected);
+        if (e.isMetaDown() || e.isControlDown()) {
+            doCtrlClick(justSelected);
         }
         //remove all wells but the last one, select all wells between last one and selected one
         else if (e.isShiftDown()) {
@@ -220,14 +261,14 @@ public class PlateModel {
         else {
             doRegularClick(justSelected);
         }
-        view.updateView();
+        view.updateView(); //regardless of what happened, update the visualization
     }
 
     /**
      * Perform necessary operations for clicking with ctrl or command pressed down.
      * @param justSelected - well that was just selected by the user
      */
-    public void doMetaClick(Well justSelected) {
+    public void doCtrlClick(Well justSelected) {
         if (justSelected.isSelected) {
             justSelected.isSelected = false;
             selectedWells.remove(justSelected);

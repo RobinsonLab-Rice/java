@@ -18,5 +18,7 @@ public class Task2ViewAdapter {
     public void updateView(){
         view.update();
     }
+
+    public Double getDefaultDispense() { return view.getDefaultDispense(); }
 	
 }

@@ -58,10 +58,11 @@ public class View2PlateAdapter {
     }
 
     /**
-     * Pass along mouse clicked info to plate model to handle selecting wells.
-     * @param e MouseEvent containing all mouse info
+     * Pass along mouse clicked info of start and end locations to plate model to handle selecting wells.
+     * @param start MouseEvent containing all mouse info of start location
+     * @param end MouseEvent containing all mouse info of end location
      */
-    public void mouseClicked(MouseEvent e) {
-        plateModel.mouseClicked(e);
+    public void clickAndDrag(MouseEvent start, MouseEvent end) {
+        plateModel.clickAndDrag(start, end);
     }
 }
