@@ -6,7 +6,7 @@ import java.net.Socket;
 
 import com.cedarsoftware.util.io.JsonReader;
 
-import main.adapters.externalcomm.ExternalComm2TaskAdapter;
+import model.tasks.TaskModel;
 import model.tasks.basictasks.IExecuteTask;
 
 public class ClientTask implements Runnable {
@@ -15,9 +15,9 @@ public class ClientTask implements Runnable {
     
     private ObjectInputStream inputStream;
     
-    private ExternalComm2TaskAdapter taskModel;
+    private TaskModel taskModel;
     
-    public ClientTask(Socket clientSocket, ExternalComm2TaskAdapter taskModel) {
+    public ClientTask(Socket clientSocket, TaskModel taskModel) {
         this.clientSocket = clientSocket;
         this.taskModel = taskModel;
     }

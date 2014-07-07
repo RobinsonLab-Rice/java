@@ -5,16 +5,17 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import main.adapters.tasks.Task2PlateAdapter;
-import main.adapters.tasks.Task2SerialCommAdapter;
-import main.adapters.tasks.Task2SerializationAdapter;
-import main.adapters.tasks.Task2ViewAdapter;
+import model.plate.PlateModel;
 import model.plate.objects.Well;
+import model.serial.SerialModel;
+import model.serialization.SaveType;
+import model.serialization.SerializationModel;
 import model.tasks.basictasks.*;
 import model.tasks.basictasks.ALeafTask;
 import model.tasks.taskvisitors.DecompileVisitor;
 import model.tasks.taskvisitors.DrawVisitor;
 import model.tasks.taskvisitors.ITaskVisitor;
+import view.MainPanel;
 
 import javax.swing.tree.DefaultTreeModel;
 
@@ -28,22 +29,22 @@ public class TaskModel {
 	/**
 	 * Adapter from the task model to plate model.
 	 */
-	private Task2PlateAdapter plateModel;
+	private PlateModel plateModel;
 	
 	/**
 	 * Adapter from the task model to main view.
 	 */
-	private Task2ViewAdapter view;
+	private MainPanel view;
 	
 	/**
 	 * Adapter from the task model to serial model.
 	 */
-	private Task2SerialCommAdapter serialCommModel;
+	private SerialModel serialCommModel;
 
     /**
      * Adapter from task model to serialization model.
      */
-    private Task2SerializationAdapter serializationModel;
+    private SerializationModel serializationModel;
 	
 	/**
      * TreeModel that contains a multitask (the root of the tree). This multitask contains everything that will be
@@ -61,41 +62,20 @@ public class TaskModel {
 	 * Constructor for TaskModel, takes in adapters to allow the view and other models.
 	 */
 	public TaskModel(){
-		taskQueue = new DefaultTreeModel(new MultiTask("Experiment Name"));
+		taskQueue = new DefaultTreeModel(new MultiTask("Experiment Name (triple click me to rename)"));
 		decompiledTasks = new ArrayList<ALeafTask>();
 		decompileVisitor = new DecompileVisitor();
 		drawVisitor = new DrawVisitor();
 	}
 
     /* On initialization, connects to given adapters. */
-    public void start(Task2ViewAdapter view, Task2PlateAdapter plateModel,
-                      Task2SerialCommAdapter serialModel, Task2SerializationAdapter serializationModel) {
+    public void start(MainPanel view, PlateModel plateModel,
+                      SerialModel serialModel, SerializationModel serializationModel) {
         this.view = view;
         this.plateModel = plateModel;
         this.serialCommModel = serialModel;
         this.serializationModel = serializationModel;
     }
-	
-//	/**
-//	 * Adds a MLDR task to the execution queue.
-//	 * @param wellNum - well number to go to
-//	 * @param fluidAmount - amount of fluid to move
-//	 */
-//	public void addToQueue(int wellNum, int fluidAmount) {
-//		Point2D wellLocation = plateModel.getLocationFromNumber(wellNum);
-//		MultiTask taskToAdd = new MultiTask(new MoveTask(wellNum), new LowerTask(), new DispenseTask(fluidAmount), new RaiseTask());
-//		taskQueue.addTask(taskToAdd);
-//		view.updateView();
-//	}
-//
-//	/**
-//	 * Adds a task (any task) to execution queue.
-//	 * @param taskToAdd - task to add (no preparation involved)
-//	 */
-//	public void addToQueue(IExecuteTask taskToAdd) {
-//		taskQueue.addTask(taskToAdd);
-//		view.updateView();
-//	}
 	
 	/**
 	 * Called by the serial model when word has been received that the Arduino is ready for the next command.
@@ -153,7 +133,7 @@ public class TaskModel {
 	 * Draw all tasks by slapping the draw visitor onto them.
 	 */
 	public void drawTasks(Graphics g, double sF) {
-        ((IExecuteTask) taskQueue.getRoot()).executeVisitor(drawVisitor, g, sF, new Point2D.Double(0, 0), plateModel.getPlates());
+        ((IExecuteTask) taskQueue.getRoot()).executeVisitor(drawVisitor, g, sF, new Point2D.Double(0, 0), plateModel.getPlateList());
 	}
 	
 	/**
@@ -178,8 +158,10 @@ public class TaskModel {
         factories.add(new TaskFactory(new MultiTask()));
 
         //add in user made tasks
-        for (IExecuteTask task : serializationModel.getSavedTasks()){
-            factories.add(new TaskFactory(task));
+        ArrayList<Object> savedTasks = serializationModel.getSavedData(SaveType.TASK);
+        for (Object task : savedTasks){
+            //add task, making sure to cast it appropriately
+            factories.add(new TaskFactory((IExecuteTask) task));
         }
 
         return factories;
@@ -231,8 +213,7 @@ public class TaskModel {
         if (shouldReverse) {} //TODO: implement a reverse method
 
         //finally, stick this constructed task on the end and tell the view to update itself
-        ((MultiTask) taskQueue.getRoot()).addTaskToEnd(finalTask);
-        taskQueue.nodeStructureChanged((MultiTask) taskQueue.getRoot());
+        appendTaskToQueue(finalTask);
     }
 
     /**
@@ -258,5 +239,14 @@ public class TaskModel {
                 new DispenseTask(amount),
                 new RaiseTask()
         );
+    }
+
+    /**
+     * Append this task to the end of the task tree.
+     * @param taskToAdd IExecuteTask to add
+     */
+    public void appendTaskToQueue(IExecuteTask taskToAdd) {
+        ((MultiTask) taskQueue.getRoot()).addTaskToEnd(taskToAdd);
+        taskQueue.nodeStructureChanged((MultiTask) taskQueue.getRoot());
     }
 }

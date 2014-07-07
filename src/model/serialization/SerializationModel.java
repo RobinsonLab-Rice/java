@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import main.adapters.serialization.Serialization2PlateAdapter;
-import main.adapters.serialization.Serialization2TaskAdapter;
+import model.plate.PlateModel;
 import model.plate.objects.Workflow;
 import model.plate.objects.PlateSpecifications;
+import model.tasks.TaskModel;
 import model.tasks.basictasks.IExecuteTask;
 import model.tasks.basictasks.MultiTask;
 
@@ -30,12 +30,12 @@ public class SerializationModel {
 	/**
 	 * Adapter to access task model.
 	 */
-	private Serialization2TaskAdapter taskModel;
+	private TaskModel taskModel;
 	
 	/**
 	 * Adapter to access plate model.
 	 */
-	private Serialization2PlateAdapter plateModel;
+	private PlateModel plateModel;
 	
 	/**
 	 * Extension to save files with.
@@ -48,7 +48,7 @@ public class SerializationModel {
 	/**
 	 * On initialization, connects to given adapters.
 	 */
-	public void start(Serialization2TaskAdapter taskModel, Serialization2PlateAdapter plateModel){
+	public void start(TaskModel taskModel, PlateModel plateModel){
         this.taskModel = taskModel;
         this.plateModel = plateModel;
 
@@ -142,15 +142,18 @@ public class SerializationModel {
         }
     }
 
-	/**
-	 * Loads workflow with given filename, giving it to the task and plate models to load back into the program.
-	 * @param filename - name of file to load from, without folder or extension
-	 */
-	public void loadWorkflow(String filename) {
-		Workflow loaded = (Workflow) loadData("data/workflow/" + filename + ext);
-        plateModel.setPlateList(loaded.plates);
-        taskModel.setTasks((MultiTask)loaded.tasks);
-	}
+    /**
+     * Checks to see if item specified by qualifiedPath actually exists
+     * @param qualifiedPath complete path of item to check
+     * @return whether or not the item exists
+     */
+    public boolean checkData(String qualifiedPath) {
+        File f = new File(qualifiedPath);
+        if (f.exists() && !f.isDirectory()) {
+            return true;
+        }
+        else return false;
+    }
 	
 	/**
 	 * Loads plate with the given filename, returning it to the view to be put in correct fields.
@@ -172,15 +175,6 @@ public class SerializationModel {
 	}
 	
 	/**
-	 * Get current plates and taskQueue from plate and task models and save it to the input file.
-	 * @param filename - name of location to save the file, without folder or extension
-	 */
-	public void saveWorkflow(String filename) {
-		String qualifiedName = "data/workflow/" + filename + ext;
-		saveItem(qualifiedName, new Workflow(plateModel.getPlateList(), taskModel.getTasks()));
-	}
-	
-	/**
 	 * Uses JSON to save the IExecuteTask to data/tasks/name. Only multitasks can be saved, so the
      * name to save the task as is just taken to be the name of the multitask.
      *
@@ -190,6 +184,16 @@ public class SerializationModel {
 		String qualifiedName = "data/tasks/" + task.toString() + ext;
 		saveItem(qualifiedName, task);
 	}
+
+    /**
+     * Uses JSON to save the IExecuteTask (root of model) to data/experiments/name. Only multitasks can be saved,
+     * and they are saved into a special folder that only saves/loads entire experiments (root of the task tree).
+     * @param task - incoming root task to persist
+     */
+    public void saveExperiment(IExecuteTask task) {
+        String qualifiedName = "data/experiments/" + task.toString() + ext;
+        saveItem(qualifiedName, task);
+    }
 	
 	/**
 	 * Uses JSON to save the PlateSpecifications to data/plates/filename
@@ -207,10 +211,11 @@ public class SerializationModel {
      * @return whether or not the save was successful
 	 */
 	public boolean saveItem(String qualifiedName, Object item){
+
 		FileOutputStream fos = null;
 
         //if the item already exists, ask the user if they really want to continue
-        if (loadData(qualifiedName) != null) {
+        if (checkData(qualifiedName) == true) {
             int result = JOptionPane.showOptionDialog(null,
                     "Saved item with that name already exists. Overwrite it?",
                     "Overwrite existing?",
@@ -244,7 +249,7 @@ public class SerializationModel {
      * @param saveType enum of different possible types of data
      * @return iterable of the saved data
      */
-    public Iterable<Object> getSavedData(SaveType saveType) {
+    public ArrayList<Object> getSavedData(SaveType saveType) {
         ArrayList<Object> savedData = new ArrayList<Object>();
         //for each file name found in updateDataList, call loadData on that and get the resulting saved object
         for (String location : updateDataList(saveType, true)) {

@@ -1,19 +1,12 @@
 package view;
 
-import main.adapters.view.View2PlateAdapter;
-import main.adapters.view.View2SerialCommAdapter;
-import main.adapters.view.View2SerializationAdapter;
-import main.adapters.view.View2TaskAdapter;
-import model.tasks.basictasks.MultiTask;
+import model.plate.PlateModel;
+import model.serial.SerialModel;
+import model.serialization.SerializationModel;
+import model.tasks.TaskModel;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Created by Christian on 6/11/2014.
@@ -28,10 +21,10 @@ public class MainPanel extends JFrame{
     private TaskCreationPanel taskCreationPanel;
 
     /* Adapters to back-end models. */
-    private View2PlateAdapter plateModel;
-    private View2SerializationAdapter serializationModel;
-    private View2SerialCommAdapter serialCommModel;
-    private View2TaskAdapter taskModel;
+    private PlateModel plateModel;
+    private SerializationModel serializationModel;
+    private SerialModel serialCommModel;
+    private TaskModel taskModel;
     private Double defaultDispense;
 
     /* Constructor that initializes adapters so the GUI can talk to the back-end models. */
@@ -39,7 +32,7 @@ public class MainPanel extends JFrame{
     }
 
     /* Called after bindings have completed, set up frame to actually be displayed. */
-    public void start(View2PlateAdapter plateModel, View2SerializationAdapter serializationModel, View2SerialCommAdapter serialCommModel, View2TaskAdapter taskModel) {
+    public void start(PlateModel plateModel, SerializationModel serializationModel, SerialModel serialCommModel, TaskModel taskModel) {
 
         /* Set the adapters */
         this.plateModel = plateModel;
@@ -52,7 +45,7 @@ public class MainPanel extends JFrame{
         taskCreationPanel.start(this, taskModel, serializationModel);
 
         /* Do necessary communication with backend models */
-        plateModel.setFrame(serializationModel.getSavedBounds(), modelPane);
+        plateModel.setBorderFrame(serializationModel.getSavedBounds(), modelPane);
 
         modelPane.addMouseListener(new MovementAreaMouseAdapter(plateModel, taskModel));
 
@@ -83,7 +76,7 @@ public class MainPanel extends JFrame{
 			**/
 			public void paintComponent(Graphics g) {
 			    super.paintComponent(g);   	// Do everything normally done first, e.g. clear the screen.
-			    plateModel.paint(g);  	    // call back to the model to paint the aperture
+                plateModel.paintAll(g);     // call back to the model to paint the aperture
 			}
 		};
     }

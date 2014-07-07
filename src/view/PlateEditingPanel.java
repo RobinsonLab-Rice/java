@@ -1,7 +1,7 @@
 package view;
 
-import main.adapters.view.View2SerializationAdapter;
 import model.plate.objects.PlateSpecifications;
+import model.serialization.SerializationModel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -28,7 +28,7 @@ public class PlateEditingPanel extends JFrame {
     private JTextField fileNameTxt;
     private JPanel contentPane;
 
-    private View2SerializationAdapter serializationModel;
+    private SerializationModel serializationModel;
 
     public PlateEditingPanel() {
 
@@ -53,12 +53,12 @@ public class PlateEditingPanel extends JFrame {
         saveAsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                serializationModel.saveSpecs(fileNameTxt.getText(), packagePlateSpecs());
+                serializationModel.savePlate(fileNameTxt.getText(), packagePlateSpecs());
             }
         });
     }
 
-    public void start(View2SerializationAdapter serializationModel, String defaultPlate) {
+    public void start(SerializationModel serializationModel, String defaultPlate) {
         this.serializationModel = serializationModel;
 
         setContentPane(this.contentPane);
@@ -66,7 +66,7 @@ public class PlateEditingPanel extends JFrame {
         pack();
 
         /* Get default plate specs and populate all the fields. */
-        PlateSpecifications specs = serializationModel.loadPlateSpecs(defaultPlate);
+        PlateSpecifications specs = serializationModel.loadPlate(defaultPlate);
         wellPosXTxt.setText(Double.toString(specs.getWellCorner().getX()));
         wellPosYTxt.setText(Double.toString(specs.getWellCorner().getY()));
         wellToWellDiameterTxt.setText(Double.toString(specs.getWellSpacing()));

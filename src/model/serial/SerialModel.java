@@ -12,9 +12,9 @@ import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
-import main.adapters.serial.Serial2PlateAdapter;
-import main.adapters.serial.Serial2TaskAdapter;
-import main.adapters.serial.Serial2ViewAdapter;
+import model.plate.PlateModel;
+import model.tasks.TaskModel;
+import view.MainPanel;
 
 /**
  * Model that handles all communication with the micro-controller. Will reach into the other model to
@@ -27,17 +27,17 @@ public class SerialModel implements SerialPortEventListener {
 	/**
 	 * Adapter from serial model to the main view.
 	 */
-	private Serial2ViewAdapter view;
+	private MainPanel view;
 	
 	/**
 	 * Adapter from the task model to plate model.
 	 */
-	private Serial2TaskAdapter taskModel;
+	private TaskModel taskModel;
 	
 	/**
 	 * Adapter from the task model to plate model.
 	 */
-	private Serial2PlateAdapter plateModel;
+	private PlateModel plateModel;
 	
 	/**
 	 * Serial port the Arduino is found on.
@@ -63,7 +63,7 @@ public class SerialModel implements SerialPortEventListener {
 	/**
 	 * Called by the controller, performs any start up tasks necessary for the model.
 	 */
-	public void start(Serial2ViewAdapter view, Serial2TaskAdapter taskModel, Serial2PlateAdapter plateModel){
+	public void start(MainPanel view, TaskModel taskModel, PlateModel plateModel){
         this.view = view;
         this.taskModel = taskModel;
         this.plateModel = plateModel;

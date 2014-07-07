@@ -13,7 +13,7 @@ import model.tasks.basictasks.*;
 /**
  * Visitor that handles all drawing of tasks. Params passed in is an array containing the graphics to paint on, scale
  * factor to draw at, Point2D location of current (virtual) arm location at the execution of this task, and current
- * list of plates (in that order).
+ * ArrayList of plates (in that order).
  *
  * @author Christian
  *
@@ -72,16 +72,13 @@ public class DrawVisitor extends ATaskVisitor {
                 Graphics2D g2d = (Graphics2D) params[0];
                 double sF = (double) params[1];
                 Point2D start = (Point2D) params[2];
-                Iterable<Plate> plates = (Iterable<Plate>) params[3];
+                ArrayList<Plate> plates = (ArrayList<Plate>) params[3];
                 MoveToWellTask moveToWellHost = (MoveToWellTask) host;
                 ArrayList<String> identifiers = moveToWellHost.getDestination();
                 Point2D destination = null;
-                Iterator itr = plates.iterator();
-                while (itr.hasNext()){
-                    Plate currPlate = (Plate) itr.next();
-                    //if plate names match, get the well
-                    if (currPlate.getName().equals(identifiers.get(0)))
-                        destination = currPlate.getWellLocation(identifiers.get(1));
+                for (Plate plate : plates) {
+                    if (plate.getName().equals(identifiers.get(0)))
+                        destination = plate.getWellLocation(identifiers.get(1));
                 }
                 //actually draw the task. if the plate doesn't exist and destination is null, do nothing
                 if (destination != null)

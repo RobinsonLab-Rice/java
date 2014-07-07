@@ -1,13 +1,9 @@
 package view;
 
-import main.adapters.view.View2PlateAdapter;
-import main.adapters.view.View2TaskAdapter;
-import model.tasks.basictasks.IExecuteTask;
-import model.tasks.basictasks.MultiTask;
+import model.plate.PlateModel;
+import model.tasks.TaskModel;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultTreeModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -20,8 +16,8 @@ import java.awt.event.MouseEvent;
  */
 public class MovementAreaMouseAdapter extends MouseAdapter {
 
-    private View2PlateAdapter plateModel;
-    private View2TaskAdapter taskModel;
+    private PlateModel plateModel;
+    private TaskModel taskModel;
 
     /* Used for tracking click and drags. */
     private MouseEvent startInfo;
@@ -30,7 +26,7 @@ public class MovementAreaMouseAdapter extends MouseAdapter {
      * @param plateModel adapter to plate model
      * @param taskModel adapter to task model
      */
-    public MovementAreaMouseAdapter(View2PlateAdapter plateModel, View2TaskAdapter taskModel) {
+    public MovementAreaMouseAdapter(PlateModel plateModel, TaskModel taskModel) {
         this.plateModel = plateModel;
         this.taskModel = taskModel;
     }

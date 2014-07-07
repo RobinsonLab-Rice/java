@@ -1,13 +1,14 @@
 package view;
 
-import main.adapters.view.View2PlateAdapter;
-import main.adapters.view.View2SerializationAdapter;
+import model.plate.PlateModel;
 import model.plate.objects.PlateSpecifications;
 import model.serialization.SaveType;
+import model.serialization.SerializationModel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Point2D;
 
 /**
  * GUI sub-panel that handles all input for plate creation.
@@ -28,8 +29,8 @@ public class PlateSetupPanel {
     private JTextField plateNicknameTxt;
 
     /* Adapters to back-end models. */
-    private View2PlateAdapter plateModel;
-    private View2SerializationAdapter serializationModel;
+    private PlateModel plateModel;
+    private SerializationModel serializationModel;
 
     /* Constructor that initializes special component needs. */
     public PlateSetupPanel() {
@@ -47,8 +48,9 @@ public class PlateSetupPanel {
         makePlateBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                PlateSpecifications specs = serializationModel.loadPlateSpecs(savedPlatesCmb.getSelectedItem().toString());
-                boolean result = plateModel.addPlate(plateNicknameTxt.getText(), numberingOrderCmb.getSelectedItem().toString(), xPosTxt.getText(), yPosTxt.getText(), specs);
+                PlateSpecifications specs = serializationModel.loadPlate(savedPlatesCmb.getSelectedItem().toString());
+                boolean result = plateModel.addPlate(plateNicknameTxt.getText(), numberingOrderCmb.getSelectedItem().toString(),
+                        new Point2D.Double(Double.parseDouble(xPosTxt.getText()), Double.parseDouble(yPosTxt.getText())), specs);
                 //if we could not add the plate, tell the user
                 if (result == false) {
                     JOptionPane.showMessageDialog(makePlateBtn, "Possibly same name as previously made plate, or in same location.",
@@ -67,11 +69,11 @@ public class PlateSetupPanel {
     }
 
     /* Perform necessary startup procedures (populating dropboxes, etc.) */
-    public void start(final View2PlateAdapter plateModel, final View2SerializationAdapter serializationModel) {
+    public void start(final PlateModel plateModel, final SerializationModel serializationModel) {
         this.plateModel = plateModel;
         this.serializationModel = serializationModel;
 
-        Iterable<String> savedPlates = serializationModel.updateDataList(SaveType.PLATE_SPEC);
+        Iterable<String> savedPlates = serializationModel.updateDataList(SaveType.PLATE_SPEC, false);
         MainPanel.GUIHelper.updateCmb(savedPlates, savedPlatesCmb);
     }
 

@@ -6,13 +6,13 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
-import main.adapters.plate.Plate2TaskAdapter;
-import main.adapters.plate.Plate2ViewAdapter;
 import model.plate.objects.ArmState;
 import model.plate.objects.BorderFrame;
 import model.plate.objects.Plate;
 import model.plate.objects.PlateSpecifications;
 import model.plate.objects.Well;
+import model.tasks.TaskModel;
+import view.MainPanel;
 
 /**
  * Model that keeps track of the current state of the frame, cell plates, and the wells themselves. Essentially,
@@ -26,12 +26,12 @@ public class PlateModel {
 	/**
 	 * Adapter from plate model to main view.
 	 */
-	private Plate2ViewAdapter view;
+	private MainPanel view;
 	
 	/**
 	 * Adapter from plate model to serial model.
 	 */
-	private Plate2TaskAdapter taskModel;
+	private TaskModel taskModel;
 	
 	/**
 	 * All the plates that are currently on the screen.
@@ -59,7 +59,7 @@ public class PlateModel {
 	}
 
     /* On initialization, connects to given adapters. */
-    public void start(Plate2ViewAdapter view, Plate2TaskAdapter taskModel){
+    public void start(MainPanel view, TaskModel taskModel){
         this.view = view;
         this.taskModel = taskModel;
     }
@@ -73,7 +73,7 @@ public class PlateModel {
 	public void setBorderFrame(Point2D bounds, Component canvas){
 		armState = new ArmState(bounds, this);
 		border = new BorderFrame(bounds, canvas);
-		view.updateView();
+		view.update();
 	}
 	
 	/**
@@ -102,7 +102,7 @@ public class PlateModel {
         }
         if (addSuccessful == true) {
             plates.add(plate);
-            view.updateView();
+            view.update();
         }
 		return addSuccessful;
 	}
@@ -131,7 +131,7 @@ public class PlateModel {
 	 */
 	public void clearAllPlates(){
 		plates.clear();
-		view.updateView();
+		view.update();
 	}
 
     /**
@@ -150,7 +150,7 @@ public class PlateModel {
                 break;
             }
         }
-        view.updateView();
+        view.update();
     }
 
 	/**
@@ -201,7 +201,7 @@ public class PlateModel {
 	/**
 	 * @return All the plates that are currently on the screen.
 	 */
-	public Iterable<Plate> getPlateList(){
+	public ArrayList<Plate> getPlateList(){
 		return plates;
 	}
 	
@@ -214,7 +214,7 @@ public class PlateModel {
 		for (Plate plate : plates){
 			addPlate(plate);
 		}
-		view.updateView();
+		view.update();
 	}
 	
 	/**
@@ -269,7 +269,7 @@ public class PlateModel {
             }
             else taskModel.makeMoveTask(selectedWells, endWell, dispenseAmounts, shouldReverse);
         }
-        view.updateView();
+        view.update();
     }
 
     /**
@@ -290,7 +290,7 @@ public class PlateModel {
         else {
             doRegularClick(justSelected);
         }
-        view.updateView(); //regardless of what happened, update the visualization
+        view.update(); //regardless of what happened, update the visualization
     }
 
     /**

@@ -1,8 +1,8 @@
 package view;
 
-import main.adapters.view.View2SerializationAdapter;
-import main.adapters.view.View2TaskAdapter;
+import model.serialization.SerializationModel;
 import model.tasks.ITaskFactory;
+import model.tasks.TaskModel;
 import model.tasks.basictasks.IExecuteTask;
 import model.tasks.basictasks.MultiTask;
 
@@ -22,12 +22,12 @@ import java.awt.event.MouseEvent;
 public class TreeRightClickListener extends MouseAdapter {
 
     private TaskTree taskTree;
-    private View2TaskAdapter taskModel;
-    private View2SerializationAdapter serializationModel;
+    private TaskModel taskModel;
+    private SerializationModel serializationModel;
     private JComboBox savedTasksCmb;
 
     public TreeRightClickListener(JComboBox savedTasksCmb, TaskTree taskTree,
-                                  View2TaskAdapter taskModel, View2SerializationAdapter serializationModel) {
+                                  TaskModel taskModel, SerializationModel serializationModel) {
         this.savedTasksCmb = savedTasksCmb;
         this.taskTree = taskTree;
         this.taskModel = taskModel;
@@ -49,24 +49,46 @@ public class TreeRightClickListener extends MouseAdapter {
 
             private static final long serialVersionUID = -3142513178293086540L;
 
-            JMenuItem save
-                    ,
-                    delete;
+            JMenuItem saveTask, saveExperiment, delete;
 
             {
-                save = new JMenuItem("Save");
+                saveTask = new JMenuItem("Save Task");
+                saveExperiment = new JMenuItem("Save Experiment");
                 delete = new JMenuItem("Delete");
 
                 /* Only allow saving on multitasks. Saves it as the multitask's current name. */
-                save.addActionListener(new ActionListener() {
+                saveTask.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    //get the selected node to later use it
+                    MultiTask selected = (MultiTask) selPath.getLastPathComponent();
+
+                    String s = popSaveDialog(selected);
+
+                    //if they didn't input anything or cancelled, do nothing and return out
+                    if (s == null || s.equals("")) { }
+                    //else, they did input something, attempt to save it
+                    else {
+                        serializationModel.saveTask(selected);
+                    }
+
+                    MainPanel.GUIHelper.updateCmb(taskModel.getTaskFactories(), savedTasksCmb);
+                    }
+                });
+
+                saveExperiment.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        //save the task to file system
-                        serializationModel.saveExecutionTask((IExecuteTask) selPath.getLastPathComponent());
-                        //update the combobox of tasks so this is shown
-//                        savedTasksCmb.removeAllItems();
-//                        for (ITaskFactory factory : taskModel.getTaskFactories()){
-//                            savedTasksCmb.addItem(factory);
-//                        }
+                        //get the selected node to later use it
+                        MultiTask selected = (MultiTask) selPath.getLastPathComponent();
+
+                        String s = popSaveDialog(selected);
+
+                        //if they didn't input anything or cancelled, do nothing and return out
+                        if (s == null || s.equals("")) { }
+                        //else, they did input something, attempt to save it
+                        else {
+                            serializationModel.saveExperiment(selected);
+                        }
+
                         MainPanel.GUIHelper.updateCmb(taskModel.getTaskFactories(), savedTasksCmb);
                     }
                 });
@@ -84,8 +106,15 @@ public class TreeRightClickListener extends MouseAdapter {
 
                 //make a different menu for multitasks and other tasks
                 if (selPath.getLastPathComponent() instanceof MultiTask){
-                    add(save);
                     add(delete);
+                    //if we selected the root, add button for saving experiment
+                    if (selPath.getLastPathComponent() == taskTree.getModel().getRoot()) {
+                        add(saveExperiment);
+                    }
+                    //else, we selected a different multitask, add button for just saving regular tasks
+                    else {
+                        add(saveTask);
+                    }
                 }
                 else {
                     add(delete);
@@ -107,5 +136,20 @@ public class TreeRightClickListener extends MouseAdapter {
         } else {
             return;
         }
+    }
+
+    /**
+     * Popup dialog for entering name of data to save.
+     * @return String (could be null) that the user input
+     */
+    private String popSaveDialog(MultiTask selected) {
+        return (String)JOptionPane.showInputDialog(
+                taskTree,
+                "Save as:",
+                "Save Item",
+                JOptionPane.YES_NO_OPTION,
+                null,
+                null,
+                selected.name);
     }
 }

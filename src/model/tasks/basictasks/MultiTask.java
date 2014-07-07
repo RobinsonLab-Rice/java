@@ -21,7 +21,7 @@ public class MultiTask extends AExecuteTask {
 	private ArrayList<IExecuteTask> taskList = new ArrayList<IExecuteTask>();
 
     /* Name of this task, also shows what the text file it is saved to will be. */
-    private String name = "MultiTask";
+    public String name = "MultiTask";
 
     /* Empty constructor, does nothing. */
     public MultiTask() {

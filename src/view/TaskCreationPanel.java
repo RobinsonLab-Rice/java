@@ -1,18 +1,13 @@
 package view;
 
-import com.cedarsoftware.util.io.JsonReader;
-import com.cedarsoftware.util.io.JsonWriter;
-import main.adapters.view.View2SerializationAdapter;
-import main.adapters.view.View2TaskAdapter;
-import model.plate.objects.PlateSpecifications;
+import model.serialization.SerializationModel;
 import model.tasks.ITaskFactory;
+import model.tasks.TaskModel;
 import model.tasks.basictasks.*;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
 import java.awt.event.*;
-import java.io.IOException;
 
 /**
  * Created by Christian on 6/13/2014.
@@ -28,8 +23,8 @@ public class TaskCreationPanel extends JPanel {
     private JTextField defaultDispense;
 
     private MainPanel mainView;
-    private View2TaskAdapter taskModel;
-    private View2SerializationAdapter serializationModel;
+    private TaskModel taskModel;
+    private SerializationModel serializationModel;
 
     /* Constructor that initializes special component needs. */
     public TaskCreationPanel() {
@@ -56,7 +51,7 @@ public class TaskCreationPanel extends JPanel {
     }
 
     /* Perform necessary startup procedures (populating dropboxes, etc.) */
-    public void start(MainPanel mainView, View2TaskAdapter taskModel, View2SerializationAdapter serializationModel){
+    public void start(MainPanel mainView, TaskModel taskModel, SerializationModel serializationModel){
         this.mainView = mainView;
         this.taskModel = taskModel;
         this.serializationModel = serializationModel;

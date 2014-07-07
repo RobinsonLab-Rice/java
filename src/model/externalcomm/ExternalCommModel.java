@@ -1,6 +1,6 @@
 package model.externalcomm;
 
-import main.adapters.externalcomm.ExternalComm2TaskAdapter;
+import model.tasks.TaskModel;
 
 import java.net.*;
 import java.util.concurrent.ExecutorService;
@@ -18,7 +18,7 @@ public class ExternalCommModel {
 	/**
 	 * Adapter from this model to the task model.
 	 */
-	ExternalComm2TaskAdapter taskModel;
+    TaskModel taskModel;
 	
 	ServerSocket welcomeSocket;
 	
@@ -31,7 +31,7 @@ public class ExternalCommModel {
 	public ExternalCommModel(){}
 
     /* On initialization, connects to given adapters and starts the server. */
-	public void start(ExternalComm2TaskAdapter taskModel){
+	public void start(TaskModel taskModel){
         this.taskModel = taskModel;
 		startServer();
 	}
