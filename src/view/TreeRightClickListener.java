@@ -1,13 +1,13 @@
 package view;
 
 import model.serialization.SerializationModel;
-import model.tasks.ITaskFactory;
 import model.tasks.TaskModel;
 import model.tasks.basictasks.IExecuteTask;
 import model.tasks.basictasks.MultiTask;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -68,6 +68,7 @@ public class TreeRightClickListener extends MouseAdapter {
                     if (s == null || s.equals("")) { }
                     //else, they did input something, attempt to save it
                     else {
+                        selected.name = s;
                         serializationModel.saveTask(selected);
                     }
 
@@ -86,6 +87,7 @@ public class TreeRightClickListener extends MouseAdapter {
                         if (s == null || s.equals("")) { }
                         //else, they did input something, attempt to save it
                         else {
+                            selected.name = s;
                             serializationModel.saveExperiment(selected);
                         }
 
@@ -93,14 +95,18 @@ public class TreeRightClickListener extends MouseAdapter {
                     }
                 });
 
-                /* Delete selected item from backend model (and tree). */
+                /* Delete selected items from backend model (and tree). */
                 delete.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                    IExecuteTask toDelete = (IExecuteTask) taskTree.getSelectionPath().getLastPathComponent();
-                    if (toDelete.getParent() == null)   //no parent means it is the root
-                        ((DefaultTreeModel) taskTree.getModel()).setRoot(new MultiTask());
-                    else                                //for all other nodes, remove them from parent
-                        ((DefaultTreeModel) taskTree.getModel()).removeNodeFromParent(toDelete);
+                        TreePath[] paths = taskTree.getSelectionPaths();
+                        for (TreePath path : paths) {
+                            MutableTreeNode toDelete = (MutableTreeNode) path.getLastPathComponent();
+
+                            if (toDelete.getParent() == null)   //no parent means it is the root
+                                ((DefaultTreeModel) taskTree.getModel()).setRoot(new MultiTask());
+                            else                                //for all other nodes, remove them from parent
+                                ((DefaultTreeModel) taskTree.getModel()).removeNodeFromParent(toDelete);
+                        }
                     }
                 });
 

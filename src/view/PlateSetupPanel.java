@@ -27,6 +27,7 @@ public class PlateSetupPanel {
     private JButton clearAllPlatesBtn;
     private JPanel plateSetupPanel;
     private JTextField plateNicknameTxt;
+    private JButton deleteSavedPlateBtn;
 
     /* Adapters to back-end models. */
     private PlateModel plateModel;
@@ -41,6 +42,7 @@ public class PlateSetupPanel {
             public void actionPerformed(ActionEvent e) {
                 PlateEditingPanel editFrame = new PlateEditingPanel();
                 editFrame.start(serializationModel, savedPlatesCmb.getSelectedItem().toString());
+                MainPanel.GUIHelper.updateCmb(serializationModel.updateDataList(SaveType.PLATE_SPEC, false), savedPlatesCmb);
             }
         });
 
@@ -59,6 +61,15 @@ public class PlateSetupPanel {
             }
         });
 
+        /* When button to delete saved plate is pressed, do just that. */
+        deleteSavedPlateBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                serializationModel.deleteData(savedPlatesCmb.getSelectedItem().toString(), SaveType.PLATE_SPEC);
+                MainPanel.GUIHelper.updateCmb(serializationModel.updateDataList(SaveType.PLATE_SPEC, false), savedPlatesCmb);
+            }
+        });
+
         /* When clear plates button is pressed, remove all plates from the backend model containing them. */
         clearAllPlatesBtn.addActionListener(new ActionListener() {
             @Override
@@ -73,8 +84,7 @@ public class PlateSetupPanel {
         this.plateModel = plateModel;
         this.serializationModel = serializationModel;
 
-        Iterable<String> savedPlates = serializationModel.updateDataList(SaveType.PLATE_SPEC, false);
-        MainPanel.GUIHelper.updateCmb(savedPlates, savedPlatesCmb);
+        MainPanel.GUIHelper.updateCmb(serializationModel.updateDataList(SaveType.PLATE_SPEC, false), savedPlatesCmb);
     }
 
 }

@@ -73,7 +73,7 @@ public class SerializationModel {
 		File dir = null;
 		switch (type){
 			case PLATE_SPEC: dir = new File("data/plates"); 		break;
-			case WORKFLOW: dir = new File("data/workflow"); 		break;
+			case EXPERIMENT: dir = new File("data/experiments");    break;
 			case TASK: dir = new File("data/tasks");				break;
 			default: System.out.println("Not a valid save type."); 	break;
 		}
@@ -89,7 +89,6 @@ public class SerializationModel {
  
 		//if no files exist
 		if (list.length == 0) {
-			System.out.println("no files end with : " + ext);
 			return new ArrayList<String>();
 		}
  
@@ -112,9 +111,10 @@ public class SerializationModel {
 	public void deleteData(String filename, SaveType type) {
 		File dataFile = null;
 		switch (type){
-			case PLATE_SPEC: dataFile = new File("data/plates/" + filename + ext);	break;
-			case WORKFLOW: dataFile = new File("data/workflow/" + filename + ext);	break;
-			default: System.out.println("Did not recognize the save data type!");	break;
+            case TASK:       dataFile = new File("data/tasks/" + filename + ext);	    break;
+			case PLATE_SPEC: dataFile = new File("data/plates/" + filename + ext);	    break;
+			case EXPERIMENT: dataFile = new File("data/experiments/" + filename + ext);	break;
+			default: System.out.println("Did not recognize the save data type!");	    return;
 		}
 		dataFile.delete();
 	}
@@ -141,19 +141,6 @@ public class SerializationModel {
             return null;
         }
     }
-
-    /**
-     * Checks to see if item specified by qualifiedPath actually exists
-     * @param qualifiedPath complete path of item to check
-     * @return whether or not the item exists
-     */
-    public boolean checkData(String qualifiedPath) {
-        File f = new File(qualifiedPath);
-        if (f.exists() && !f.isDirectory()) {
-            return true;
-        }
-        else return false;
-    }
 	
 	/**
 	 * Loads plate with the given filename, returning it to the view to be put in correct fields.
@@ -173,6 +160,17 @@ public class SerializationModel {
         task.resetParents();
         return task;
 	}
+
+    /**
+     * Loads task with given filename.
+     * @param filename - name of file to load from, without folder or extension
+     * @return
+     */
+    public IExecuteTask loadExperiment(String filename) {
+        IExecuteTask task = (IExecuteTask) loadData("data/experiments/" + filename + ext);
+        task.resetParents();
+        return task;
+    }
 	
 	/**
 	 * Uses JSON to save the IExecuteTask to data/tasks/name. Only multitasks can be saved, so the
@@ -261,5 +259,18 @@ public class SerializationModel {
     /* Returns saved bounds that were loaded on program startup. */
     public Point2D getSavedBounds() {
         return userSettings.frameBounds;
+    }
+
+    /**
+     * Checks to see if item specified by qualifiedPath actually exists
+     * @param qualifiedPath complete path of item to check
+     * @return whether or not the item exists
+     */
+    public boolean checkData(String qualifiedPath) {
+        File f = new File(qualifiedPath);
+        if (f.exists() && !f.isDirectory()) {
+            return true;
+        }
+        else return false;
     }
 }

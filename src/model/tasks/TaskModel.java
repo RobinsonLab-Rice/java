@@ -167,6 +167,19 @@ public class TaskModel {
         return factories;
     }
 
+    public Iterable<ITaskFactory> getExperimentFactories() {
+        ArrayList<ITaskFactory> factories = new ArrayList<ITaskFactory>();
+
+        //add in user made tasks
+        ArrayList<Object> savedTasks = serializationModel.getSavedData(SaveType.EXPERIMENT);
+        for (Object task : savedTasks){
+            //add task, making sure to cast it appropriately
+            factories.add(new TaskFactory((IExecuteTask) task));
+        }
+
+        return factories;
+    }
+
     /**
      * @return TreeModel that encompasses our current task heirarchy
      */

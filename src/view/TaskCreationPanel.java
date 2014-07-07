@@ -1,5 +1,6 @@
 package view;
 
+import model.serialization.SaveType;
 import model.serialization.SerializationModel;
 import model.tasks.ITaskFactory;
 import model.tasks.TaskModel;
@@ -7,6 +8,8 @@ import model.tasks.basictasks.*;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.event.*;
 
 /**
@@ -15,12 +18,16 @@ import java.awt.event.*;
 public class TaskCreationPanel extends JPanel {
     private JPanel taskCreatingPanel;
     private JComboBox<ITaskFactory> savedTasksCmb;
-    private JButton moveToEditTreeBtn;
+    private JButton moveTaskToTreeBtn;
     private JButton debugExecuteBtn;
     private JButton executeAllBtn;
     private TaskTree taskTree;
     private JTextField defaultPlate;
     private JTextField defaultDispense;
+    private JComboBox<ITaskFactory> savedExperimentCmb;
+    private JButton moveExperimentToTreeBtn;
+    private JButton deleteTaskBtn;
+    private JButton deleteExperimentBtn;
 
     private MainPanel mainView;
     private TaskModel taskModel;
@@ -29,8 +36,8 @@ public class TaskCreationPanel extends JPanel {
     /* Constructor that initializes special component needs. */
     public TaskCreationPanel() {
 
-        /* Get selected factory, make its task, and add that to the edit tree. */
-        moveToEditTreeBtn.addActionListener(new ActionListener() {
+        /* Get selected factory, make its task, and add that to the execution tree. */
+        moveTaskToTreeBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 IExecuteTask root = (IExecuteTask) taskTree.getModel().getRoot();
@@ -38,6 +45,35 @@ public class TaskCreationPanel extends JPanel {
                 taskToAdd.setParent(root);
                 root.insert(taskToAdd, root.getChildCount());
                 ((DefaultTreeModel)taskTree.getModel()).nodeStructureChanged(root);
+            }
+        });
+
+        /* Get selected factory, make its task, and make that the new root of the execution tree. */
+        moveExperimentToTreeBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                IExecuteTask newRoot = savedExperimentCmb.getItemAt(savedExperimentCmb.getSelectedIndex()).make();
+                ((DefaultTreeModel) taskTree.getModel()).setRoot(newRoot);
+            }
+        });
+
+        deleteTaskBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (savedTasksCmb.getSelectedIndex() <= 4) {
+                    JOptionPane.showMessageDialog(savedTasksCmb, "Can't delete a built-in task.");
+                    return;
+                }
+                serializationModel.deleteData(savedTasksCmb.getItemAt(savedTasksCmb.getSelectedIndex()).toString(), SaveType.TASK);
+                MainPanel.GUIHelper.updateCmb(taskModel.getTaskFactories(), savedTasksCmb);
+            }
+        });
+
+        deleteExperimentBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                serializationModel.deleteData(savedExperimentCmb.getItemAt(savedExperimentCmb.getSelectedIndex()).toString(), SaveType.EXPERIMENT);
+                MainPanel.GUIHelper.updateCmb(taskModel.getExperimentFactories(), savedExperimentCmb);
             }
         });
 
@@ -66,11 +102,15 @@ public class TaskCreationPanel extends JPanel {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getExtendedKeyCode() == KeyEvent.VK_BACK_SPACE) {
-                    IExecuteTask toDelete = (IExecuteTask) taskTree.getSelectionPath().getLastPathComponent();
-                    if (toDelete.getParent() == null)   //no parent means it is the root
-                        ((DefaultTreeModel) taskTree.getModel()).setRoot(new MultiTask());
-                    else                                //for all other nodes, remove them from parent
-                        ((DefaultTreeModel) taskTree.getModel()).removeNodeFromParent(toDelete);
+                    TreePath[] paths = taskTree.getSelectionPaths();
+                    for (TreePath path : paths) {
+                        MutableTreeNode toDelete = (MutableTreeNode) path.getLastPathComponent();
+
+                        if (toDelete.getParent() == null)   //no parent means it is the root
+                            ((DefaultTreeModel) taskTree.getModel()).setRoot(new MultiTask());
+                        else                                //for all other nodes, remove them from parent
+                            ((DefaultTreeModel) taskTree.getModel()).removeNodeFromParent(toDelete);
+                    }
                 }
             }
         });
@@ -81,9 +121,9 @@ public class TaskCreationPanel extends JPanel {
 //        taskTree.getActionMap().put("copy", TransferHandler.getCopyAction());
 //        taskTree.getActionMap().put("paste", TransferHandler.getPasteAction());
 
-        for (ITaskFactory factory : taskModel.getTaskFactories()) {
-            savedTasksCmb.addItem(factory);
-        }
+        //populate the task and experiment comboboxes
+        MainPanel.GUIHelper.updateCmb(taskModel.getTaskFactories(), savedTasksCmb);
+        MainPanel.GUIHelper.updateCmb(taskModel.getExperimentFactories(), savedExperimentCmb);
     }
 
     public void createUIComponents(){
