@@ -25,7 +25,7 @@ public class DispenseTask extends ALeafTask {
 	 * @param volume - amount of volume to fill associated well with
 	 */
 	public DispenseTask(Double volume){
-		this.volume = volume;
+        this.volume = volume;
 	}
 	
 	/**

@@ -7,9 +7,11 @@ import model.tasks.TaskModel;
 import model.tasks.basictasks.*;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.*;
 
 /**
@@ -107,11 +109,26 @@ public class TaskCreationPanel extends JPanel {
                         MutableTreeNode toDelete = (MutableTreeNode) path.getLastPathComponent();
 
                         if (toDelete.getParent() == null)   //no parent means it is the root
-                            ((DefaultTreeModel) taskTree.getModel()).setRoot(new MultiTask());
+                            ((DefaultTreeModel) taskTree.getModel()).setRoot(new MultiTask("Experiment Name"));
                         else                                //for all other nodes, remove them from parent
                             ((DefaultTreeModel) taskTree.getModel()).removeNodeFromParent(toDelete);
                     }
                 }
+            }
+        });
+
+        /* Define how the node text will be drawn on the tree. */
+        taskTree.setCellRenderer(new DefaultTreeCellRenderer(){
+            @Override
+            public Component getTreeCellRendererComponent(JTree tree,Object value,
+                                                          boolean sel,boolean expanded,boolean leaf,int row,boolean hasFocus){
+                super.getTreeCellRendererComponent(tree,value,sel,expanded,leaf,row,hasFocus);
+                IExecuteTask node = (IExecuteTask) value;
+                //if node is not visible, grey it out
+                if (!node.getVisibility()){
+                    setForeground(Color.GRAY);
+                }
+                return this;
             }
         });
 

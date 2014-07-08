@@ -214,4 +214,15 @@ public class MultiTask extends AExecuteTask {
     public void setUserObject(Object object) {
         this.name = (String) object;
     }
+
+    /**
+     * Sets this task (and its children, if it haves them) to be visible/hidden on the GUI.
+     */
+    @Override
+    public void setVisibility(boolean isVisible) {
+        this.isVisible = isVisible;
+        for (IExecuteTask task : taskList) {
+            task.setVisibility(isVisible);
+        }
+    }
 }

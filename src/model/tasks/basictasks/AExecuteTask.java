@@ -14,6 +14,8 @@ public abstract class AExecuteTask implements IExecuteTask {
      */
     protected transient IExecuteTask parent;
 
+    protected boolean isVisible = true;
+
     /**
      * Sets the parent of the receiver to <code>newParent</code>. Inherited from MutableTreeNode.
      *
@@ -30,5 +32,12 @@ public abstract class AExecuteTask implements IExecuteTask {
     @Override
     public void removeFromParent() {
         parent.remove(this);
+    }
+
+    /**
+     * @return true if this task is visible to the user, false otherwise
+     */
+    public boolean getVisibility() {
+        return isVisible;
     }
 }

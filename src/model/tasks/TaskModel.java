@@ -262,4 +262,11 @@ public class TaskModel {
         ((MultiTask) taskQueue.getRoot()).addTaskToEnd(taskToAdd);
         taskQueue.nodeStructureChanged((MultiTask) taskQueue.getRoot());
     }
+
+    /**
+     * Sends an order to repaint, so that objects manipulating tasks can make a call to redraw them when finished.
+     */
+    public void repaint() {
+        view.update();
+    }
 }

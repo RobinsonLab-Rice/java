@@ -2,6 +2,7 @@ package view;
 
 import model.serialization.SerializationModel;
 import model.tasks.TaskModel;
+import model.tasks.basictasks.AExecuteTask;
 import model.tasks.basictasks.IExecuteTask;
 import model.tasks.basictasks.MultiTask;
 
@@ -49,12 +50,14 @@ public class TreeRightClickListener extends MouseAdapter {
 
             private static final long serialVersionUID = -3142513178293086540L;
 
-            JMenuItem saveTask, saveExperiment, delete;
+            JMenuItem saveTask, saveExperiment, delete, show, hide;
 
             {
                 saveTask = new JMenuItem("Save Task");
                 saveExperiment = new JMenuItem("Save Experiment");
                 delete = new JMenuItem("Delete");
+                show = new JMenuItem("Show");
+                hide = new JMenuItem("Hide");
 
                 /* Only allow saving on multitasks. Saves it as the multitask's current name. */
                 saveTask.addActionListener(new ActionListener() {
@@ -103,16 +106,37 @@ public class TreeRightClickListener extends MouseAdapter {
                             MutableTreeNode toDelete = (MutableTreeNode) path.getLastPathComponent();
 
                             if (toDelete.getParent() == null)   //no parent means it is the root
-                                ((DefaultTreeModel) taskTree.getModel()).setRoot(new MultiTask());
+                                ((DefaultTreeModel) taskTree.getModel()).setRoot(new MultiTask("Experiment Name"));
                             else                                //for all other nodes, remove them from parent
                                 ((DefaultTreeModel) taskTree.getModel()).removeNodeFromParent(toDelete);
                         }
                     }
                 });
 
+                /* Show task and all its children. */
+                show.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        AExecuteTask selected = (AExecuteTask) selPath.getLastPathComponent();
+                        selected.setVisibility(true);
+                        ((DefaultTreeModel) taskTree.getModel()).nodeStructureChanged(selected);
+                        taskModel.repaint();
+                    }
+                });
+
+                /* Hide task and all its children. */
+                hide.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        AExecuteTask selected = (AExecuteTask) selPath.getLastPathComponent();
+                        selected.setVisibility(false);
+                        ((DefaultTreeModel) taskTree.getModel()).nodeStructureChanged(selected);
+                        taskModel.repaint();
+                    }
+                });
+
                 //make a different menu for multitasks and other tasks
                 if (selPath.getLastPathComponent() instanceof MultiTask){
-                    add(delete);
                     //if we selected the root, add button for saving experiment
                     if (selPath.getLastPathComponent() == taskTree.getModel().getRoot()) {
                         add(saveExperiment);
@@ -122,9 +146,10 @@ public class TreeRightClickListener extends MouseAdapter {
                         add(saveTask);
                     }
                 }
-                else {
-                    add(delete);
-                }
+
+                add(delete);
+                add(show);
+                add(hide);
 
             }
         };

@@ -140,4 +140,12 @@ public abstract class ALeafTask extends AExecuteTask {
     public boolean isLeaf() {
         return true;
     }
+
+    /**
+     * Sets this task to be visible/hidden on the GUI.
+     */
+    @Override
+    public void setVisibility(boolean isVisible) {
+        this.isVisible = isVisible;
+    }
 }

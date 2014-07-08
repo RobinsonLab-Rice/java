@@ -37,4 +37,14 @@ public interface IExecuteTask extends Serializable, MutableTreeNode {
      */
     public void resetParents();
 
+    /**
+     * Sets this task (and its children, if it haves them) to be visible/hidden on the GUI.
+     * @param isVisible true if task should be shown, false if not
+     */
+    public abstract void setVisibility(boolean isVisible);
+
+    /**
+     * @return true if this task is visible to the user, false otherwise
+     */
+    public boolean getVisibility();
 }
