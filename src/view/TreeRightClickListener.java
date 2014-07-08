@@ -22,13 +22,15 @@ import java.awt.event.MouseEvent;
  */
 public class TreeRightClickListener extends MouseAdapter {
 
+    private TaskCreationPanel taskView;
     private TaskTree taskTree;
     private TaskModel taskModel;
     private SerializationModel serializationModel;
     private JComboBox savedTasksCmb;
 
-    public TreeRightClickListener(JComboBox savedTasksCmb, TaskTree taskTree,
+    public TreeRightClickListener(TaskCreationPanel taskView, JComboBox savedTasksCmb, TaskTree taskTree,
                                   TaskModel taskModel, SerializationModel serializationModel) {
+        this.taskView = taskView;
         this.savedTasksCmb = savedTasksCmb;
         this.taskTree = taskTree;
         this.taskModel = taskModel;
@@ -101,15 +103,7 @@ public class TreeRightClickListener extends MouseAdapter {
                 /* Delete selected items from backend model (and tree). */
                 delete.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        TreePath[] paths = taskTree.getSelectionPaths();
-                        for (TreePath path : paths) {
-                            MutableTreeNode toDelete = (MutableTreeNode) path.getLastPathComponent();
-
-                            if (toDelete.getParent() == null)   //no parent means it is the root
-                                ((DefaultTreeModel) taskTree.getModel()).setRoot(new MultiTask("Experiment Name"));
-                            else                                //for all other nodes, remove them from parent
-                                ((DefaultTreeModel) taskTree.getModel()).removeNodeFromParent(toDelete);
-                        }
+                        taskView.deleteNodes(taskTree.getSelectionPaths());
                     }
                 });
 
@@ -119,7 +113,7 @@ public class TreeRightClickListener extends MouseAdapter {
                     public void actionPerformed(ActionEvent e) {
                         AExecuteTask selected = (AExecuteTask) selPath.getLastPathComponent();
                         selected.setVisibility(true);
-                        ((DefaultTreeModel) taskTree.getModel()).nodeStructureChanged(selected);
+                        ((DefaultTreeModel) taskTree.getModel()).nodeChanged(selected);
                         taskModel.repaint();
                     }
                 });
@@ -130,7 +124,7 @@ public class TreeRightClickListener extends MouseAdapter {
                     public void actionPerformed(ActionEvent e) {
                         AExecuteTask selected = (AExecuteTask) selPath.getLastPathComponent();
                         selected.setVisibility(false);
-                        ((DefaultTreeModel) taskTree.getModel()).nodeStructureChanged(selected);
+                        ((DefaultTreeModel) taskTree.getModel()).nodeChanged(selected);
                         taskModel.repaint();
                     }
                 });

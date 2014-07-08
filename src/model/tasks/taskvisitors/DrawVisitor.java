@@ -43,9 +43,6 @@ public class DrawVisitor extends ATaskVisitor {
 			public Object apply(String id, IExecuteTask host, Object... params) {
 				MultiTask multiHost = (MultiTask) host;
 
-                //stop immedietely if this task should not be drawn
-                if (!multiHost.getVisibility()) return params[2];
-
 				ArrayList<IExecuteTask> subtasks = Collections.list(multiHost.children());
 				for (IExecuteTask task : subtasks){
 					Point2D result = (Point2D) task.executeVisitor(DrawVisitor.this, params);
@@ -106,12 +103,10 @@ public class DrawVisitor extends ATaskVisitor {
                         destination = plate.getWellLocation(identifiers.get(1));
                 }
 
-                //stop immedietely if this task should not be drawn
-                if (!moveToWellHost.getVisibility()) return destination;
-
-                //actually draw the task. if the plate doesn't exist and destination is null, do nothing
-                if (destination != null)
+                //actually draw the task. if the plate doesn't exist and destination is null, do nothing.
+                if (destination != null && moveToWellHost.getVisibility()){
                     g2d.drawLine((int) (start.getX()*sF), (int) (start.getY()*sF), (int) (destination.getX()*sF), (int) (destination.getY()*sF));
+                }
 
                 return destination; //return the final location
 			}
@@ -126,11 +121,8 @@ public class DrawVisitor extends ATaskVisitor {
                 Point2D start = (Point2D) params[2];
                 Point2D destination = moveToLocHost.getDestination();
 
-                //stop immedietely if this task should not be drawn
-                if (!moveToLocHost.getVisibility()) return destination;
-
                 //actually draw the task
-                if (destination != null)
+                if (destination != null && moveToLocHost.getVisibility())
                     g2d.drawLine((int) (start.getX()*sF), (int) (start.getY()*sF), (int) (destination.getX()*sF), (int) (destination.getY()*sF));
 
                 return destination; //return the final location

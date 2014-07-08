@@ -97,22 +97,14 @@ public class TaskCreationPanel extends JPanel {
         taskTree.setModel(this.taskModel.getTreeModel());
 
         /* Set the class to be used for right clicking on the jtree. */
-        taskTree.addMouseListener(new TreeRightClickListener(savedTasksCmb, taskTree, taskModel, serializationModel));
+        taskTree.addMouseListener(new TreeRightClickListener(this, savedTasksCmb, taskTree, taskModel, serializationModel));
 
         /* Add keyboard shortcuts to the JTree. */
         taskTree.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getExtendedKeyCode() == KeyEvent.VK_BACK_SPACE) {
-                    TreePath[] paths = taskTree.getSelectionPaths();
-                    for (TreePath path : paths) {
-                        MutableTreeNode toDelete = (MutableTreeNode) path.getLastPathComponent();
-
-                        if (toDelete.getParent() == null)   //no parent means it is the root
-                            ((DefaultTreeModel) taskTree.getModel()).setRoot(new MultiTask("Experiment Name"));
-                        else                                //for all other nodes, remove them from parent
-                            ((DefaultTreeModel) taskTree.getModel()).removeNodeFromParent(toDelete);
-                    }
+                    deleteNodes(taskTree.getSelectionPaths());
                 }
             }
         });
@@ -124,8 +116,8 @@ public class TaskCreationPanel extends JPanel {
                                                           boolean sel,boolean expanded,boolean leaf,int row,boolean hasFocus){
                 super.getTreeCellRendererComponent(tree,value,sel,expanded,leaf,row,hasFocus);
                 IExecuteTask node = (IExecuteTask) value;
-                //if node is not visible, grey it out
-                if (!node.getVisibility()){
+                //if node is not visible and is a leaf task, grey it out. never grey out multi tasks, too confusing
+                if (!node.getVisibility() && node instanceof ALeafTask){
                     setForeground(Color.GRAY);
                 }
                 return this;
@@ -159,5 +151,20 @@ public class TaskCreationPanel extends JPanel {
      */
     public String getDefaultPlate() {
         return defaultPlate.getText();
+    }
+
+    /**
+     * Delete nodes on specified path.
+     */
+    public void deleteNodes(TreePath[] paths) {
+        for (TreePath path : paths) {
+            MutableTreeNode toDelete = (MutableTreeNode) path.getLastPathComponent();
+
+            if (toDelete.getParent() == null)   //no parent means it is the root
+                ((DefaultTreeModel) taskTree.getModel()).setRoot(new MultiTask("Experiment Name"));
+            else                                //for all other nodes, remove them from parent
+                ((DefaultTreeModel) taskTree.getModel()).removeNodeFromParent(toDelete);
+        }
+        taskModel.repaint();
     }
 }
