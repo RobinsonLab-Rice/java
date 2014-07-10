@@ -22,7 +22,7 @@ public class Parser {
      * Checks whether input string is a well "identifier" -- an alphanumeric value.
      */
     public static boolean isIdentifier(String str) {
-        return str.matches("[A-Z][1-9]");
+        return str.matches("[A-Z][1-9]+");
     }
 
     /**

@@ -291,7 +291,7 @@ public class TaskModel {
         //if start and end values are both well identifiers, populate arraylist with proper identifier list
         if (Parser.Singleton.isIdentifier(startVal) && Parser.Singleton.isIdentifier(endVal) && Parser.Singleton.isInteger(incVal)) {
             //Integer numCols = plateModel.getPlate(view.getDefaultPlate()).getPlateSpecs().getNumCols();
-            loopVals = plateModel.getPlate(view.getDefaultPlate()).getWellsInRange(startVal, endVal, incVal);
+            loopVals = plateModel.getPlate(view.getDefaultPlate()).getWellsInRange(startVal, endVal, Integer.parseInt(incVal));
         }
         //else if all required values are numbers, fill arraylist with all them.
         else if (Parser.Singleton.isNumeric(startVal) && Parser.Singleton.isNumeric(endVal) && Parser.Singleton.isNumeric(incVal)){

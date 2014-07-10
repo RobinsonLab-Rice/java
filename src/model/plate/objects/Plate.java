@@ -223,9 +223,40 @@ public class Plate implements Serializable {
      * @param startVal start identifier
      * @param endVal end identifier
      * @param incVal how many wells to increment by each time
-     * @return ArrayList of all
+     * @return ArrayList of all wells included in the range
      */
-    public ArrayList<String> getWellsInRange(String startVal, String endVal, String incVal) {
+    public ArrayList<String> getWellsInRange(String startVal, String endVal, int incVal) {
+
+        int startNum = convertIdToNum(startVal);
+        int endNum = convertIdToNum(endVal);
+
+        ArrayList<String> returnList = new ArrayList<String>();
+        for (int i = startNum; i <= endNum; i += incVal) {
+            returnList.add(convertNumToId(i));
+        }
+    }
+
+    /**
+     * Convert a well id (A4, C7, etc.) to a number, where A1 = 1, A2 = 2, etc. Varies depending on number of columns on
+     * this plate.
+     */
+    private int convertIdToNum(String id) {
+        int row = (int) id.charAt(0) - 65; //convert A to 0, B to 1, etc.
+        int col = Integer.parseInt(id.substring(1));
+
+        return row*plateSpecs.getNumCols() + col;
+    }
+
+    /**
+     * Inverse of convertIdToNum, using a well number converts it to its id (A4, C7, etc.), which depends on this plate's
+     * number of columns.
+     */
+    private String convertNumToId(int num) {
+        int rowNum = num/plateSpecs.getNumCols();
+        char rowLetter = (char) rowNum;
+        int col = num % plateSpecs.getNumCols();
+
+        return Character.toString(rowLetter) + String.valueOf(col);
     }
 }
 
