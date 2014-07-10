@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import model.plate.objects.ArmState;
 import model.plate.objects.Well;
 import model.tasks.taskvisitors.ITaskVisitor;
+import util.Parser;
 
 /**
  * Move task, tells the arm to move to specified well.
@@ -115,6 +116,22 @@ public class MoveToWellTask extends ALeafTask {
      */
     @Override
     public void setUserObject(Object object) {
+        String input = (String) object;
+
+        //if input is a number, set the item normally.
+        if (Parser.Singleton.isNumeric(input)) {
+            try {
+                this.volume = Double.parseDouble((String) object);
+            } catch (NumberFormatException e) {
+                System.out.println("Tried to change dispense something that wasn't a double.");
+                e.printStackTrace();
+            }
+        }
+        //else, input is a string and we should set the variable to later be filled in
+        else {
+            this.variable = input;
+        }
+
         //parse the input, making sure they input 2 values separated by a comma
         String[] halves = ((String) object).split(",");
         if (halves.length != 2) {

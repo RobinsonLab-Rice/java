@@ -204,6 +204,20 @@ public class PlateModel {
 	public ArrayList<Plate> getPlateList(){
 		return plates;
 	}
+
+    /**
+     * Given a plate's name, return the actual plate. Returns null if no plate with given name exists.
+     */
+    public Plate getPlate(String name) {
+        Plate returnPlate = null;
+        for (Plate plate : plates) {
+            if (plate.getName().equals(name)) {
+                returnPlate = plate;
+                break;
+            }
+        }
+        return returnPlate;
+    }
 	
 	/**
 	 * @param plates - All the plates that are currently on the screen.

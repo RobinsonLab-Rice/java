@@ -88,6 +88,13 @@ public class MainPanel extends JFrame{
         return taskCreationPanel.getDefaultDispense();
     }
 
+    /**
+     * @return name of default plate, from task creation panel
+     */
+    public String getDefaultPlate() {
+        return taskCreationPanel.getDefaultPlate();
+    }
+
     /* Helper class that contains convenience methods for this and other views. */
     public static class GUIHelper {
 

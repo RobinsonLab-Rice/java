@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
+import javafx.scene.transform.Affine;
 import model.plate.objects.Plate;
 import model.tasks.basictasks.*;
 
@@ -51,6 +52,7 @@ public class DrawVisitor extends ATaskVisitor {
 				return null;
 			}
 		});
+
         //draw a dispense task by drawing an arrow up or down
 		addCmd("Dispense", new ITaskVisitorCmd(){
 			@Override
@@ -105,6 +107,7 @@ public class DrawVisitor extends ATaskVisitor {
 
                 //actually draw the task. if the plate doesn't exist and destination is null, do nothing.
                 if (destination != null && moveToWellHost.getVisibility()){
+                    drawArrows(g2d, new Point2D.Double(start.getX()*sF, start.getY()*sF), new Point2D.Double(destination.getX()*sF, destination.getY()*sF), sF);
                     g2d.drawLine((int) (start.getX()*sF), (int) (start.getY()*sF), (int) (destination.getX()*sF), (int) (destination.getY()*sF));
                 }
 
@@ -122,8 +125,11 @@ public class DrawVisitor extends ATaskVisitor {
                 Point2D destination = moveToLocHost.getDestination();
 
                 //actually draw the task
-                if (destination != null && moveToLocHost.getVisibility())
+                if (destination != null && moveToLocHost.getVisibility()){
+                    drawArrows(g2d, new Point2D.Double(start.getX()*sF, start.getY()*sF), new Point2D.Double(destination.getX()*sF, destination.getY()*sF), sF);
                     g2d.drawLine((int) (start.getX()*sF), (int) (start.getY()*sF), (int) (destination.getX()*sF), (int) (destination.getY()*sF));
+                }
+
 
                 return destination; //return the final location
             }
@@ -147,4 +153,40 @@ public class DrawVisitor extends ATaskVisitor {
             }
         });
 	}
+
+    /**
+     * Draw arrows along line formed by two input points.
+     */
+    private void drawArrows(Graphics2D g2d, Point2D start, Point2D end, double sF) {
+
+        int cutoff = 150;
+        //int scale = 5;
+        Point2D midPoint = new Point2D.Double((start.getX() + end.getX())/2, (start.getY() + end.getY())/2);
+
+        //draw arrow regardless
+        Polygon arrow = new Polygon(
+                new int[] {-1,0,1,0},
+                new int[] {0,1,0,1},
+                4
+        );
+
+        AffineTransform at = new AffineTransform();
+        at.translate(midPoint.getX(), midPoint.getY());
+        at.rotate(Math.atan2(end.getY() - start.getY(), end.getX() - start.getX())-Math.PI/2);
+        at.scale(sF, sF);
+
+        g2d.setTransform(at);
+        g2d.setStroke(new BasicStroke((float) (1/sF)));
+        g2d.drawPolygon(arrow);
+        g2d.setTransform(new AffineTransform());
+
+        //if distance between two points is less than some cutoff, return
+        if (start.distance(end) < cutoff) {
+            return;
+        }
+        else {
+            drawArrows(g2d, start, midPoint, sF);
+            drawArrows(g2d, midPoint, end, sF);
+        }
+    }
 }

@@ -4,6 +4,7 @@ import java.io.OutputStream;
 
 import model.plate.objects.ArmState;
 import model.tasks.taskvisitors.ITaskVisitor;
+import util.Parser;
 
 /**
  * Dispense task, tells the robot to dispense the input amount of liquid.
@@ -74,12 +75,20 @@ public class DispenseTask extends ALeafTask {
      */
     @Override
     public void setUserObject(Object object) {
-        //if object can't be converted to double, throw an exception
-        try {
-            this.volume = Double.parseDouble((String) object);
-        } catch (NumberFormatException e) {
-            System.out.println("Tried to change dispense something that wasn't a double.");
-            e.printStackTrace();
+        String input = (String) object;
+
+        //if input is a number, set the item normally.
+        if (Parser.Singleton.isNumeric(input)) {
+            try {
+                this.volume = Double.parseDouble((String) object);
+            } catch (NumberFormatException e) {
+                System.out.println("Tried to change dispense something that wasn't a double.");
+                e.printStackTrace();
+            }
+        }
+        //else, input is a string and we should set the variable to later be filled in
+        else {
+            this.variable = input;
         }
     }
 }

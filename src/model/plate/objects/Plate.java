@@ -210,5 +210,22 @@ public class Plate implements Serializable {
     public Point2D getDimensions() {
         return plateSpecs.getBorderDimensions();
     }
+
+    /**
+     * @return plate specifications object of this plate, encapsulates all info that makes this type of plate
+     */
+    public PlateSpecifications getPlateSpecs() {
+        return plateSpecs;
+    }
+
+    /**
+     * Gets the identifiers (A1, B3, etc.) in a certain range on this well plate.
+     * @param startVal start identifier
+     * @param endVal end identifier
+     * @param incVal how many wells to increment by each time
+     * @return ArrayList of all
+     */
+    public ArrayList<String> getWellsInRange(String startVal, String endVal, String incVal) {
+    }
 }
 

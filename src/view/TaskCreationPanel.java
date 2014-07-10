@@ -30,6 +30,11 @@ public class TaskCreationPanel extends JPanel {
     private JButton moveExperimentToTreeBtn;
     private JButton deleteTaskBtn;
     private JButton deleteExperimentBtn;
+    private JTextField variableTxt;
+    private JButton generateBtn;
+    private JTextField startValueTxt;
+    private JTextField endValueTxt;
+    private JTextField incrementTxt;
 
     private MainPanel mainView;
     private TaskModel taskModel;
@@ -76,6 +81,16 @@ public class TaskCreationPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 serializationModel.deleteData(savedExperimentCmb.getItemAt(savedExperimentCmb.getSelectedIndex()).toString(), SaveType.EXPERIMENT);
                 MainPanel.GUIHelper.updateCmb(taskModel.getExperimentFactories(), savedExperimentCmb);
+            }
+        });
+
+        /* When generate button is pressed, package up relevant info and ship it off to task model. */
+        generateBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //send over: currently selected task, variable, start value, end value, increment value
+                taskModel.loopTasks(savedTasksCmb.getItemAt(savedTasksCmb.getSelectedIndex()), variableTxt.getText(),
+                        startValueTxt.getText(), endValueTxt.getText(), incrementTxt.getText());
             }
         });
 

@@ -3,9 +3,10 @@ package util;
 import java.awt.*;
 
 /**
- * Utility class that supplies  class routines for generating various random values
+ * Utility class that supplies class routines for generating various random values
  */
 public class Randomizer implements IRandomizer {
+
   public static Randomizer Singleton = new Randomizer();
   
   private Randomizer() {

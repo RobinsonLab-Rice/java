@@ -20,6 +20,11 @@ public abstract class ALeafTask extends AExecuteTask {
 	private static final long serialVersionUID = -8336180786535595266L;
 
     /**
+     * Variable to later fill in with for loops.
+     */
+    public String variable = "";
+
+    /**
      * Writes string to the serial output buffer. Handles exceptions and cases where no stream is selected.
      * @param string String to write to the buffer
      * @param stream Output stream to write to

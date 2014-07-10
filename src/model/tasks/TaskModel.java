@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import model.plate.PlateModel;
+import model.plate.objects.Plate;
 import model.plate.objects.Well;
 import model.serial.SerialModel;
 import model.serialization.SaveType;
@@ -15,6 +16,7 @@ import model.tasks.basictasks.ALeafTask;
 import model.tasks.taskvisitors.DecompileVisitor;
 import model.tasks.taskvisitors.DrawVisitor;
 import model.tasks.taskvisitors.ITaskVisitor;
+import util.Parser;
 import view.MainPanel;
 
 import javax.swing.tree.DefaultTreeModel;
@@ -268,5 +270,51 @@ public class TaskModel {
      */
     public void repaint() {
         view.update();
+    }
+
+    /**
+     * Generates a sequence of tasks. Return value indicates whether or not the tasks were successfully made and added
+     * to the queue.
+     * @param taskToMake factory of task to repeat
+     * @param variable variable to be overwritten in task
+     * @param startVal start value of variable
+     * @param endVal end value of variable
+     * @param incVal how much to increment variable every time
+     * @return true if tasks were successfully made and added, false otherwise
+     */
+    public boolean loopTasks(ITaskFactory taskToMake, String variable, String startVal, String endVal, String incVal) {
+
+        MultiTask accTasks = new MultiTask("LoopGeneratedTask");
+
+        ArrayList loopVals = new ArrayList();
+
+        //if start and end values are both well identifiers, populate arraylist with proper identifier list
+        if (Parser.Singleton.isIdentifier(startVal) && Parser.Singleton.isIdentifier(endVal) && Parser.Singleton.isInteger(incVal)) {
+            //Integer numCols = plateModel.getPlate(view.getDefaultPlate()).getPlateSpecs().getNumCols();
+            loopVals = plateModel.getPlate(view.getDefaultPlate()).getWellsInRange(startVal, endVal, incVal);
+        }
+        //else if all required values are numbers, fill arraylist with all them.
+        else if (Parser.Singleton.isNumeric(startVal) && Parser.Singleton.isNumeric(endVal) && Parser.Singleton.isNumeric(incVal)){
+            double start = Double.parseDouble(startVal);
+            double end = Double.parseDouble(endVal);
+            double inc = Double.parseDouble(incVal);
+
+            while (start <= end) {
+                loopVals.add(start);
+                start += inc;
+            }
+        }
+        //else the values don't correspond to anything we know, don't do anything.
+        else {
+            return false;
+        }
+
+        //for each loop value we obtained, make a new task from the factory where we replace the all occurences of the
+        //variable with the value
+        for (Object value : loopVals) {
+            IExecuteTask newTask = taskToMake.make();
+            newTask.replace(variable, value);
+            accTasks.addTaskToEnd(newTask);
+        }
     }
 }
