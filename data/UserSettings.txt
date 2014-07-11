@@ -1,5 +1,5 @@
 {
-    "@type":"model.serialization.UserSettings",
+    "@type":"UserSettings",
     "frameBounds":{
         "@type":"java.awt.geom.Point2D$Double",
         "x":223.46,
