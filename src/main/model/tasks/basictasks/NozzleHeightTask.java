@@ -18,14 +18,6 @@ public class NozzleHeightTask extends ALeafTask {
 	private static final long serialVersionUID = -1956176933458574472L;
 	
 	private String heightToSet;
-	
-//	/**
-//	 * Constructor, just sets the appropriate volume.
-//	 * @param heightToSet - height (in cm) nozzle should be set to
-//	 */
-//	public NozzleHeightTask(Double heightToSet){
-//		this.heightToSet = heightToSet;
-//	}
 
     /**
      * @param heightToSet height this task moves nozzle to, can be string of a double or a variable
@@ -110,5 +102,12 @@ public class NozzleHeightTask extends ALeafTask {
         else {
             return false;
         }
+    }
+
+    /**
+     * Show this task nicely, printing its target height.
+     */
+    public String toString() {
+        return "NozzleHeight: " + heightToSet;
     }
 }

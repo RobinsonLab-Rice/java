@@ -31,10 +31,6 @@ public class MoveToLocTask extends ALeafTask {
      */
     private String yDestination;
 
-//    public MoveToLocTask(double x, double y) {
-//        destination = new Point2D.Double(x, y);
-//    }
-
     public MoveToLocTask(String x, String y) {
         xDestination = x;
         yDestination = y;

@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+/**
+ * Dialog used to gather user info on loop parameters.
+ */
 public class LoopInfoDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;

@@ -34,7 +34,7 @@ public class TaskCreationPanel extends JPanel {
     private JButton deleteTaskBtn;
     private JButton deleteExperimentBtn;
     private JButton generateBtn;
-    private JTextField nTextField;
+    private JTextField mTextField;
     private JTextField nTextField1;
 
     private MainPanel mainView;
