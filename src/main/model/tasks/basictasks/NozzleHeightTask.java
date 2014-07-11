@@ -72,19 +72,6 @@ public class NozzleHeightTask extends ALeafTask {
 	}
 
     /**
-     * Replace variable in this task and all its children.
-     *
-     * @param variable - if the task's "heightToSet" matches this, change its value to newValue
-     * @param newValue - new value to change to
-     */
-    @Override
-    public void replace(String variable, Object newValue) {
-        if (variable.equals(heightToSet)) {
-            heightToSet = (String) newValue;
-        }
-    }
-
-    /**
      * When somebody changes text on JTree, check if the data is correct and, if it is, set this task's parameters
      * appropriately.
      *
@@ -93,5 +80,35 @@ public class NozzleHeightTask extends ALeafTask {
     @Override
     public void setUserObject(Object object) {
         heightToSet = (String) object;
+    }
+
+    /**
+     * Replace variable in this task and all its children.
+     *
+     * @param variable - if the task's "heightToSet" matches this, change its value to newValue
+     * @param newValue - new value to change to
+     */
+    @Override
+    public void replaceAll(String variable, Object newValue) {
+        if (variable.equals(heightToSet)) {
+            heightToSet = (String) newValue;
+        }
+    }
+
+    /**
+     * Replace variable in this task and all its children.
+     *
+     * @param variable - if the task's "heightToSet" matches this, change its value to newValue
+     * @param newValue - new value to change to
+     */
+    @Override
+    public boolean replaceOne(String variable, Object newValue) {
+        if (variable.equals(heightToSet)) {
+            heightToSet = (String) newValue;
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }

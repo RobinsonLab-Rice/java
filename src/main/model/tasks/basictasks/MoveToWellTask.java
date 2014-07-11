@@ -99,19 +99,6 @@ public class MoveToWellTask extends ALeafTask {
 	}
 
     /**
-     * Replace variable in this task and all its children.
-     *
-     * @param variable - if the move task's "identifier" matches this, change value of identifier to newValue
-     * @param newValue - new value to change to
-     */
-    @Override
-    public void replace(String variable, Object newValue) {
-        if (variable.equals(identifier)){
-            identifier = (String) newValue;
-        }
-    }
-
-    /**
      * @return arm location after executing this task
      */
     public ArrayList<String> getDestination() {
@@ -151,4 +138,33 @@ public class MoveToWellTask extends ALeafTask {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Replace variable in this task and all its children.
+     *
+     * @param variable - if the move task's "identifier" matches this, change value of identifier to newValue
+     * @param newValue - new value to change to
+     */
+    @Override
+    public void replaceAll(String variable, Object newValue) {
+        if (variable.equals(identifier)){
+            identifier = (String) newValue;
+        }
+    }
+
+    /**
+     * Replace variable in this task and all its children.
+     *
+     * @param variable - if the move task's "identifier" matches this, change value of identifier to newValue
+     * @param newValue - new value to change to
+     */
+    @Override
+    public boolean replaceOne(String variable, Object newValue) {
+        if (variable.equals(identifier)){
+            identifier = (String) newValue;
+            return true;
+        }
+        else return false;
+    }
+
 }

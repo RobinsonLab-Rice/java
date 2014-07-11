@@ -27,17 +27,15 @@ public class TaskCreationPanel extends JPanel {
     private JButton debugExecuteBtn;
     private JButton executeAllBtn;
     private TaskTree taskTree;
-    private JTextField defaultPlate;
-    private JTextField defaultDispense;
+    public JTextField defaultPlate;
+    public JTextField defaultDispense;
     private JComboBox<ITaskFactory> savedExperimentCmb;
     private JButton moveExperimentToTreeBtn;
     private JButton deleteTaskBtn;
     private JButton deleteExperimentBtn;
-    private JTextField variableTxt;
     private JButton generateBtn;
-    private JTextField startValueTxt;
-    private JTextField endValueTxt;
-    private JTextField incrementTxt;
+    private JTextField nTextField;
+    private JTextField nTextField1;
 
     private MainPanel mainView;
     private TaskModel taskModel;
@@ -91,9 +89,11 @@ public class TaskCreationPanel extends JPanel {
         generateBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                LoopInfoDialog loopDialog = new LoopInfoDialog(generateBtn);
+                LoopInfo info = loopDialog.showDialog();
                 //send over: currently selected task, variable, start value, end value, increment value
-                taskModel.loopTasks(savedTasksCmb.getItemAt(savedTasksCmb.getSelectedIndex()), variableTxt.getText(),
-                        startValueTxt.getText(), endValueTxt.getText(), incrementTxt.getText());
+                taskModel.loopGenerateTasks(savedTasksCmb.getItemAt(savedTasksCmb.getSelectedIndex()), info.variable,
+                        info.start, info.end, info.inc);
             }
         });
 
@@ -160,15 +160,8 @@ public class TaskCreationPanel extends JPanel {
     /**
      * @return default value to dispense when creating a dispense task
      */
-    public double getDefaultDispense() {
-        return Double.parseDouble(defaultDispense.getText());
-    }
-
-    /**
-     * @return default plate to set when creating a move task
-     */
-    public String getDefaultPlate() {
-        return defaultPlate.getText();
+    public String getDefaultDispense() {
+        return defaultDispense.getText();
     }
 
     /**

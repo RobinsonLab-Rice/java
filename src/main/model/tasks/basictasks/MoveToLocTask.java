@@ -93,22 +93,6 @@ public class MoveToLocTask extends ALeafTask {
     }
 
     /**
-     * Replace variable in this task and all its children.
-     *
-     * @param variable - if the task's x or y destination matches this, change value
-     * @param newValue - new value to change to
-     */
-    @Override
-    public void replace(String variable, Object newValue) {
-        if (variable.equals(xDestination)) {
-            xDestination = (String) newValue;
-        }
-        if (variable.equals(yDestination)) {
-            yDestination = (String) newValue;
-        }
-    }
-
-    /**
      * @return arm location after executing this task
      */
     public Point2D getDestination() {
@@ -146,5 +130,41 @@ public class MoveToLocTask extends ALeafTask {
      */
     public String toString() {
         return "Move to location: x = " + xDestination + ", y = " + yDestination;
+    }
+
+    /**
+     * Replace variable in this task and all its children.
+     *
+     * @param variable - if the task's x or y destination matches this, change value
+     * @param newValue - new value to change to
+     */
+    @Override
+    public void replaceAll(String variable, Object newValue) {
+        if (variable.equals(xDestination)) {
+            xDestination = (String) newValue;
+        }
+        if (variable.equals(yDestination)) {
+            yDestination = (String) newValue;
+        }
+    }
+
+    /**
+     * Replace variable in this task and all its children.
+     *
+     * @param variable - if the task's x or y destination matches this, change value
+     * @param newValue - new value to change to
+     */
+    @Override
+    public boolean replaceOne(String variable, Object newValue) {
+        boolean result = false;
+        if (variable.equals(xDestination)) {
+            xDestination = (String) newValue;
+            result = true;
+        }
+        if (variable.equals(yDestination)) {
+            yDestination = (String) newValue;
+            result = true;
+        }
+        return result;
     }
 }

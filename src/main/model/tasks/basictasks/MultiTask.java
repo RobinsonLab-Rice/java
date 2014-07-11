@@ -231,9 +231,22 @@ public class MultiTask extends AExecuteTask {
      * @param variable - if the task's "variable" matches this, change value
      * @param newValue - new value to change to
      */
-    public void replace(String variable, Object newValue) {
+    public void replaceAll(String variable, Object newValue) {
         for (IExecuteTask task : taskList) {
-            task.replace(variable, newValue);
+            task.replaceAll(variable, newValue);
         }
+    }
+
+    /**
+     * Replace variable in this task and all its children.
+     * @param variable - if the task's "variable" matches this, change value
+     * @param newValue - new value to change to
+     */
+    public boolean replaceOne(String variable, Object newValue) {
+        for (IExecuteTask task : taskList) {
+            boolean result = task.replaceOne(variable, newValue);
+            if (result == true) return true;
+        }
+        return false;
     }
 }

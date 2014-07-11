@@ -259,17 +259,9 @@ public class PlateModel {
          * Else, they are different wells and we should make a task for movement between them.
          */
         else {
-            ArrayList<Double> dispenseAmounts = new ArrayList<Double>();
-
             //add in option for user to reverse the flow of liquid by holding down alt
             boolean shouldReverse = false;
             if (end.isAltDown()) shouldReverse = true;
-
-            //also if ctrl/cmd was held down on this drag, popup the dialog for a custom move amount. in the process,
-            //change dispenseAmounts accordingly
-            if (end.isControlDown() || end.isMetaDown()) {
-                //TODO: ask GUI for user input on new dispense amounts
-            }
 
             /**
              * There are a few cases for actually moving:
@@ -279,9 +271,9 @@ public class PlateModel {
             if (!startWell.isSelected) {
                 ArrayList<Well> startWellWrapper = new ArrayList<Well>();
                 startWellWrapper.add(startWell);
-                taskModel.makeMoveTask(startWellWrapper, endWell, dispenseAmounts, shouldReverse);
+                taskModel.makeMoveTask(startWellWrapper, endWell, shouldReverse);
             }
-            else taskModel.makeMoveTask(selectedWells, endWell, dispenseAmounts, shouldReverse);
+            else taskModel.makeMoveTask(selectedWells, endWell, shouldReverse);
         }
         view.update();
     }

@@ -157,7 +157,7 @@
           </grid>
         </constraints>
         <properties>
-          <text value="test"/>
+          <text value="Plate1"/>
         </properties>
       </component>
       <component id="63387" class="javax.swing.JButton" binding="deleteSavedPlateBtn">

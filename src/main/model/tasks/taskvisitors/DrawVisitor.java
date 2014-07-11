@@ -26,12 +26,14 @@ public class DrawVisitor extends ATaskVisitor {
 
     private BufferedImage dispenseIcon;
     private BufferedImage withdrawIcon;
+    private BufferedImage questionMarkIcon;
 
 	public DrawVisitor(){
         //load up the right icons
         try {
             dispenseIcon = ImageIO.read(new File("src/images/dispense_icon.png"));
             withdrawIcon = ImageIO.read(new File("src/images/withdraw_icon.png"));
+            questionMarkIcon = ImageIO.read(new File("src/images/question_mark_icon.png"));
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -75,8 +77,17 @@ public class DrawVisitor extends ATaskVisitor {
                             scale*2,                //height
                             null);
                 }
-                else {                              //otherwise, draw an arrow going down
+                else if (dispenseHost.getVolume() > 0) {          //otherwise, draw an arrow going down
                     g2d.drawImage(withdrawIcon,
+                            (int)(destination.getX()*sF - scale), //top-left x coordinate
+                            (int)(destination.getY()*sF - scale), //top-left y coorinate
+                            scale*2,                 //width
+                            scale*2,                //height
+                            null);
+                }
+                //if the volume is 0, task is not filled out yet. draw a question mark.
+                else {
+                    g2d.drawImage(questionMarkIcon,
                             (int)(destination.getX()*sF - scale), //top-left x coordinate
                             (int)(destination.getY()*sF - scale), //top-left y coorinate
                             scale*2,                 //width

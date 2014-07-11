@@ -152,7 +152,14 @@ public abstract class ALeafTask extends AExecuteTask {
     /**
      * By default, do nothing for replacing things. This will be overwritten by objects that actually use it.
      */
-    public void replace(String variable, Object newValue) {
+    public void replaceAll(String variable, Object newValue) {
         return;
+    }
+
+    /**
+     * By default, do nothing for replacing things. This will be overwritten by objects that actually use it.
+     */
+    public boolean replaceOne(String variable, Object newValue) {
+        return false;
     }
 }

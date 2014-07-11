@@ -3,6 +3,7 @@ package main.view;
 import main.model.serialization.SerializationModel;
 import main.model.tasks.TaskModel;
 import main.model.tasks.basictasks.AExecuteTask;
+import main.model.tasks.basictasks.IExecuteTask;
 import main.model.tasks.basictasks.MultiTask;
 
 import javax.swing.*;
@@ -50,7 +51,7 @@ public class TreeRightClickListener extends MouseAdapter {
 
             private static final long serialVersionUID = -3142513178293086540L;
 
-            JMenuItem saveTask, saveExperiment, delete, show, hide;
+            JMenuItem saveTask, saveExperiment, delete, show, hide, replace;
 
             {
                 saveTask = new JMenuItem("Save Task");
@@ -58,6 +59,7 @@ public class TreeRightClickListener extends MouseAdapter {
                 delete = new JMenuItem("Delete");
                 show = new JMenuItem("Show");
                 hide = new JMenuItem("Hide");
+                replace = new JMenuItem("Replace variable");
 
                 /* Only allow saving on multitasks. Saves it as the multitask's current name. */
                 saveTask.addActionListener(new ActionListener() {
@@ -127,6 +129,19 @@ public class TreeRightClickListener extends MouseAdapter {
                     }
                 });
 
+                /* Replace variables in currently selected task. */
+                replace.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        LoopInfoDialog loopInfoDialog = new LoopInfoDialog(replace);
+                        LoopInfo info = loopInfoDialog.showDialog();
+                        IExecuteTask selected = (IExecuteTask) selPath.getLastPathComponent();
+                        taskModel.loopReplaceTasks(selected, info.variable, info.start, info.end, info.inc);
+                        ((DefaultTreeModel) taskTree.getModel()).nodeStructureChanged(selected);
+                        taskModel.repaint();
+                    }
+                });
+
                 //make a different menu for multitasks and other tasks
                 if (selPath.getLastPathComponent() instanceof MultiTask){
                     //if we selected the root, add button for saving experiment
@@ -137,6 +152,7 @@ public class TreeRightClickListener extends MouseAdapter {
                     else {
                         add(saveTask);
                     }
+                    add(replace);
                 }
 
                 add(delete);

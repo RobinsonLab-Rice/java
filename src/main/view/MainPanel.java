@@ -41,7 +41,7 @@ public class MainPanel extends JFrame{
         this.taskModel = taskModel;
 
         /* Start the sub-views */
-        plateSetupPanel.start(plateModel, serializationModel);
+        plateSetupPanel.start(this, plateModel, serializationModel);
         taskCreationPanel.start(this, taskModel, serializationModel);
 
         /* Do necessary communication with backend models */
@@ -84,7 +84,7 @@ public class MainPanel extends JFrame{
     /**
      * @return default amount to dispense, from task creation panel
      */
-    public Double getDefaultDispense() {
+    public String getDefaultDispense() {
         return taskCreationPanel.getDefaultDispense();
     }
 
@@ -92,7 +92,14 @@ public class MainPanel extends JFrame{
      * @return name of default plate, from task creation panel
      */
     public String getDefaultPlate() {
-        return taskCreationPanel.getDefaultPlate();
+        return taskCreationPanel.defaultPlate.getText();
+    }
+
+    /**
+     * @param name new name of default plate to load when making tasks
+     */
+    public void setDefaultPlate(String name) {
+        taskCreationPanel.defaultPlate.setText(name);
     }
 
     /* Helper class that contains convenience methods for this and other views. */

@@ -1,5 +1,5 @@
 {
-  "@type":"PlateSpecifications",
+  "@type":"main.model.plate.objects.PlateSpecifications",
   "wellCorner":{
     "@type":"java.awt.geom.Point2D$Double",
     "x":23.16,

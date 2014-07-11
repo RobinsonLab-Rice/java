@@ -95,9 +95,24 @@ public class DispenseTask extends ALeafTask {
      * @param variable - if the task's volume matches this, change volume to newValue
      * @param newValue - new value of dispense
      */
-    public void replace(String variable, Object newValue) {
+    public void replaceAll(String variable, Object newValue) {
         if (volume.equals(variable)) {
             volume = (String) newValue;
+        }
+    }
+
+    /**
+     * If variable matches the stored dispense string, replace dispense value with newValue.
+     * @param variable - if the task's volume matches this, change volume to newValue
+     * @param newValue - new value of dispense
+     */
+    public boolean replaceOne(String variable, Object newValue) {
+        if (volume.equals(variable)) {
+            volume = (String) newValue;
+            return true;
+        }
+        else {
+            return false;
         }
     }
 }

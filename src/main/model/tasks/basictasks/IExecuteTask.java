@@ -53,5 +53,13 @@ public interface IExecuteTask extends Serializable, MutableTreeNode {
      * @param variable - if the task's "variable" matches this, change value
      * @param newValue - new value to change to
      */
-    public void replace(String variable, Object newValue);
+    public void replaceAll(String variable, Object newValue);
+
+    /**
+     * Replace first occurence of variable in this task and its children, returning as soon as it does.
+     * @param variable - if the task's "variable" matches this, change value
+     * @param newValue - new value to change to
+     * @return whether or not the value was replaced in this task
+     */
+    public boolean replaceOne(String variable, Object newValue);
 }

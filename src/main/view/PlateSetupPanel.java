@@ -30,6 +30,7 @@ public class PlateSetupPanel {
     private JButton deleteSavedPlateBtn;
 
     /* Adapters to back-end models. */
+    private MainPanel view;
     private PlateModel plateModel;
     private SerializationModel serializationModel;
 
@@ -58,6 +59,9 @@ public class PlateSetupPanel {
                     JOptionPane.showMessageDialog(makePlateBtn, "Possibly same name as previously made plate, or in same location.",
                             "Could not add plate", JOptionPane.ERROR_MESSAGE);
                 }
+                else {
+                    view.setDefaultPlate(plateNicknameTxt.getText());
+                }
             }
         });
 
@@ -80,7 +84,8 @@ public class PlateSetupPanel {
     }
 
     /* Perform necessary startup procedures (populating dropboxes, etc.) */
-    public void start(final PlateModel plateModel, final SerializationModel serializationModel) {
+    public void start(final MainPanel view, final PlateModel plateModel, final SerializationModel serializationModel) {
+        this.view = view;
         this.plateModel = plateModel;
         this.serializationModel = serializationModel;
 
