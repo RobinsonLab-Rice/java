@@ -1,7 +1,9 @@
 package main.model.tasks.basictasks;
 
+import javafx.scene.shape.MoveTo;
 import main.model.plate.objects.ArmState;
 import main.model.tasks.taskvisitors.ITaskVisitor;
+import main.util.Parser;
 
 import java.awt.geom.Point2D;
 import java.io.OutputStream;
@@ -20,12 +22,22 @@ public class MoveToLocTask extends ALeafTask {
     private static final long serialVersionUID = 8216224355050783969L;
 
     /**
-     * Location to move to (absolute relative to origin).
+     * Location to move to in x direction (absolute relative to origin).
      */
-    private Point2D destination;
+    private String xDestination;
 
-    public MoveToLocTask(double x, double y) {
-        destination = new Point2D.Double(x, y);
+    /**
+     * Location to move to in x direction (absolute relative to origin).
+     */
+    private String yDestination;
+
+//    public MoveToLocTask(double x, double y) {
+//        destination = new Point2D.Double(x, y);
+//    }
+
+    public MoveToLocTask(String x, String y) {
+        xDestination = x;
+        yDestination = y;
     }
 
     /**
@@ -38,8 +50,21 @@ public class MoveToLocTask extends ALeafTask {
      */
     @Override
     public void execute(ArmState armState, OutputStream outputStream) {
-        double xCmToMove = armState.getX() - destination.getX();
-        double yCmToMove = armState.getY() - destination.getY();
+
+        Double xAbsolute = null;
+        Double yAbsolute = null;
+
+        //if either x or y destination is not a numerical value, return without executing.
+        if (!Parser.isNumeric(xDestination) || !Parser.isNumeric(yDestination)) {
+            return;
+        }
+        else {
+            xAbsolute = Double.parseDouble(xDestination);
+            yAbsolute = Double.parseDouble(yDestination);
+        }
+
+        double xCmToMove = armState.getX() - xAbsolute;
+        double yCmToMove = armState.getY() - yAbsolute;
 
         //round this result using BigDecimals to send over only 2 decimal places
         xCmToMove = (new BigDecimal(xCmToMove).setScale(2, BigDecimal.ROUND_HALF_DOWN)).doubleValue();
@@ -68,10 +93,32 @@ public class MoveToLocTask extends ALeafTask {
     }
 
     /**
+     * Replace variable in this task and all its children.
+     *
+     * @param variable - if the task's x or y destination matches this, change value
+     * @param newValue - new value to change to
+     */
+    @Override
+    public void replace(String variable, Object newValue) {
+        if (variable.equals(xDestination)) {
+            xDestination = (String) newValue;
+        }
+        if (variable.equals(yDestination)) {
+            yDestination = (String) newValue;
+        }
+    }
+
+    /**
      * @return arm location after executing this task
      */
     public Point2D getDestination() {
-        return destination;
+        //if either are not numeric, return (0,0)
+        if (!Parser.isNumeric(xDestination) || !Parser.isNumeric(yDestination)) {
+            return new Point2D.Double(0,0);
+        }
+        else {
+            return new Point2D.Double(Double.parseDouble(xDestination), Double.parseDouble(yDestination));
+        }
     }
 
     /**
@@ -89,18 +136,15 @@ public class MoveToLocTask extends ALeafTask {
             return;
         }
         for (String half : halves) half.trim();
-        try {
-            destination = new Point2D.Double(Double.valueOf(halves[0]), Double.valueOf(halves[1]));
-        } catch (NumberFormatException e) {
-            System.out.println("Did not input proper format for moving to a location.");
-            e.printStackTrace();
-        }
+
+        xDestination = halves[0];
+        yDestination = halves[1];
     }
 
     /**
      * @return how to print this task, and how to draw it to the tree on GUI
      */
     public String toString() {
-        return "Move to location: x = " + destination.getX() + ", y = " + destination.getY();
+        return "Move to location: x = " + xDestination + ", y = " + yDestination;
     }
 }

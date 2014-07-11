@@ -151,10 +151,10 @@ public class TaskModel {
         ArrayList<ITaskFactory> factories = new ArrayList<ITaskFactory>();
 
         //add in premade tasks
-        factories.add(new TaskFactory(new MoveToWellTask("replaceMe", "0")));
-        factories.add(new TaskFactory(new MoveToLocTask(0.0, 0.0)));
-        factories.add(new TaskFactory(new DispenseTask(100)));
-        factories.add(new TaskFactory(new NozzleHeightTask(1350.0)));
+        factories.add(new TaskFactory(new MoveToWellTask("Plate1", "n")));
+        factories.add(new TaskFactory(new MoveToLocTask("n", "m")));
+        factories.add(new TaskFactory(new DispenseTask("n")));
+        factories.add(new TaskFactory(new NozzleHeightTask("n")));
         factories.add(new TaskFactory(new MultiTask()));
 
         //add in user made tasks
@@ -249,7 +249,7 @@ public class TaskModel {
         return new MultiTask(name,
                 new MoveToWellTask(well),
                 new LowerTask(),
-                new DispenseTask(amount),
+                new DispenseTask(amount.toString()),
                 new RaiseTask()
         );
     }
@@ -287,12 +287,12 @@ public class TaskModel {
         ArrayList loopVals = new ArrayList();
 
         //if start and end values are both well identifiers, populate arraylist with proper identifier list
-        if (Parser.Singleton.isIdentifier(startVal) && Parser.Singleton.isIdentifier(endVal) && Parser.Singleton.isInteger(incVal)) {
+        if (Parser.isIdentifier(startVal) && Parser.isIdentifier(endVal) && Parser.isInteger(incVal)) {
             //Integer numCols = plateModel.getPlate(view.getDefaultPlate()).getPlateSpecs().getNumCols();
             loopVals = plateModel.getPlate(view.getDefaultPlate()).getWellsInRange(startVal, endVal, Integer.parseInt(incVal));
         }
         //else if all required values are numbers, fill arraylist with all them.
-        else if (Parser.Singleton.isNumeric(startVal) && Parser.Singleton.isNumeric(endVal) && Parser.Singleton.isNumeric(incVal)){
+        else if (Parser.isNumeric(startVal) && Parser.isNumeric(endVal) && Parser.isNumeric(incVal)){
             double start = Double.parseDouble(startVal);
             double end = Double.parseDouble(endVal);
             double inc = Double.parseDouble(incVal);

@@ -17,30 +17,29 @@ public class DispenseTask extends ALeafTask {
 	 */
 	private static final long serialVersionUID = 919292764151689689L;
 	
-	/**
-	 * Volume of liquid to move, currently the time in ms before switching to air.
-	 */
-	private Double volume = null;
+//	/**
+//	 * Volume of liquid to move, currently the time in ms before switching to air.
+//	 */
+//	private Double volume = null;
 
     /**
      * Variable to store if volume is null.
      */
-    private String variable = null;
+    private String volume = null;
 	
-	/**
-	 * @param volume - amount of volume to fill associated well with
-	 */
-	public DispenseTask(Double volume){
-        this.volume = volume;
-        this.variable = null;
-	}
+//	/**
+//	 * @param volume - amount of volume to fill associated well with
+//	 */
+//	public DispenseTask(Double volume){
+//        this.volume = volume;
+//        this.variable = null;
+//	}
 
     /**
-     * @param variable - variable to later overwrite with volume
+     * @param volume - amount to dispense, as a string to be parsed when this task needs to be worked with
      */
-    public DispenseTask(String variable) {
-        this.volume = null;
-        this.variable = variable;
+    public DispenseTask(String volume) {
+        this.volume = volume;
     }
 
 	/**
@@ -64,10 +63,14 @@ public class DispenseTask extends ALeafTask {
 	}
 
     /**
-     * @return amount to dispense
+     * @return amount to dispense. if the amount is still a variable, return 0
      */
     public double getVolume() {
-        return volume;
+        //if volume is a number, return that number
+        if (Parser.Singleton.isNumeric(volume)) {
+            return Double.parseDouble(volume);
+        }
+        else return 0;
     }
 	
 	public String toString() {
@@ -84,29 +87,17 @@ public class DispenseTask extends ALeafTask {
     public void setUserObject(Object object) {
         String input = (String) object;
 
-        //if input is a number, set the item normally.
-        if (Parser.Singleton.isNumeric(input)) {
-            try {
-                this.volume = Double.parseDouble((String) object);
-            } catch (NumberFormatException e) {
-                System.out.println("Tried to change dispense something that wasn't a double.");
-                e.printStackTrace();
-            }
-        }
-        //else, input is a string and we should set the variable to later be filled in
-        else {
-            this.variable = input;
-        }
+        this.volume = input;
     }
 
     /**
-     * If variable matches the stored variable, replace dispense value with newValue.
-     * @param variable - if the task's "variable" matches this, change value
+     * If variable matches the stored dispense string, replace dispense value with newValue.
+     * @param variable - if the task's volume matches this, change volume to newValue
      * @param newValue - new value of dispense
      */
     public void replace(String variable, Object newValue) {
-        if (this.variable.equals(variable)) {
-            volume = (double) newValue;
+        if (volume.equals(variable)) {
+            volume = (String) newValue;
         }
     }
 }

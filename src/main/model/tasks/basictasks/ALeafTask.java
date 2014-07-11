@@ -148,4 +148,11 @@ public abstract class ALeafTask extends AExecuteTask {
     public void setVisibility(boolean isVisible) {
         this.isVisible = isVisible;
     }
+
+    /**
+     * By default, do nothing for replacing things. This will be overwritten by objects that actually use it.
+     */
+    public void replace(String variable, Object newValue) {
+        return;
+    }
 }

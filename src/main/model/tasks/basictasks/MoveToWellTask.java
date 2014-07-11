@@ -58,8 +58,16 @@ public class MoveToWellTask extends ALeafTask {
 	 * through the output stream.
 	 */
 	public void execute(ArmState armState, OutputStream outputStream) {
-        //find out what absolute location the saved plate and well correspond to
-        Point2D destination = armState.getPlateModel().getLocationFromIdentifier(plate, identifier);
+        Point2D destination = null;
+
+        //if the destination identifier is not correct (i.e. is still a variable) do nothing
+        if (!Parser.isIdentifier(identifier)){
+            return;
+        }
+        else{
+            //find out what absolute location the saved plate and well correspond to
+            destination = armState.getPlateModel().getLocationFromIdentifier(plate, identifier);
+        }
 
 		double xCmToMove = armState.getX() - destination.getX();
 		double yCmToMove = armState.getY() - destination.getY();
@@ -91,6 +99,19 @@ public class MoveToWellTask extends ALeafTask {
 	}
 
     /**
+     * Replace variable in this task and all its children.
+     *
+     * @param variable - if the move task's "identifier" matches this, change value of identifier to newValue
+     * @param newValue - new value to change to
+     */
+    @Override
+    public void replace(String variable, Object newValue) {
+        if (variable.equals(identifier)){
+            identifier = (String) newValue;
+        }
+    }
+
+    /**
      * @return arm location after executing this task
      */
     public ArrayList<String> getDestination() {
@@ -115,20 +136,6 @@ public class MoveToWellTask extends ALeafTask {
      */
     @Override
     public void setUserObject(Object object) {
-        String input = (String) object;
-//        //if input is a number, set the item normally.
-//        if (Parser.Singleton.isNumeric(input)) {
-//            try {
-//                this.volume = Double.parseDouble((String) object);
-//            } catch (NumberFormatException e) {
-//                System.out.println("Tried to change dispense something that wasn't a double.");
-//                e.printStackTrace();
-//            }
-//        }
-//        //else, input is a string and we should set the variable to later be filled in
-//        else {
-//            this.variable = input;
-//        }
 
         //parse the input, making sure they input 2 values separated by a comma
         String[] halves = ((String) object).split(",");
