@@ -112,7 +112,7 @@ public class MoveToWellTask extends ALeafTask {
 	 * Define how this task should be printed.
 	 */
 	public String toString() {
-		return "Move to: plate = " + plate + ", well = " + identifier;
+		return "Move to: " + plate + ", " + identifier;
 	}
 
     /**

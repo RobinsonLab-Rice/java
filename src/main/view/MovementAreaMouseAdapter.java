@@ -77,19 +77,30 @@ public class MovementAreaMouseAdapter extends MouseAdapter {
     public void doPopup(final MouseEvent e) {
         JPopupMenu menu = new JPopupMenu() {
 
-            JMenuItem deletePlate, withdraw, deposit;
+            JMenuItem deletePlate, rotatePlate;
 
             {
                 deletePlate = new JMenuItem("Delete Plate");
+                rotatePlate = new JMenuItem("Rotate Plate");
 
-                /* Only allow saving on multitasks. Saves it as the multitask's current name. */
+
                 deletePlate.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent a) {
                         //delete plate we clicked on
                         plateModel.deletePlate(e.getPoint());
                     }
                 });
+
+                rotatePlate.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent a) {
+                        //toggle rotation of plate we clicked on
+                        plateModel.rotatePlate(e.getPoint());
+                    }
+                });
+
                 add(deletePlate);
+                add(rotatePlate);
             }
         };
         menu.show(e.getComponent(), e.getX(), e.getY());

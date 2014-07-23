@@ -79,13 +79,12 @@ public class PlateModel {
 	/**
 	 * Adds a plate to the current Iterable of plates.
      * @param name - name to refer to this well by
-	 * @param numberingOrder - order to number all the wells on the plate
 	 * @param platePos - where to position the (currently) top left corner of the plate
 	 * @param specs - set of specifications for this particular plate, usually from data sheet
      * @return whether or not adding the plate was successful
 	 */
-	public boolean addPlate(String name, String numberingOrder, Point2D platePos, PlateSpecifications specs){
-		Plate plate = new Plate(name, platePos, specs, numberingOrder);
+	public boolean addPlate(String name, Point2D platePos, PlateSpecifications specs){
+		Plate plate = new Plate(name, platePos, specs);
 		return addPlate(plate);
 	}
 	
@@ -139,6 +138,31 @@ public class PlateModel {
      * @param location Point plate is located (in pixels)
      */
     public void deletePlate(Point location) {
+        Plate toRemove = findPlate(location);
+        if (toRemove != null) {
+            plates.remove(toRemove);
+            view.update();
+        }
+    }
+
+    /**
+     * Rotate plate at input location.
+     * @param location Point plate is located (in pixels)
+     */
+    public void rotatePlate(Point location) {
+        Plate toRemove = findPlate(location);
+        if (toRemove != null) {
+            toRemove.toggleRotation();
+            view.update();
+        }
+    }
+
+    /**
+     * Loop through list of plates, looking for first one that contains the given point.
+     * @param location Point plate is located (in pixels)
+     * @return
+     */
+    public Plate findPlate(Point location) {
         for (Plate plate : plates) {
             //construct a rectangle for the plate's border
             Point2D TLcorner = plate.getTLcorner();
@@ -146,12 +170,12 @@ public class PlateModel {
             Rectangle2D boundingBox = new Rectangle2D.Double(TLcorner.getX(), TLcorner.getY(), dimensions.getX(), dimensions.getY());
             //if the point, scaled, is in the plate border, delete it
             if (boundingBox.contains(location.getX()/border.getScaleFactor(), location.getY()/border.getScaleFactor())){
-                plates.remove(plate);
-                break;
+                return plate;
             }
         }
-        view.update();
+        return null;
     }
+
 
 	/**
 	 * Find out which well was clicked on.

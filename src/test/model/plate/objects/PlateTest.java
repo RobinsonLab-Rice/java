@@ -20,7 +20,7 @@ public class PlateTest {
     @Before
     public void setUp() {
         PlateSpecifications sixWellSpecs = new PlateSpecifications(23.16, 24.76, 39.0, 2, 3, 127.76, 85.48, 35.43, 10.0, 17.0);
-        sixWell = new Plate("6-well", new Point2D.Double(0,0), sixWellSpecs, "ALPHANUMERIC");
+        sixWell = new Plate("6-well", new Point2D.Double(0,0), sixWellSpecs);
     }
 
     @Test

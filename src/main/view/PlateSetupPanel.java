@@ -52,7 +52,7 @@ public class PlateSetupPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 PlateSpecifications specs = serializationModel.loadPlate(savedPlatesCmb.getSelectedItem().toString());
-                boolean result = plateModel.addPlate(plateNicknameTxt.getText(), numberingOrderCmb.getSelectedItem().toString(),
+                boolean result = plateModel.addPlate(plateNicknameTxt.getText(),
                         new Point2D.Double(Double.parseDouble(xPosTxt.getText()), Double.parseDouble(yPosTxt.getText())), specs);
                 //if we could not add the plate, tell the user
                 if (result == false) {
