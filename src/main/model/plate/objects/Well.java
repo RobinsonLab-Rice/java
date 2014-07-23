@@ -1,7 +1,7 @@
 package main.model.plate.objects;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Observable;
 import java.util.Observer;
@@ -85,21 +85,31 @@ public class Well implements Observer {
 		int screenLocX = (int)Math.round((parentPlate.getTLcorner().getX() + relativeLocation.getX()-diameter/2)*sF);
 		int screenLocY = (int)Math.round((parentPlate.getTLcorner().getY() + relativeLocation.getY()-diameter/2)*sF);
 
+        //get the graphics objects
+        Graphics2D g2d = (Graphics2D) g;
+        AffineTransform at = new AffineTransform();
+
         //draw well's outline
-		g.setColor(Color.BLACK);
-		g.drawOval(screenLocX, screenLocY, (int)Math.round(diameter*sF), (int)Math.round(diameter*sF));
+        at.translate(screenLocX, screenLocY);
+        at.scale(sF, sF);
+
+        g2d.setTransform(at);
+		g2d.setColor(Color.BLACK);
+		g2d.drawOval(0, 0, (int) diameter, (int) diameter);
 
         //highlight well if it is selected
         if (isSelected){
-            g.setColor(Color.LIGHT_GRAY);
-            g.fillOval(screenLocX, screenLocY, (int)Math.round(diameter*sF), (int)Math.round(diameter*sF));
+            g2d.setColor(Color.LIGHT_GRAY);
+            g2d.fillOval(0, 0, (int) diameter, (int) diameter);
         }
 
-		//regardless, draw the well's label in the corner
-        g.setColor(Color.BLACK);
-		g.setFont(g.getFont().deriveFont((float) (sF*diameter/2)));
-		screenLocY += Math.round(diameter*sF);
-		g.drawString(identifier, screenLocX, screenLocY);
+        g2d.setTransform(new AffineTransform());
+
+		//for now, don't draw the well's number label
+//        g.setColor(Color.BLACK);
+//		g.setFont(g.getFont().deriveFont((float) (sF*diameter/2)));
+//		screenLocY += Math.round(diameter*sF);
+//		g.drawString(identifier, screenLocX, screenLocY);
 	}
 	
 	/**

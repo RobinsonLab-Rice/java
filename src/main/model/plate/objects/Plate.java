@@ -1,10 +1,12 @@
 package main.model.plate.objects;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import javafx.scene.transform.Affine;
 import main.model.plate.IWellCmd;
 import main.model.plate.WellDispatcher;
 
@@ -79,8 +81,7 @@ public class Plate implements Serializable {
 	 * @param sF - scalefactor, how much to stretch this box based on its bounding frame
 	 */
 	public void paint(final Graphics g, final double sF){
-        this.drawBorder(g, sF);
-        this.drawLabels(g, sF);
+        this.drawPlate(g, sF);
         //tell dispatcher to get all wells to paint
         dispatcher.notifyAll(
                 new IWellCmd(){
@@ -121,27 +122,44 @@ public class Plate implements Serializable {
     }
 	
 	/**
-	 * Draw the bounding box for plate object (physical dimensions, defined by user), as well as its given name
+	 * Draw the bounding box for plate object (physical dimensions, defined by user), as well as its given name and
+     * the well row and column labels
 	 * @param g - graphics to draw on
 	 * @param sF - scalefactor, how much to stretch this box based on its bounding frame
 	 */
-	private void drawBorder(Graphics g, double sF){
-        //draw the plate border
-		g.drawRect((int)Math.round(TLcorner.getX()*sF), (int)Math.round(TLcorner.getY()*sF), 
-				   (int)Math.round(plateSpecs.getBorderDimensions().getX()*sF), (int)Math.round(plateSpecs.getBorderDimensions().getY()*sF));
-        //write the plate's name, based on the input scale factor for the window
-        g.setFont(g.getFont().deriveFont((float) (sF*10)));
-        g.drawString(name, (int)Math.round(TLcorner.getX()*sF), (int)Math.round((TLcorner.getY())*sF));
-	}
-
-    /**
-     * Draw well labels for this plate (i.e. label rows with A, B, C, etc., columnss with 1,2,3,etc.)
-     * @param g - graphics to draw on
-     * @param sF - scalefactor, how much to stretch this box based on its bounding frame
-     */
-    private void drawLabels(Graphics g, double sF) {
+	private void drawPlate(Graphics g, double sF){
+        //set up objects
         Graphics2D g2d = (Graphics2D) g;
-    }
+        AffineTransform at = new AffineTransform();
+
+        //set up the affine transform, apply it to the graphics object. must apply in backwards-order
+        at.translate(TLcorner.getX()*sF, (TLcorner.getY())*sF);
+        if (isRotated) {
+            at.translate(plateSpecs.getBorderDimensions().getY()*sF, 0);
+            at.rotate(Math.PI/2);
+        }
+        at.scale(sF, sF);
+
+        g2d.setTransform(at);
+        g2d.setStroke(new BasicStroke((float) (1/sF)));
+
+        //draw the border
+        g2d.drawRect(0,0, (int)Math.round(plateSpecs.getBorderDimensions().getX()), (int)Math.round(plateSpecs.getBorderDimensions().getY()));
+
+        //draw the name
+        g2d.setFont(g2d.getFont().deriveFont((float) (sF*5)));
+        g2d.drawString(name, 0, 0);
+
+        //draw the row labels
+        float fontSize = 12;
+        g2d.setFont(g2d.getFont().deriveFont(fontSize));
+        for (int i = 0; i < plateSpecs.getNumRows(); i++) {
+            g2d.drawString(String.valueOf((char) ('A' + i)), 0, (int) (plateSpecs.getWellCorner().getY() + plateSpecs.getWellSpacing()*i + fontSize/2));
+        }
+        for (int i = 0; i < plateSpecs.getNumCols(); i++) {
+            g2d.drawString(String.valueOf((char) ('1' + i)), (int) (plateSpecs.getWellCorner().getX() + plateSpecs.getWellSpacing()*i - fontSize/2), fontSize*2/3);
+        }
+	}
 	
 	/**
 	 * Creates all wells on this plate and adds them to the plate's dispatcher.
