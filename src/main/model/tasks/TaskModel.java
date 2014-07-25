@@ -15,7 +15,7 @@ import main.model.tasks.taskvisitors.DecompileVisitor;
 import main.model.tasks.taskvisitors.DrawVisitor;
 import main.model.tasks.taskvisitors.ITaskVisitor;
 import main.util.Parser;
-import main.view.MainPanel;
+import main.view.panels.MainPanel;
 
 import javax.swing.tree.DefaultTreeModel;
 

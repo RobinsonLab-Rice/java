@@ -5,6 +5,11 @@ import main.model.tasks.TaskModel;
 import main.model.tasks.basictasks.AExecuteTask;
 import main.model.tasks.basictasks.IExecuteTask;
 import main.model.tasks.basictasks.MultiTask;
+import main.view.dialogs.LoopInfo;
+import main.view.dialogs.LoopInfoDialog;
+import main.view.dialogs.SimpleDialogs;
+import main.view.panels.MainPanel;
+import main.view.panels.TaskCreationPanel;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
@@ -67,7 +72,7 @@ public class TreeRightClickListener extends MouseAdapter {
                     //get the selected node to later use it
                     MultiTask selected = (MultiTask) selPath.getLastPathComponent();
 
-                    String s = popSaveDialog(selected);
+                    String s = SimpleDialogs.popSaveDialog(taskTree, selected.name);
 
                     //if they didn't input anything or cancelled, do nothing and return out
                     if (s == null || s.equals("")) { }
@@ -86,7 +91,7 @@ public class TreeRightClickListener extends MouseAdapter {
                         //get the selected node to later use it
                         MultiTask selected = (MultiTask) selPath.getLastPathComponent();
 
-                        String s = popSaveDialog(selected);
+                        String s = SimpleDialogs.popSaveDialog(taskTree, selected.name);
 
                         //if they didn't input anything or cancelled, do nothing and return out
                         if (s == null || s.equals("")) { }
@@ -175,20 +180,5 @@ public class TreeRightClickListener extends MouseAdapter {
         } else {
             return;
         }
-    }
-
-    /**
-     * Popup dialog for entering name of data to save.
-     * @return String (could be null) that the user input
-     */
-    private String popSaveDialog(MultiTask selected) {
-        return (String)JOptionPane.showInputDialog(
-                taskTree,
-                "Save as:",
-                "Save Item",
-                JOptionPane.YES_NO_OPTION,
-                null,
-                null,
-                selected.name);
     }
 }

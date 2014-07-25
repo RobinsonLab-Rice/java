@@ -1,4 +1,4 @@
-package main.view;
+package main.view.dialogs;
 
 import javax.swing.*;
 import java.awt.*;

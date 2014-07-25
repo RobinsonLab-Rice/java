@@ -1,4 +1,4 @@
-package main.view;
+package main.view.dialogs;
 
 /**
  * Helper class for packaging info from LoopInfoDialog

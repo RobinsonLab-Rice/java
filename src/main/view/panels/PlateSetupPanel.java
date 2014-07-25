@@ -1,9 +1,11 @@
-package main.view;
+package main.view.panels;
 
 import main.model.plate.PlateModel;
 import main.model.plate.objects.PlateSpecifications;
 import main.model.serialization.SaveType;
 import main.model.serialization.SerializationModel;
+import main.view.dialogs.LoopInfoDialog;
+import main.view.panels.MainPanel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -41,8 +43,8 @@ public class PlateSetupPanel {
         editListButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                PlateEditingPanel editFrame = new PlateEditingPanel();
-                editFrame.start(serializationModel, savedPlatesCmb.getSelectedItem().toString());
+                LoopInfoDialog editDialog = new LoopInfoDialog(editListButton);
+                editDialog.showDialog();
                 MainPanel.GUIHelper.updateCmb(serializationModel.updateDataList(SaveType.PLATE_SPEC, false), savedPlatesCmb);
             }
         });

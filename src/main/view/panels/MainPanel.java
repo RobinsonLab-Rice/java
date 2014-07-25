@@ -1,9 +1,10 @@
-package main.view;
+package main.view.panels;
 
 import main.model.tasks.TaskModel;
 import main.model.plate.PlateModel;
 import main.model.serial.SerialModel;
 import main.model.serialization.SerializationModel;
+import main.view.MovementAreaMouseAdapter;
 
 import javax.swing.*;
 import java.awt.*;
