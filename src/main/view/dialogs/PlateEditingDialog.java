@@ -30,7 +30,7 @@ public class PlateEditingDialog extends JDialog {
 
     private SerializationModel serializationModel;
 
-    public PlateEditingDialog(Component parent, SerializationModel serializationModel, PlateSpecifications defaultSpecs, String defaultName) {
+    public PlateEditingDialog(Component parent, SerializationModel serializationModel, String defaultName) {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
@@ -84,6 +84,9 @@ public class PlateEditingDialog extends JDialog {
             }
         });
 
+        //get the current data from serialization model
+        PlateSpecifications defaultSpecs = serializationModel.loadPlate(defaultName);
+
         //fill in default values of fields
         wellPosXTxt.setText(String.valueOf(defaultSpecs.getWellCorner().getX()));
         wellPosYTxt.setText(String.valueOf(defaultSpecs.getWellCorner().getY()));
@@ -101,22 +104,6 @@ public class PlateEditingDialog extends JDialog {
     //When this dialog closes, package the spec data and save it to the backend model (telling user if that is unsuccessful).
     public void showDialog() {
         setVisible(true);
-        PlateSpecifications packagedData = new PlateSpecifications(
-                Double.parseDouble(wellPosXTxt.getText()),
-                Double.parseDouble(wellPosYTxt.getText()),
-                Double.parseDouble(wellToWellDiameterTxt.getText()),
-                Integer.parseInt(numRowsTxt.getText()),
-                Integer.parseInt(numColsTxt.getText()),
-                Double.parseDouble(widthTxt.getText()),
-                Double.parseDouble(lengthTxt.getText()),
-                Double.parseDouble(wellDiameterTxt.getText()),
-                Double.parseDouble(wellVolumeTxt.getText()),
-                Double.parseDouble(wellHeightTxt.getText()));
-
-        //if data was not successfully saved, tell the user.
-        if (serializationModel.savePlate(specName.getText(), packagedData) == false) {
-            SimpleDialogs.popSaveUnsuccessful(buttonOK);
-        }
         return;
     }
 
@@ -124,8 +111,28 @@ public class PlateEditingDialog extends JDialog {
     private void onOK() {
         //if the path name does already exist, popup an overwrite dialog. else continue
         if (serializationModel.checkData("data/plates/" + specName.getText() + ".txt")){
-            //if they don't want to save over, return without onOK operations. else, continue
-            if (SimpleDialogs.popOverwriteDialog() != JOptionPane.YES_OPTION) return;
+            PlateSpecifications packagedData = null;
+            try {
+                packagedData = new PlateSpecifications(
+                        Double.parseDouble(wellPosXTxt.getText()),
+                        Double.parseDouble(wellPosYTxt.getText()),
+                        Double.parseDouble(wellToWellDiameterTxt.getText()),
+                        Integer.parseInt(numRowsTxt.getText()),
+                        Integer.parseInt(numColsTxt.getText()),
+                        Double.parseDouble(widthTxt.getText()),
+                        Double.parseDouble(lengthTxt.getText()),
+                        Double.parseDouble(wellDiameterTxt.getText()),
+                        Double.parseDouble(wellVolumeTxt.getText()),
+                        Double.parseDouble(wellHeightTxt.getText()));
+            }
+            catch (NumberFormatException e) {
+                SimpleDialogs.popSaveUnsuccessful(buttonOK);
+                return;
+            }
+            //if data was not successfully saved, tell the user.
+            if (serializationModel.savePlate(specName.getText(), packagedData) == false) {
+                SimpleDialogs.popSaveUnsuccessful(buttonOK);
+            }
         }
         setVisible(false);
         dispose();

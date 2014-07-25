@@ -5,6 +5,7 @@ import main.model.plate.objects.PlateSpecifications;
 import main.model.serialization.SaveType;
 import main.model.serialization.SerializationModel;
 import main.view.dialogs.LoopInfoDialog;
+import main.view.dialogs.PlateEditingDialog;
 import main.view.panels.MainPanel;
 
 import javax.swing.*;
@@ -20,11 +21,10 @@ import java.awt.geom.Point2D;
 public class PlateSetupPanel {
 
     /* All fields that this panel contains. */
-    private JComboBox savedPlatesCmb;
+    private JComboBox<String> savedPlatesCmb;
     private JButton editListButton;
     private JTextField xPosTxt;
     private JTextField yPosTxt;
-    private JComboBox numberingOrderCmb;
     private JButton makePlateBtn;
     private JButton clearAllPlatesBtn;
     private JPanel plateSetupPanel;
@@ -38,16 +38,6 @@ public class PlateSetupPanel {
 
     /* Constructor that initializes special component needs. */
     public PlateSetupPanel() {
-
-        /* When edit list button is pressed, launch the edit sub-window. */
-        editListButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                LoopInfoDialog editDialog = new LoopInfoDialog(editListButton);
-                editDialog.showDialog();
-                MainPanel.GUIHelper.updateCmb(serializationModel.updateDataList(SaveType.PLATE_SPEC, false), savedPlatesCmb);
-            }
-        });
 
         /* When make plate button is pressed, package the current plate info and ship it off to the plate model. */
         makePlateBtn.addActionListener(new ActionListener() {
@@ -92,6 +82,16 @@ public class PlateSetupPanel {
         this.serializationModel = serializationModel;
 
         MainPanel.GUIHelper.updateCmb(serializationModel.updateDataList(SaveType.PLATE_SPEC, false), savedPlatesCmb);
+
+        /* When edit list button is pressed, launch the edit sub-window. */
+        editListButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                PlateEditingDialog editDialog = new PlateEditingDialog(editListButton, serializationModel, savedPlatesCmb.getItemAt(savedPlatesCmb.getSelectedIndex()));
+                editDialog.showDialog();
+                MainPanel.GUIHelper.updateCmb(serializationModel.updateDataList(SaveType.PLATE_SPEC, false), savedPlatesCmb);
+            }
+        });
     }
 
 }

@@ -147,7 +147,7 @@ public class Plate implements Serializable {
         g2d.drawRect(0,0, (int)Math.round(plateSpecs.getBorderDimensions().getX()), (int)Math.round(plateSpecs.getBorderDimensions().getY()));
 
         //draw the name
-        g2d.setFont(g2d.getFont().deriveFont((float) (sF*5)));
+        g2d.setFont(g2d.getFont().deriveFont((float) (16/sF)));
         g2d.drawString(name, 0, 0);
 
         //draw the row labels
