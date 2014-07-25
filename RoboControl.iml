@@ -69,19 +69,16 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="junit-4.11" level="project" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Downloads/uispec4j-2.4-jdk16.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/json-io-2.6.1.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES>
-          <root url="jar://$USER_HOME$/Downloads/uispec4j-2.4-jdk6-sources.zip!/" />
-        </SOURCES>
+        <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="junit-4.11" level="project" />
-    <orderEntry type="library" name="json-io-2.6.0" level="project" />
   </component>
 </module>
 
