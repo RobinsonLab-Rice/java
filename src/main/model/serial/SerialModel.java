@@ -14,7 +14,7 @@ import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 import main.model.plate.PlateModel;
 import main.model.tasks.TaskModel;
-import main.view.MainPanel;
+import main.view.panels.MainPanel;
 
 /**
  * Model that handles all communication with the micro-controller. Will reach into the other model to

@@ -1,4 +1,4 @@
-package main.view;
+package main.view.panels;
 
 import main.model.tasks.TaskModel;
 import main.model.tasks.basictasks.ALeafTask;
@@ -8,6 +8,10 @@ import main.model.serialization.SaveType;
 import main.model.serialization.SerializationModel;
 import main.model.tasks.ITaskFactory;
 import main.model.tasks.basictasks.NullTask;
+import main.view.dialogs.LoopInfo;
+import main.view.TaskTree;
+import main.view.TreeRightClickListener;
+import main.view.dialogs.LoopInfoDialog;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;

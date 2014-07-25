@@ -11,6 +11,7 @@ import main.model.tasks.TaskModel;
 import main.model.tasks.basictasks.IExecuteTask;
 import main.model.plate.objects.PlateSpecifications;
 
+import main.view.dialogs.SimpleDialogs;
 import org.apache.commons.io.FilenameUtils;
 
 import com.cedarsoftware.util.io.JsonReader;
@@ -212,14 +213,7 @@ public class SerializationModel {
 
         //if the item already exists, ask the user if they really want to continue
         if (checkData(qualifiedName) == true) {
-            int result = JOptionPane.showOptionDialog(null,
-                    "Saved item with that name already exists. Overwrite it?",
-                    "Overwrite existing?",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,     //do not use a custom Icon
-                    new String[] {"Save Anyway", "Cancel"},  //the titles of buttons
-                    "Save Anyway"); //default button title
+            int result = SimpleDialogs.popOverwriteDialog();
             if (result != JOptionPane.YES_OPTION) {
                 return false;
             }
@@ -262,7 +256,7 @@ public class SerializationModel {
     /**
      * Checks to see if item specified by qualifiedPath actually exists
      * @param qualifiedPath complete path of item to check
-     * @return whether or not the item exists
+     * @return true if item does exist
      */
     public boolean checkData(String qualifiedPath) {
         File f = new File(qualifiedPath);

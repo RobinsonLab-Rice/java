@@ -3,7 +3,7 @@ package main.controller;
 import java.awt.EventQueue;
 
 import main.model.tasks.TaskModel;
-import main.view.MainPanel;
+import main.view.panels.MainPanel;
 import main.model.externalcomm.ExternalCommModel;
 import main.model.plate.PlateModel;
 import main.model.serial.SerialModel;

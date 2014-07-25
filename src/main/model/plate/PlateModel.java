@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import main.model.plate.objects.Plate;
 import main.model.plate.objects.Well;
 import main.model.tasks.TaskModel;
-import main.view.MainPanel;
+import main.view.panels.MainPanel;
 import main.model.plate.objects.ArmState;
 import main.model.plate.objects.BorderFrame;
 import main.model.plate.objects.PlateSpecifications;
