@@ -1,6 +1,8 @@
 package main.model.plate;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -13,6 +15,8 @@ import main.view.MainPanel;
 import main.model.plate.objects.ArmState;
 import main.model.plate.objects.BorderFrame;
 import main.model.plate.objects.PlateSpecifications;
+
+import javax.swing.*;
 
 /**
  * Model that keeps track of the current state of the frame, cell plates, and the wells themselves. Essentially,
@@ -59,9 +63,15 @@ public class PlateModel {
 	}
 
     /* On initialization, connects to given adapters. */
-    public void start(MainPanel view, TaskModel taskModel){
+    public void start(final MainPanel view, TaskModel taskModel){
         this.view = view;
         this.taskModel = taskModel;
+
+        new Timer(100, new ActionListener() {
+            public void actionPerformed (ActionEvent e) {
+                view.update();
+            }
+        }).start();
     }
 	
 	/**
@@ -413,5 +423,12 @@ public class PlateModel {
         }
         selectedWells.clear();
         return lastWell;
+    }
+
+    /**
+     * Tells view to redraw itself.S
+     */
+    public void redraw() {
+        view.update();
     }
 }

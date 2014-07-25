@@ -104,6 +104,7 @@ public class DrawVisitor extends ATaskVisitor {
                 MoveToWellTask moveToWellHost = (MoveToWellTask) host;
 
                 Graphics2D g2d = (Graphics2D) params[0];
+                g2d.setColor(Color.black);
                 double sF = (double) params[1];
                 Point2D start = (Point2D) params[2];
                 ArrayList<Plate> plates = (ArrayList<Plate>) params[3];
@@ -129,6 +130,7 @@ public class DrawVisitor extends ATaskVisitor {
                 MoveToLocTask moveToLocHost = (MoveToLocTask) host;
 
                 Graphics2D g2d = (Graphics2D) params[0];
+                g2d.setColor(Color.black);
                 double sF = (double) params[1];
                 Point2D start = (Point2D) params[2];
                 Point2D destination = moveToLocHost.getDestination();

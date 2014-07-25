@@ -81,7 +81,7 @@ public class Well implements Observer {
 	 * @param g - graphics to paint on
 	 * @param sF - scale factor from cm to pixels
 	 */
-	public void paint(Graphics g, double sF){
+	public void paint(Graphics g, double sF, boolean isRotated){
 		int screenLocX = (int)Math.round((parentPlate.getTLcorner().getX() + relativeLocation.getX()-diameter/2)*sF);
 		int screenLocY = (int)Math.round((parentPlate.getTLcorner().getY() + relativeLocation.getY()-diameter/2)*sF);
 
@@ -90,6 +90,10 @@ public class Well implements Observer {
         AffineTransform at = new AffineTransform();
 
         //draw well's outline
+        if (isRotated) {
+            at.translate(parentPlate.getPlateSpecs().getBorderDimensions().getY()*sF, 0);
+            at.rotate(Math.PI/2);
+        }
         at.translate(screenLocX, screenLocY);
         at.scale(sF, sF);
 
@@ -102,8 +106,6 @@ public class Well implements Observer {
             g2d.setColor(Color.LIGHT_GRAY);
             g2d.fillOval(0, 0, (int) diameter, (int) diameter);
         }
-
-        g2d.setTransform(new AffineTransform());
 
 		//for now, don't draw the well's number label
 //        g.setColor(Color.BLACK);

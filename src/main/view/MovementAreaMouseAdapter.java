@@ -39,12 +39,11 @@ public class MovementAreaMouseAdapter extends MouseAdapter {
     }
 
     /**
-     * When mouse is pressed:
-     * if it is a right click, select the well clicked and display the popup menu
-     * if it is a left click, save the locations of selected wells to start a click and drag
+     * When mouse is pressed, save start info for the mouse released to act on.
      */
     @Override
     public void mousePressed(MouseEvent e) {
+        plateModel.redraw();
         startInfo = e;
     }
 
@@ -60,6 +59,7 @@ public class MovementAreaMouseAdapter extends MouseAdapter {
         if (e.getButton() == 3) {
             doPopup(e);
         }
+        plateModel.redraw();
     }
 
     /**

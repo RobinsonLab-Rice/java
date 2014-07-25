@@ -86,7 +86,7 @@ public class Plate implements Serializable {
         dispatcher.notifyAll(
                 new IWellCmd(){
                     public void apply(Well context, WellDispatcher disp){
-                        context.paint(g, sF);
+                        context.paint(g, sF, isRotated);
                     }
                 }
         );
@@ -151,13 +151,17 @@ public class Plate implements Serializable {
         g2d.drawString(name, 0, 0);
 
         //draw the row labels
-        float fontSize = 12;
+        float fontSize = (float) (14/sF);
         g2d.setFont(g2d.getFont().deriveFont(fontSize));
         for (int i = 0; i < plateSpecs.getNumRows(); i++) {
-            g2d.drawString(String.valueOf((char) ('A' + i)), 0, (int) (plateSpecs.getWellCorner().getY() + plateSpecs.getWellSpacing()*i + fontSize/2));
+            g2d.drawString(String.valueOf((char) ('A' + i)), (int) (plateSpecs.getWellCorner().getX() - plateSpecs.getWellDiameter()/2 - fontSize) ,
+                    (int) (plateSpecs.getWellCorner().getY() + plateSpecs.getWellSpacing()*i + fontSize/2));
         }
-        for (int i = 0; i < plateSpecs.getNumCols(); i++) {
-            g2d.drawString(String.valueOf((char) ('1' + i)), (int) (plateSpecs.getWellCorner().getX() + plateSpecs.getWellSpacing()*i - fontSize/2), fontSize*2/3);
+        int increment = 1;
+        if (plateSpecs.getNumCols() > 13) increment = 2;
+        for (int i = 0; i < plateSpecs.getNumCols(); i+= increment) {
+            g2d.drawString(String.valueOf(1 + i), (int) (plateSpecs.getWellCorner().getX() + plateSpecs.getWellSpacing()*i - fontSize/2),
+                    (int) (plateSpecs.getWellCorner().getY() - plateSpecs.getWellDiameter()/2));
         }
 	}
 	
