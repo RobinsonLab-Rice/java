@@ -29,19 +29,25 @@ public class MoveToWellTask extends ALeafTask {
     private String plate;
 
     /**
-     * Well number to move to. This is parsed when the command is executed, so could point to different locations
-     * based on the experiment.
+     * Row of well to move to.
      */
-	private String identifier;
+    private String row;
+
+    /**
+     * Column of well to move to.
+     */
+    private String column;
 
     /**
      * Sets well identifier to move to.
      * @param plate - plate to move to
-     * @param identifier - identifier for well to move to (could be its number, alphanumeric, etc.)
+     * @param row - identifier for row to move to (capital letter or lowercase variable)
+     * @param column - identifier for column to move to (number or lowercase variable)
      */
-	public MoveToWellTask(String plate, String identifier) {
+	public MoveToWellTask(String plate, String row, String column) {
         this.plate = plate;
-		this.identifier = identifier;
+        this.row = row;
+        this.column = column;
 	}
 
     /**
@@ -50,7 +56,7 @@ public class MoveToWellTask extends ALeafTask {
      */
     public MoveToWellTask(Well destination) {
         this.plate = destination.getParentPlate().getName();
-        this.identifier = destination.getIdentifier();
+        this.setIdentifiers(destination.getIdentifier());
     }
 
 	/**
@@ -61,12 +67,12 @@ public class MoveToWellTask extends ALeafTask {
         Point2D destination = null;
 
         //if the destination identifier is not correct (i.e. is still a variable) do nothing
-        if (!Parser.isIdentifier(identifier)){
+        if (!Parser.isIdentifier(row + column)){
             return;
         }
         else{
             //find out what absolute location the saved plate and well correspond to
-            destination = armState.getPlateModel().getLocationFromIdentifier(plate, identifier);
+            destination = armState.getPlateModel().getLocationFromIdentifier(plate, row + column);
         }
 
 		double xCmToMove = armState.getX() - destination.getX();
@@ -104,7 +110,7 @@ public class MoveToWellTask extends ALeafTask {
     public ArrayList<String> getDestination() {
         ArrayList<String> destination = new ArrayList<String>();
         destination.add(plate);
-        destination.add(identifier);
+        destination.add(row + column);
         return destination;
     }
 	
@@ -112,7 +118,7 @@ public class MoveToWellTask extends ALeafTask {
 	 * Define how this task should be printed.
 	 */
 	public String toString() {
-		return "Move to: " + plate + ", " + identifier;
+		return "Move to: " + plate + ", " + row + column;
 	}
 
     /**
@@ -132,7 +138,7 @@ public class MoveToWellTask extends ALeafTask {
         }
         try {
             plate = halves[0].trim();
-            identifier = halves[1].trim();
+            this.setIdentifiers(halves[1].trim());
         } catch (NumberFormatException e) {
             System.out.println("Did not input proper format for moving to a well.");
             e.printStackTrace();
@@ -147,24 +153,41 @@ public class MoveToWellTask extends ALeafTask {
      */
     @Override
     public void replaceAll(String variable, Object newValue) {
-        if (variable.equals(identifier)){
-            identifier = (String) newValue;
-        }
+        replaceOne(variable, newValue);
     }
 
     /**
      * Replace variable in this task and all its children.
-     *
-     * @param variable - if the move task's "identifier" matches this, change value of identifier to newValue
-     * @param newValue - new value to change to
+     * @param variable
+     * @param newValue
+     * @return
      */
-    @Override
     public boolean replaceOne(String variable, Object newValue) {
-        if (variable.equals(identifier)){
-            identifier = (String) newValue;
+        if (this.row.equals(variable)) {
+            row = (String) newValue;
             return true;
         }
-        else return false;
+        else if (this.column.equals(variable)) {
+            column = (String) newValue;
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * Sets rows and columns based on whole identifier.
+     * @param identifier alphanumeric identifier (e.g. A1, B3, etc.)
+     */
+    public void setIdentifiers(String identifier) {
+        if (identifier.length() > 3) {
+            this.row = "null";
+            this.column = "null";
+            return;
+        }
+        this.row = Character.toString(identifier.charAt(0));
+        this.column = identifier.substring(1);
     }
 
 }

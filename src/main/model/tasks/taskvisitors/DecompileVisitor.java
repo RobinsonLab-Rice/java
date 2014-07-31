@@ -62,5 +62,12 @@ public class DecompileVisitor extends ATaskVisitor {
 				return null;
 			}
 		});
+        addCmd("PumpParams", new ITaskVisitorCmd(){
+            @Override
+            public Object apply(String id, IExecuteTask host, Object... params) {
+                ((ArrayList<ALeafTask>) params[0]).add((RaiseTask) host);
+                return null;
+            }
+        });
 	}
 }

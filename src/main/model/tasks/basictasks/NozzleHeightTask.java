@@ -82,9 +82,7 @@ public class NozzleHeightTask extends ALeafTask {
      */
     @Override
     public void replaceAll(String variable, Object newValue) {
-        if (variable.equals(heightToSet)) {
-            heightToSet = (String) newValue;
-        }
+        replaceOne(variable, newValue);
     }
 
     /**

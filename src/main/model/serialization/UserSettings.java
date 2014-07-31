@@ -9,4 +9,9 @@ public class UserSettings {
 
     public Point2D frameBounds;
 
+    public int defaultLowerSteps;
+
+    public int defaultRaiseSteps;
+
+    public double stepsTouLFactor;
 }

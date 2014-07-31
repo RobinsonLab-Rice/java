@@ -18,6 +18,7 @@ import main.util.Parser;
 import main.view.panels.MainPanel;
 
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
 
 /**
  * Model that controls all creation and managing of tasks. Relays to plate model when wells need to be given tasks.
@@ -151,7 +152,7 @@ public class TaskModel {
         ArrayList<ITaskFactory> factories = new ArrayList<ITaskFactory>();
 
         //add in premade tasks
-        factories.add(new TaskFactory(new MoveToWellTask("Plate1", "n")));
+        factories.add(new TaskFactory(new MoveToWellTask("Plate1", "n", "m")));
         factories.add(new TaskFactory(new MoveToLocTask("n", "m")));
         factories.add(new TaskFactory(new DispenseTask("n")));
         factories.add(new TaskFactory(new NozzleHeightTask("n")));
@@ -253,7 +254,10 @@ public class TaskModel {
     public MultiTask makeSingleTransaction(Well well, String amount, boolean isWithdraw) {
         String name;
 
-        if (isWithdraw) name = "MoveAndWithdraw";
+        if (isWithdraw) {
+            name = "MoveAndWithdraw";
+            amount = "-" + amount;
+        }
         else name = "MoveAndDeposit";
 
         return new MultiTask(name,
@@ -282,17 +286,18 @@ public class TaskModel {
     }
 
     /**
-     * Generates a sequence of tasks. Return value indicates whether or not the tasks were successfully made and added
-     * to the queue.
+     * Generates a sequence of tasks based on input task, replacing the input one.
      *
-     * @param taskToMake factory of task to repeat
+     * @param taskToLoop task to repeat
      * @param variable   variable to be overwritten in task
      * @param startVal   start value of variable
      * @param endVal     end value of variable
      * @param incVal     how much to increment variable every time
      * @return true if tasks were successfully made and added, false otherwise
      */
-    public boolean loopGenerateTasks(ITaskFactory taskToMake, String variable, String startVal, String endVal, String incVal) {
+    public boolean loopGenerateTasks(IExecuteTask taskToLoop, String variable, String startVal, String endVal, String incVal) {
+
+        TaskFactory taskToMake = new TaskFactory(taskToLoop);
 
         MultiTask accTasks = new MultiTask("Looped" + taskToMake.toString());
 
@@ -307,7 +312,11 @@ public class TaskModel {
             accTasks.addTaskToEnd(newTask);
         }
 
-        this.appendTaskToQueue(accTasks);
+        //insert this new node exactly where the old one was
+        accTasks.setParent((MutableTreeNode) taskToLoop.getParent());
+        taskQueue.insertNodeInto(accTasks, (MutableTreeNode) taskToLoop.getParent(), taskToLoop.getParent().getIndex(taskToLoop));
+        ((MutableTreeNode) taskToLoop.getParent()).remove(taskToLoop);
+        taskQueue.nodeStructureChanged(taskToLoop.getParent());
 
         return true;
     }
@@ -351,6 +360,28 @@ public class TaskModel {
         if (Parser.isIdentifier(startVal) && Parser.isIdentifier(endVal) && Parser.isInteger(incVal)) {
             loopVals = plateModel.getPlate(view.getDefaultPlate()).getWellsInRange(startVal, endVal, Integer.parseInt(incVal));
             if (loopVals == null) return null;
+        }
+        //else if values are letters, get all between them
+        else if (startVal.matches("[A-Z]") && endVal.matches("[A-Z]") && Parser.isInteger(incVal)) {
+            int start = (int) startVal.charAt(0);
+            int end = (int) endVal.charAt(0);
+            int inc = Integer.parseInt(incVal);
+
+            while (start <= end) {
+                loopVals.add(String.valueOf((char) start));
+                start += inc;
+            }
+        }
+        //else if values are integers, get all between them
+        else if (Parser.isInteger(startVal) && Parser.isInteger(endVal) && Parser.isInteger(incVal)) {
+            int start = Integer.parseInt(startVal);
+            int end = Integer.parseInt(endVal);
+            int inc = Integer.parseInt(incVal);
+
+            while (start <= end) {
+                loopVals.add(String.valueOf(start));
+                start += inc;
+            }
         }
         //else if all required values are numbers, fill arraylist with all them.
         else if (Parser.isNumeric(startVal) && Parser.isNumeric(endVal) && Parser.isNumeric(incVal)) {

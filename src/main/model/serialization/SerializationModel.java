@@ -42,7 +42,7 @@ public class SerializationModel {
 	private String ext = ".txt";
 
     /* Saved copy of user settings, so we don't have to dig through the file system when each piece is wanted. */
-    private UserSettings userSettings;
+    public static UserSettings userSettings;
 	
 	/**
 	 * On initialization, connects to given adapters.

@@ -11,6 +11,7 @@ import java.util.Collections;
 
 import main.model.plate.objects.Plate;
 import main.model.tasks.basictasks.*;
+import main.util.Parser;
 
 import javax.imageio.ImageIO;
 
@@ -69,7 +70,7 @@ public class DrawVisitor extends ATaskVisitor {
                 int scale = 8;
 
                 //actually draw the task, drawing a different icon for withdrawing and dispensing
-                if (dispenseHost.getVolume() > 0) { //if withdrawing, draw an arrow going up
+                if (dispenseHost.getVolume() < 0) { //if withdrawing, draw an arrow going up
                     g2d.drawImage(dispenseIcon,
                             (int)(destination.getX()*sF - scale), //top-left x coordinate
                             (int)(destination.getY()*sF - scale), //top-left y coorinate
@@ -109,11 +110,16 @@ public class DrawVisitor extends ATaskVisitor {
                 Point2D start = (Point2D) params[2];
                 ArrayList<Plate> plates = (ArrayList<Plate>) params[3];
                 ArrayList<String> identifiers = moveToWellHost.getDestination();
+
+                //if well is not an idenfitifer
+                if (!Parser.isIdentifier(identifiers.get(1))) return start;
+
                 Point2D destination = null;
                 for (Plate plate : plates) {
                     if (plate.getName().equals(identifiers.get(0)))
                         destination = plate.getWellLocation(identifiers.get(1));
                 }
+                if (destination == null) return start;
 
                 //actually draw the task. if the plate doesn't exist and destination is null, do nothing.
                 if (destination != null && moveToWellHost.getVisibility()){
@@ -158,6 +164,12 @@ public class DrawVisitor extends ATaskVisitor {
             }
         });
         addCmd("Raise", new ITaskVisitorCmd(){
+            @Override
+            public Object apply(String id, IExecuteTask host, Object... params) {
+                return null;
+            }
+        });
+        addCmd("PumpParams", new ITaskVisitorCmd(){
             @Override
             public Object apply(String id, IExecuteTask host, Object... params) {
                 return null;

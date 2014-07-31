@@ -56,7 +56,7 @@ public class TreeRightClickListener extends MouseAdapter {
 
             private static final long serialVersionUID = -3142513178293086540L;
 
-            JMenuItem saveTask, saveExperiment, delete, show, hide, replace;
+            JMenuItem saveTask, saveExperiment, delete, show, hide, replace, loop;
 
             {
                 saveTask = new JMenuItem("Save Task");
@@ -65,6 +65,7 @@ public class TreeRightClickListener extends MouseAdapter {
                 show = new JMenuItem("Show");
                 hide = new JMenuItem("Hide");
                 replace = new JMenuItem("Replace variable");
+                loop = new JMenuItem("Loop Task");
 
                 /* Only allow saving on multitasks. Saves it as the multitask's current name. */
                 saveTask.addActionListener(new ActionListener() {
@@ -147,6 +148,17 @@ public class TreeRightClickListener extends MouseAdapter {
                     }
                 });
 
+                loop.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        LoopInfoDialog loopDialog = new LoopInfoDialog(loop);
+                        LoopInfo info = loopDialog.showDialog();
+                        //send over: currently selected task, variable, start value, end value, increment value
+                        taskModel.loopGenerateTasks((IExecuteTask) selPath.getLastPathComponent(), info.variable,
+                                info.start, info.end, info.inc);
+                    }
+                });
+
                 //make a different menu for multitasks and other tasks
                 if (selPath.getLastPathComponent() instanceof MultiTask){
                     //if we selected the root, add button for saving experiment
@@ -160,6 +172,7 @@ public class TreeRightClickListener extends MouseAdapter {
                     add(replace);
                 }
 
+                add(loop);
                 add(delete);
                 add(show);
                 add(hide);

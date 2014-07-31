@@ -3,6 +3,7 @@ package main.model.tasks.basictasks;
 import java.io.OutputStream;
 
 import main.model.plate.objects.ArmState;
+import main.model.serialization.SerializationModel;
 import main.model.tasks.taskvisitors.ITaskVisitor;
 
 /**
@@ -14,8 +15,7 @@ public class RaiseTask extends ALeafTask {
 	private static final long serialVersionUID = 3963417044553710729L;
 
 	/**
-	 * Constructor, just sets the appropriate volume.
-	 * @param heightToSet - height (in cm) nozzle should be set to
+	 * Empty constructor.
 	 */
 	public RaiseTask(){
 	}
@@ -25,13 +25,13 @@ public class RaiseTask extends ALeafTask {
 	 * move to a certain height, which is saved to this task in its constructor.
 	 */
 	public void execute(ArmState armState, OutputStream outputStream) {
-		String cmdString = "nozzleHeight(" + "1500" + ")";
+		String cmdString = "nozzleHeight(" + SerializationModel.userSettings.defaultRaiseSteps + ")";
 		this.writeString(cmdString, outputStream);
 	}
 	
 	/**
 	 * Calls the "Raise" case of the given algo.
-	 * @param algo The IPhraseVisitor algo to use.
+	 * @param visitor The IPhraseVisitor algo to use.
 	 * @param params vararg list of input parameters
 	 * @return the result of running the Chord case of the visitor.
 	 */
@@ -39,13 +39,6 @@ public class RaiseTask extends ALeafTask {
 	public Object executeVisitor(ITaskVisitor visitor, Object... params) {
 		return visitor.caseAt("Raise", this, params);
 	}
-
-//	/**
-//	 * Raise task doesn't have any parameters, doesn't change at all.
-//	 */
-//	@Override
-//	public void traverseOrModify(Object[] taskPath, String toChange) {
-//	}
 	
 	/**
 	 * Define how this task should be printed.

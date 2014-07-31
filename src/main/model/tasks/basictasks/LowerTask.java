@@ -3,6 +3,7 @@ package main.model.tasks.basictasks;
 import java.io.OutputStream;
 
 import main.model.plate.objects.ArmState;
+import main.model.serialization.SerializationModel;
 import main.model.tasks.taskvisitors.ITaskVisitor;
 
 /**
@@ -14,8 +15,7 @@ public class LowerTask extends ALeafTask {
 	private static final long serialVersionUID = 3963417044553710729L;
 
 	/**
-	 * Constructor, just sets the appropriate volume.
-	 * @param heightToSet - height (in cm) nozzle should be set to
+	 * Empty constructor.
 	 */
 	public LowerTask(){
 	}
@@ -25,7 +25,7 @@ public class LowerTask extends ALeafTask {
 	 * move to a certain height, which is saved to this task in its constructor.
 	 */
 	public void execute(ArmState armState, OutputStream outputStream) {
-		String cmdString = "nozzleHeight(" + "1325" + ")";
+		String cmdString = "nozzleHeight(" + SerializationModel.userSettings.defaultLowerSteps + ")";
 		this.writeString(cmdString, outputStream);
 	}
 	

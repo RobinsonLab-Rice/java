@@ -4,5 +4,8 @@
         "@type":"java.awt.geom.Point2D$Double",
         "x":223.46,
         "y":93
-    }
+    },
+    "defaultLowerSteps":1325,
+    "defaultRaiseSteps":1500,
+    "stepsTouLFactor":13.072
 }

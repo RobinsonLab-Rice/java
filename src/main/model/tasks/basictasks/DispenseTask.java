@@ -3,6 +3,7 @@ package main.model.tasks.basictasks;
 import java.io.OutputStream;
 
 import main.model.plate.objects.ArmState;
+import main.model.serialization.SerializationModel;
 import main.model.tasks.taskvisitors.ITaskVisitor;
 import main.util.Parser;
 
@@ -16,14 +17,9 @@ public class DispenseTask extends ALeafTask {
 	 * Auto generated serial ID.
 	 */
 	private static final long serialVersionUID = 919292764151689689L;
-	
-//	/**
-//	 * Volume of liquid to move, currently the time in ms before switching to air.
-//	 */
-//	private Double volume = null;
 
     /**
-     * Variable to store if volume is null.
+     * Amount of volume this task dispenses, in uL. Stored as a string in case a variable needs to be used.
      */
     private String volume = null;
 
@@ -39,7 +35,8 @@ public class DispenseTask extends ALeafTask {
 	 * with time to flow liquid and time to flow air, in ms.
 	 */
 	public void execute(ArmState armState, OutputStream outputStream) {
-		String cmdString = "dispense(" + volume + ")";
+        int steps = (int) (Double.parseDouble(volume) * SerializationModel.userSettings.stepsTouLFactor);
+		String cmdString = "dispense(" + steps + ")";
 		this.writeString(cmdString, outputStream);
 	}
 	
@@ -88,9 +85,7 @@ public class DispenseTask extends ALeafTask {
      * @param newValue - new value of dispense
      */
     public void replaceAll(String variable, Object newValue) {
-        if (volume.equals(variable)) {
-            volume = (String) newValue;
-        }
+        replaceOne(variable, newValue);
     }
 
     /**
