@@ -35,7 +35,7 @@ public class ClientTask implements Runnable {
                     //convert it using json
                     IExecuteTask newTask = (IExecuteTask) JsonReader.jsonToJava(taskString);
                     //add that task to the queue
-                    taskModel.appendTaskToQueue(newTask);
+                    taskModel.addExternalTask(newTask);
                 }
                 catch (EOFException e) {
                     //do nothing, normal execution

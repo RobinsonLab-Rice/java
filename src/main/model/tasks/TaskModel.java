@@ -99,19 +99,19 @@ public class TaskModel {
 //		view.updateView();
 //	}
 
-//	/**
-//	 * Executes the tasks normally, ie by sending one command over at a time to Arduino
-//	 */
-//	public void executeAll() {
-//		//make sure we start on a clean slate
-//		decompiledTasks.clear();
-//
-//		//decompile the specified stage and put the results in the decompiledTasks ArrayList
-//		taskQueue.executeVisitor(decompileVisitor, decompiledTasks);
-//
-//		//execute the first one to start the chain!
-//		executeNext();
-//	}
+	/**
+	 * Executes the tasks normally, ie by sending one command over at a time to Arduino
+	 */
+	public void executeAll() {
+		//make sure we start on a clean slate
+		decompiledTasks.clear();
+
+		//decompile the specified stage and put the results in the decompiledTasks ArrayList
+        ((IExecuteTask) taskQueue.getRoot()).executeVisitor(decompileVisitor, decompiledTasks);
+
+		//execute the first one to start the chain!
+		executeNext();
+	}
 
     /**
      * Executes all stages listed, in order.
@@ -402,5 +402,16 @@ public class TaskModel {
             return null;
         }
         return loopVals;
+    }
+
+    /**
+     * Add a task to the queue from an external program. Adds tasks in such a way that they will be executed at the end
+     * if the program is already executing.
+     */
+    public void addExternalTask(IExecuteTask task) {
+        //add it to the main tree, for visualization purposes
+        appendTaskToQueue(task);
+        //also add it to the decompiled list, since that's what is actually being executed now
+        ((IExecuteTask) taskQueue.getRoot()).executeVisitor(decompileVisitor, decompiledTasks);
     }
 }
