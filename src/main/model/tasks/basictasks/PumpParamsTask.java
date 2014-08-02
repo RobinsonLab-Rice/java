@@ -69,4 +69,11 @@ public class PumpParamsTask extends ALeafTask {
         speed = Integer.parseInt(halves[0]);
         acceleration = Integer.parseInt(halves[1]);
     }
+
+    /**
+     * Define how this will be shown to the user.
+     */
+    public String toString() {
+        return "new speed=" + speed + ", new accel=" + acceleration;
+    }
 }

@@ -1,7 +1,6 @@
 package main.model.externalcomm;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.net.Socket;
 
 import com.cedarsoftware.util.io.JsonReader;
@@ -13,7 +12,7 @@ public class ClientTask implements Runnable {
 	
     private final Socket clientSocket;
     
-    private ObjectInputStream inputStream;
+    private DataInputStream inputStream;
     
     private TaskModel taskModel;
     
@@ -28,11 +27,19 @@ public class ClientTask implements Runnable {
 
         // Do whatever required to process the client's request
         try {
-        	inputStream = new ObjectInputStream(clientSocket.getInputStream());
+        	inputStream = new DataInputStream(clientSocket.getInputStream());
 		    while (true){
-		    	JsonReader jr = new JsonReader(inputStream);
-		    	IExecuteTask task = (IExecuteTask) jr.readObject();
-		    	taskModel.appendTaskToQueue(task);
+                try {
+                    //get string from client
+                    String taskString = inputStream.readUTF();
+                    //convert it using json
+                    IExecuteTask newTask = (IExecuteTask) JsonReader.jsonToJava(taskString);
+                    //add that task to the queue
+                    taskModel.appendTaskToQueue(newTask);
+                }
+                catch (EOFException e) {
+                    //do nothing, normal execution
+                }
 		    }
 		    
 		} catch (Exception e1) {

@@ -154,7 +154,10 @@ public class TaskModel {
         //add in premade tasks
         factories.add(new TaskFactory(new MoveToWellTask("Plate1", "n", "m")));
         factories.add(new TaskFactory(new MoveToLocTask("n", "m")));
+        factories.add(new TaskFactory(new PumpParamsTask(1000, 500)));
         factories.add(new TaskFactory(new DispenseTask("n")));
+        factories.add(new TaskFactory(new LowerTask()));
+        factories.add(new TaskFactory(new RaiseTask()));
         factories.add(new TaskFactory(new NozzleHeightTask("n")));
         factories.add(new TaskFactory(new MultiTask()));
 
