@@ -168,7 +168,7 @@ public class PlateModel {
     }
 
     /**
-     * Loop through list of plates, looking for first one that contains the given point.
+     * Loop through list of plates, looking for first one that contains the given point. Accounts for plates being rotated as well.
      * @param location Point plate is located (in pixels)
      * @return
      */
@@ -177,7 +177,13 @@ public class PlateModel {
             //construct a rectangle for the plate's border
             Point2D TLcorner = plate.getTLcorner();
             Point2D dimensions = plate.getDimensions();
-            Rectangle2D boundingBox = new Rectangle2D.Double(TLcorner.getX(), TLcorner.getY(), dimensions.getX(), dimensions.getY());
+            Rectangle2D boundingBox = null;
+            if (plate.isRotated) {
+                boundingBox = new Rectangle2D.Double(TLcorner.getX(), TLcorner.getY(), dimensions.getY(), dimensions.getX());
+            }
+            else {
+                boundingBox = new Rectangle2D.Double(TLcorner.getX(), TLcorner.getY(), dimensions.getX(), dimensions.getY());
+            }
             //if the point, scaled, is in the plate border, delete it
             if (boundingBox.contains(location.getX()/border.getScaleFactor(), location.getY()/border.getScaleFactor())){
                 return plate;

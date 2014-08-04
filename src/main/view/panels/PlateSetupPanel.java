@@ -39,8 +39,7 @@ public class PlateSetupPanel {
     /* Constructor that initializes special component needs. */
     public PlateSetupPanel() {
 
-        /* When make plate button is pressed, package the current plate info and ship it off to the plate model. */
-        makePlateBtn.addActionListener(new ActionListener() {
+        ActionListener makePlate = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 PlateSpecifications specs = serializationModel.loadPlate(savedPlatesCmb.getSelectedItem().toString());
@@ -55,7 +54,13 @@ public class PlateSetupPanel {
                     view.setDefaultPlate(plateNicknameTxt.getText());
                 }
             }
-        });
+        };
+
+        /* When make plate button is pressed, package the current plate info and ship it off to the plate model. */
+        makePlateBtn.addActionListener(makePlate);
+        xPosTxt.addActionListener(makePlate);
+        yPosTxt.addActionListener(makePlate);
+        plateNicknameTxt.addActionListener(makePlate);
 
         /* When button to delete saved plate is pressed, do just that. */
         deleteSavedPlateBtn.addActionListener(new ActionListener() {
@@ -73,6 +78,8 @@ public class PlateSetupPanel {
                 plateModel.clearAllPlates();
             }
         });
+
+
     }
 
     /* Perform necessary startup procedures (populating dropboxes, etc.) */
