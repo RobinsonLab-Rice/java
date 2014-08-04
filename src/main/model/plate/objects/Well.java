@@ -82,19 +82,18 @@ public class Well implements Observer {
 	 * @param sF - scale factor from cm to pixels
 	 */
 	public void paint(Graphics g, double sF, boolean isRotated){
-		int screenLocX = (int)Math.round((parentPlate.getTLcorner().getX() + relativeLocation.getX()-diameter/2)*sF);
-		int screenLocY = (int)Math.round((parentPlate.getTLcorner().getY() + relativeLocation.getY()-diameter/2)*sF);
 
         //get the graphics objects
         Graphics2D g2d = (Graphics2D) g;
         AffineTransform at = new AffineTransform();
 
         //draw well's outline
+        at.translate(parentPlate.getTLcorner().getX()*sF, parentPlate.getTLcorner().getY()*sF);
         if (isRotated) {
             at.translate(parentPlate.getPlateSpecs().getBorderDimensions().getY()*sF, 0);
             at.rotate(Math.PI/2);
         }
-        at.translate(screenLocX, screenLocY);
+        at.translate((relativeLocation.getX()-diameter/2)*sF, (relativeLocation.getY()-diameter/2)*sF);
         at.scale(sF, sF);
 
         g2d.setTransform(at);
@@ -106,28 +105,25 @@ public class Well implements Observer {
             g2d.setColor(Color.LIGHT_GRAY);
             g2d.fillOval(0, 0, (int) diameter, (int) diameter);
         }
-
-		//for now, don't draw the well's number label
-//        g.setColor(Color.BLACK);
-//		g.setFont(g.getFont().deriveFont((float) (sF*diameter/2)));
-//		screenLocY += Math.round(diameter*sF);
-//		g.drawString(identifier, screenLocX, screenLocY);
 	}
 	
 	/**
 	 * Returns the well's position in cm, with all modifiers.
 	 */
 	public Point2D getAbsoluteLocation(){
-		return new Point2D.Double(parentPlate.getTLcorner().getX() + relativeLocation.getX(),
-								  parentPlate.getTLcorner().getY() + relativeLocation.getY());
+        if (parentPlate.isRotated) {
+            return new Point2D.Double(parentPlate.getTLcorner().getX() + parentPlate.getDimensions().getY() - relativeLocation.getY(),
+                    parentPlate.getTLcorner().getY() + relativeLocation.getX());
+        }
+        else {
+            return new Point2D.Double(parentPlate.getTLcorner().getX() + relativeLocation.getX(),
+                    parentPlate.getTLcorner().getY() + relativeLocation.getY());
+        }
 	}
 	
 	/**
 	 * End section for setters and getters without special calculations.
 	 */
-	public Point2D getRelativeLocation(){
-		return relativeLocation;
-	}
 	public double getDiameter(){
 		return diameter;
 	}
