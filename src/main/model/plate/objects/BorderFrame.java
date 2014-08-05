@@ -53,4 +53,6 @@ public class BorderFrame {
 	public double getScaleFactor(){
 		return scaleFactor;
 	}
+
+    public Point2D getDimensions() {return borderSize; }
 }

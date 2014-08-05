@@ -31,11 +31,13 @@ public class TreeRightClickListener extends MouseAdapter {
     private TaskModel taskModel;
     private SerializationModel serializationModel;
     private JComboBox savedTasksCmb;
+    private JComboBox savedExpCmb;
 
-    public TreeRightClickListener(TaskCreationPanel taskView, JComboBox savedTasksCmb, TaskTree taskTree,
+    public TreeRightClickListener(TaskCreationPanel taskView, JComboBox savedTasksCmb, JComboBox savedExpCmb, TaskTree taskTree,
                                   TaskModel taskModel, SerializationModel serializationModel) {
         this.taskView = taskView;
         this.savedTasksCmb = savedTasksCmb;
+        this.savedExpCmb = savedExpCmb;
         this.taskTree = taskTree;
         this.taskModel = taskModel;
         this.serializationModel = serializationModel;
@@ -44,7 +46,7 @@ public class TreeRightClickListener extends MouseAdapter {
     public void mousePressed(MouseEvent e) {
         TreePath selPath = taskTree.getPathForLocation(e.getX(), e.getY());
         //if our click was a right click
-        if (e.getButton() == 3) {
+        if (e.getButton() == 3 && selPath != null) {
             setSelectedOnRightClick(e);
             //pop up with a contextual menu of buttons
             doPop(e, selPath);
@@ -103,7 +105,7 @@ public class TreeRightClickListener extends MouseAdapter {
                             serializationModel.saveExperiment(selected);
                         }
 
-                        MainPanel.GUIHelper.updateCmb(taskModel.getTaskFactories(), savedTasksCmb);
+                        MainPanel.GUIHelper.updateCmb(taskModel.getExperimentFactories(), savedExpCmb);
                     }
                 });
 
@@ -144,12 +146,12 @@ public class TreeRightClickListener extends MouseAdapter {
                         LoopInfo info = loopDialog.showDialog();
 
                         //if increment is not an integer, stop execution and tell user
-                        if (!Parser.isInteger(info.inc)){
+                        if (!Parser.isNumeric(info.inc)){
                             SimpleDialogs.popBadInput(replaceInc);
                             return;
                         }
                         //same if it is an int, but is 0 (infinite loop)
-                        else if (Integer.parseInt(info.inc) == 0) {
+                        else if (Double.parseDouble(info.inc) <= 0) {
                             SimpleDialogs.popBadInput(replaceInc);
                             return;
                         }
@@ -183,12 +185,12 @@ public class TreeRightClickListener extends MouseAdapter {
                         LoopInfoDialog loopDialog = new LoopInfoDialog(loop);
                         LoopInfo info = loopDialog.showDialog();
                         //if increment is not an integer, stop execution and tell user
-                        if (!Parser.isInteger(info.inc)){
+                        if (!Parser.isNumeric(info.inc)){
                             SimpleDialogs.popBadInput(replaceInc);
                             return;
                         }
                         //same if it is an int, but is 0 (infinite loop)
-                        else if (Integer.parseInt(info.inc) == 0) {
+                        else if (Double.parseDouble(info.inc) <= 0) {
                             SimpleDialogs.popBadInput(replaceInc);
                             return;
                         }
@@ -214,7 +216,6 @@ public class TreeRightClickListener extends MouseAdapter {
                     add(replaceInc);
                     add(replaceAll);
                 }
-
                 add(loop);
                 add(delete);
                 add(show);

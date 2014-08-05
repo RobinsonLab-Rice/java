@@ -91,14 +91,6 @@ public class TaskModel {
         }
     }
 
-//	/**
-//	 * Removes all stages from the taskQueue, adding a new MultiTask to have something in it.
-//	 */
-//	public void clearAllTasks() {
-//		taskQueue.getSubtasks().clear();
-//		view.updateView();
-//	}
-
 	/**
 	 * Executes the tasks normally, ie by sending one command over at a time to Arduino
 	 */
@@ -133,7 +125,7 @@ public class TaskModel {
      * Draw all tasks by slapping the draw visitor onto them.
      */
     public void drawTasks(Graphics g, double sF) {
-        ((IExecuteTask) taskQueue.getRoot()).executeVisitor(drawVisitor, g, sF, new Point2D.Double(0, 0), plateModel.getPlateList());
+        ((IExecuteTask) taskQueue.getRoot()).executeVisitor(drawVisitor, g, sF, plateModel.getBorderSize(), plateModel.getPlateList());
     }
 
     /**
@@ -358,20 +350,23 @@ public class TaskModel {
      */
     public ArrayList<String> getLoopValues(String startVal, String endVal, String incVal) {
         ArrayList loopVals = new ArrayList();
-        //if start and end values are both well identifiers, populate arraylist with proper identifier list
-        if (Parser.isIdentifier(startVal) && Parser.isIdentifier(endVal) && Parser.isInteger(incVal)) {
-            loopVals = plateModel.getPlate(view.getDefaultPlate()).getWellsInRange(startVal, endVal, Integer.parseInt(incVal));
-            if (loopVals == null) return null;
-        }
-        //else if values are letters, get all between them
-        else if (startVal.matches("[A-Z]") && endVal.matches("[A-Z]") && Parser.isInteger(incVal)) {
+        //if values are letters, get all between them
+        if (startVal.matches("[A-Z]") && endVal.matches("[A-Z]") && Parser.isInteger(incVal)) {
             int start = (int) startVal.charAt(0);
             int end = (int) endVal.charAt(0);
             int inc = Integer.parseInt(incVal);
 
-            while (start <= end) {
-                loopVals.add(String.valueOf((char) start));
-                start += inc;
+            if (end > start) {
+                while (start <= end) {
+                    loopVals.add(String.valueOf((char) start));
+                    start += inc;
+                }
+            }
+            else {
+                while (start >= end) {
+                    loopVals.add(String.valueOf((char) start));
+                    start -= inc;
+                }
             }
         }
         //else if values are integers, get all between them
@@ -380,9 +375,17 @@ public class TaskModel {
             int end = Integer.parseInt(endVal);
             int inc = Integer.parseInt(incVal);
 
-            while (start <= end) {
-                loopVals.add(String.valueOf(start));
-                start += inc;
+            if (end > start) {
+                while (start <= end) {
+                    loopVals.add(String.valueOf(start));
+                    start += inc;
+                }
+            }
+            else {
+                while (start >= end) {
+                    loopVals.add(String.valueOf(start));
+                    start -= inc;
+                }
             }
         }
         //else if all required values are numbers, fill arraylist with all them.
@@ -391,9 +394,17 @@ public class TaskModel {
             double end = Double.parseDouble(endVal);
             double inc = Double.parseDouble(incVal);
 
-            while (start <= end) {
-                loopVals.add(String.valueOf(start));
-                start += inc;
+            if (end > start) {
+                while (start <= end) {
+                    loopVals.add(String.valueOf(start));
+                    start += inc;
+                }
+            }
+            else {
+                while (start >= end) {
+                    loopVals.add(String.valueOf(start));
+                    start -= inc;
+                }
             }
         }
         //else the values don't correspond to anything we know, don't do anything.
@@ -402,6 +413,8 @@ public class TaskModel {
         }
         return loopVals;
     }
+
+
 
     /**
      * Add a task to the queue from an external program. Adds tasks in such a way that they will be executed at the end

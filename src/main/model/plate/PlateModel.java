@@ -437,4 +437,11 @@ public class PlateModel {
     public void redraw() {
         view.update();
     }
+
+    /**
+     * @return dimensions of the frame border, previously retrieved from user settings file
+     */
+    public Point2D getBorderSize() {
+        return border.getDimensions();
+    }
 }

@@ -111,7 +111,7 @@ public class TaskCreationPanel extends JPanel {
         taskTree.setUI(new CustomTreeUI(taskTreeScrollPane));
 
         /* Set the class to be used for right clicking on the jtree. */
-        taskTree.addMouseListener(new TreeRightClickListener(this, savedTasksCmb, taskTree, taskModel, serializationModel));
+        taskTree.addMouseListener(new TreeRightClickListener(this, savedTasksCmb, savedExperimentCmb, taskTree, taskModel, serializationModel));
 
         /* Add keyboard shortcuts to the JTree. */
         taskTree.addKeyListener(new KeyAdapter() {
