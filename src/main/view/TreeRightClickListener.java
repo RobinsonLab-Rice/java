@@ -5,11 +5,11 @@ import main.model.tasks.TaskModel;
 import main.model.tasks.basictasks.AExecuteTask;
 import main.model.tasks.basictasks.IExecuteTask;
 import main.model.tasks.basictasks.MultiTask;
-import main.view.dialogs.LoopInfo;
-import main.view.dialogs.LoopInfoDialog;
-import main.view.dialogs.SimpleDialogs;
+import main.util.Parser;
+import main.view.dialogs.*;
 import main.view.panels.MainPanel;
 import main.view.panels.TaskCreationPanel;
+import sun.java2d.pipe.SpanShapeRenderer;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
@@ -56,7 +56,7 @@ public class TreeRightClickListener extends MouseAdapter {
 
             private static final long serialVersionUID = -3142513178293086540L;
 
-            JMenuItem saveTask, saveExperiment, delete, show, hide, replace, loop;
+            JMenuItem saveTask, saveExperiment, delete, show, hide, replaceInc, replaceAll, loop;
 
             {
                 saveTask = new JMenuItem("Save Task");
@@ -64,7 +64,8 @@ public class TreeRightClickListener extends MouseAdapter {
                 delete = new JMenuItem("Delete");
                 show = new JMenuItem("Show");
                 hide = new JMenuItem("Hide");
-                replace = new JMenuItem("Replace variable");
+                replaceInc = new JMenuItem("Replace: Incremental");
+                replaceAll = new JMenuItem("Replace: All");
                 loop = new JMenuItem("Loop Task");
 
                 /* Only allow saving on multitasks. Saves it as the multitask's current name. */
@@ -135,14 +136,42 @@ public class TreeRightClickListener extends MouseAdapter {
                     }
                 });
 
-                /* Replace variables in currently selected task. */
-                replace.addActionListener(new ActionListener() {
+                /* Incrementally replace variables in currently selected task. */
+                replaceInc.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        LoopInfoDialog loopInfoDialog = new LoopInfoDialog(replace);
-                        LoopInfo info = loopInfoDialog.showDialog();
+                        LoopInfoDialog loopDialog = new LoopInfoDialog(loop);
+                        LoopInfo info = loopDialog.showDialog();
+
+                        //if increment is not an integer, stop execution and tell user
+                        if (!Parser.isInteger(info.inc)){
+                            SimpleDialogs.popBadInput(replaceInc);
+                            return;
+                        }
+                        //same if it is an int, but is 0 (infinite loop)
+                        else if (Integer.parseInt(info.inc) == 0) {
+                            SimpleDialogs.popBadInput(replaceInc);
+                            return;
+                        }
+                        //if all is good, continue
+                        else {
+                            //send over: currently selected task, variable, start value, end value, increment value
+                            IExecuteTask selected = (IExecuteTask) selPath.getLastPathComponent();
+                            taskModel.loopReplaceTasks(selected, info.variable, info.start, info.end, info.inc);
+                            ((DefaultTreeModel) taskTree.getModel()).nodeStructureChanged(selected);
+                            taskModel.repaint();
+                        }
+                    }
+                });
+
+                /* Replace all variables in currently selected task. */
+                replaceAll.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        ReplaceAllDialog replaceDialog = new ReplaceAllDialog(replaceAll);
+                        ReplaceInfo info = replaceDialog.showDialog();
                         IExecuteTask selected = (IExecuteTask) selPath.getLastPathComponent();
-                        taskModel.loopReplaceTasks(selected, info.variable, info.start, info.end, info.inc);
+                        taskModel.replaceAll(selected, info.toReplace, info.start);
                         ((DefaultTreeModel) taskTree.getModel()).nodeStructureChanged(selected);
                         taskModel.repaint();
                     }
@@ -153,9 +182,22 @@ public class TreeRightClickListener extends MouseAdapter {
                     public void actionPerformed(ActionEvent e) {
                         LoopInfoDialog loopDialog = new LoopInfoDialog(loop);
                         LoopInfo info = loopDialog.showDialog();
-                        //send over: currently selected task, variable, start value, end value, increment value
-                        taskModel.loopGenerateTasks((IExecuteTask) selPath.getLastPathComponent(), info.variable,
-                                info.start, info.end, info.inc);
+                        //if increment is not an integer, stop execution and tell user
+                        if (!Parser.isInteger(info.inc)){
+                            SimpleDialogs.popBadInput(replaceInc);
+                            return;
+                        }
+                        //same if it is an int, but is 0 (infinite loop)
+                        else if (Integer.parseInt(info.inc) == 0) {
+                            SimpleDialogs.popBadInput(replaceInc);
+                            return;
+                        }
+                        //if all is good, continue
+                        else {
+                            //send over: currently selected task, variable, start value, end value, increment value
+                            taskModel.loopGenerateTasks((IExecuteTask) selPath.getLastPathComponent(), info.variable,
+                                    info.start, info.end, info.inc);
+                        }
                     }
                 });
 
@@ -169,7 +211,8 @@ public class TreeRightClickListener extends MouseAdapter {
                     else {
                         add(saveTask);
                     }
-                    add(replace);
+                    add(replaceInc);
+                    add(replaceAll);
                 }
 
                 add(loop);

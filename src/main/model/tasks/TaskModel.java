@@ -340,8 +340,7 @@ public class TaskModel {
         ArrayList loopVals = getLoopValues(startVal, endVal, incVal);
         if (loopVals == null) return false;
 
-        //for each loop value we obtained, make a new task from the factory where we replace the all occurences of the
-        //variable with the value
+        //for each loop value we obtained, replace one value in the task
         for (Object value : loopVals) {
             taskToAlter.replaceOne(variable, value);
         }
@@ -413,5 +412,18 @@ public class TaskModel {
         appendTaskToQueue(task);
         //also add it to the decompiled list, since that's what is actually being executed now
         ((IExecuteTask) taskQueue.getRoot()).executeVisitor(decompileVisitor, decompiledTasks);
+    }
+
+    /**
+     * Incrementally replace variable in selected task.
+     */
+    public void replaceInc(IExecuteTask task, String toReplace, String start, int increment) {
+    }
+
+    /**
+     * Replace all occurences of variable in selected task.
+     */
+    public void replaceAll(IExecuteTask task, String toReplace, String replacement) {
+        task.replaceAll(toReplace, replacement);
     }
 }

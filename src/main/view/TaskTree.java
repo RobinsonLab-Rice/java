@@ -25,5 +25,6 @@ public class TaskTree extends JTree {
         setDropMode(DropMode.INSERT);
         getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
         setTransferHandler(new TreeTransferHandler());
+        setLargeModel(true);
     }
 }

@@ -142,6 +142,7 @@ public class Plate implements Serializable {
 
         g2d.setTransform(at);
         g2d.setStroke(new BasicStroke((float) (1/sF)));
+        g2d.setColor(Color.BLACK);
 
         //draw the border
         g2d.drawRect(0,0, (int)Math.round(plateSpecs.getBorderDimensions().getX()), (int)Math.round(plateSpecs.getBorderDimensions().getY()));

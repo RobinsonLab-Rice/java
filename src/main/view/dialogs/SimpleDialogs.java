@@ -47,4 +47,13 @@ public class SimpleDialogs {
     public static void popSaveUnsuccessful(Component parent) {
         JOptionPane.showMessageDialog(parent, "Data could not be saved, possibly incorrectly formatted.");
     }
+
+    /**
+     * Simple dialog for telling user that info they input was bad.
+     * @param parent component to pop on top of
+     */
+    public static void popBadInput(Component parent) {
+        JOptionPane.showMessageDialog(parent, "Input data not in correct format, try again.");
+    }
+
 }

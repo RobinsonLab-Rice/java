@@ -69,31 +69,34 @@ public class DrawVisitor extends ATaskVisitor {
 
                 int scale = 8;
 
-                //actually draw the task, drawing a different icon for withdrawing and dispensing
-                if (dispenseHost.getVolume() < 0) { //if withdrawing, draw an arrow going up
-                    g2d.drawImage(dispenseIcon,
-                            (int)(destination.getX()*sF - scale), //top-left x coordinate
-                            (int)(destination.getY()*sF - scale), //top-left y coorinate
-                            scale*2,                 //width
-                            scale*2,                //height
-                            null);
-                }
-                else if (dispenseHost.getVolume() > 0) {          //otherwise, draw an arrow going down
-                    g2d.drawImage(withdrawIcon,
-                            (int)(destination.getX()*sF - scale), //top-left x coordinate
-                            (int)(destination.getY()*sF - scale), //top-left y coorinate
-                            scale*2,                 //width
-                            scale*2,                //height
-                            null);
-                }
-                //if the volume is 0, task is not filled out yet. draw a question mark.
-                else {
-                    g2d.drawImage(questionMarkIcon,
-                            (int)(destination.getX()*sF - scale), //top-left x coordinate
-                            (int)(destination.getY()*sF - scale), //top-left y coorinate
-                            scale*2,                 //width
-                            scale*2,                //height
-                            null);
+                //only draw if we've actually moved a little
+                if (destination.distance(0,0) != 0) {
+                    //actually draw the task, drawing a different icon for withdrawing and dispensing
+                    if (dispenseHost.getVolume() < 0) { //if withdrawing, draw an arrow going up
+                        g2d.drawImage(dispenseIcon,
+                                (int)(destination.getX()*sF - scale), //top-left x coordinate
+                                (int)(destination.getY()*sF - scale), //top-left y coorinate
+                                scale*2,                 //width
+                                scale*2,                //height
+                                null);
+                    }
+                    else if (dispenseHost.getVolume() > 0) {          //otherwise, draw an arrow going down
+                        g2d.drawImage(withdrawIcon,
+                                (int)(destination.getX()*sF - scale), //top-left x coordinate
+                                (int)(destination.getY()*sF - scale), //top-left y coorinate
+                                scale*2,                 //width
+                                scale*2,                //height
+                                null);
+                    }
+                    //if the volume is 0, task is not filled out yet. draw a question mark.
+                    else {
+                        g2d.drawImage(questionMarkIcon,
+                                (int)(destination.getX()*sF - scale), //top-left x coordinate
+                                (int)(destination.getY()*sF - scale), //top-left y coorinate
+                                scale*2,                 //width
+                                scale*2,                //height
+                                null);
+                        }
                 }
                 return params[2]; //return location as is
 			}

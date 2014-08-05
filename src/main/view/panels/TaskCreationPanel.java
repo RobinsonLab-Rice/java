@@ -8,12 +8,14 @@ import main.model.serialization.SaveType;
 import main.model.serialization.SerializationModel;
 import main.model.tasks.ITaskFactory;
 import main.model.tasks.basictasks.NullTask;
+import main.view.CustomTreeUI;
 import main.view.dialogs.LoopInfo;
 import main.view.TaskTree;
 import main.view.TreeRightClickListener;
 import main.view.dialogs.LoopInfoDialog;
 
 import javax.swing.*;
+import javax.swing.plaf.TreeUI;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
@@ -38,6 +40,7 @@ public class TaskCreationPanel extends JPanel {
     private JButton deleteTaskBtn;
     private JButton deleteExperimentBtn;
     private JTextField hTextField;
+    private JScrollPane taskTreeScrollPane;
 
     private MainPanel mainView;
     private TaskModel taskModel;
@@ -103,6 +106,9 @@ public class TaskCreationPanel extends JPanel {
         this.serializationModel = serializationModel;
 
         taskTree.setModel(this.taskModel.getTreeModel());
+
+        //TreeUI toCheck = taskTree.getUI();
+        taskTree.setUI(new CustomTreeUI(taskTreeScrollPane));
 
         /* Set the class to be used for right clicking on the jtree. */
         taskTree.addMouseListener(new TreeRightClickListener(this, savedTasksCmb, taskTree, taskModel, serializationModel));

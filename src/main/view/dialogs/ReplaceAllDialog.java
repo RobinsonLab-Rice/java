@@ -4,21 +4,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-/**
- * Dialog used to gather user info on loop parameters.
- */
-public class LoopInfoDialog extends JDialog {
+public class ReplaceAllDialog extends JDialog {
+    private JPanel contentPane;
+    private JButton buttonOK;
+    private JButton buttonCancel;
+    private JTextField txtToReplace;
+    private JTextField txtReplacement;
 
-    public JPanel contentPane;
-    protected JButton buttonOK;
-    protected JButton buttonCancel;
-
-    private JTextField variableTxt;
-    private JTextField incTxt;
-    private JTextField startTxt;
-    private JTextField endTxt;
-
-    public LoopInfoDialog(Component parent) {
+    public ReplaceAllDialog(Component parent) {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
@@ -64,8 +57,8 @@ public class LoopInfoDialog extends JDialog {
         dispose();
     }
 
-    public LoopInfo showDialog() {
+    public ReplaceInfo showDialog() {
         setVisible(true);
-        return new LoopInfo(variableTxt.getText(), startTxt.getText(), endTxt.getText(), incTxt.getText());
+        return new ReplaceInfo(txtToReplace.getText(), txtReplacement.getText());
     }
 }
