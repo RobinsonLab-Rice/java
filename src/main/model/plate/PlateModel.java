@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import main.model.plate.objects.Plate;
 import main.model.plate.objects.Well;
+import main.model.serialization.SerializationModel;
 import main.model.tasks.TaskModel;
 import main.view.panels.MainPanel;
 import main.model.plate.objects.ArmState;
@@ -28,14 +29,19 @@ import javax.swing.*;
 public class PlateModel {
 
 	/**
-	 * Adapter from plate model to main view.
+	 * Reference to main GUI view.
 	 */
 	private MainPanel view;
 	
 	/**
-	 * Adapter from plate model to serial model.
+	 * Reference to task model.
 	 */
 	private TaskModel taskModel;
+
+    /**
+     * Reference to serialization model.
+     */
+    private SerializationModel serializationModel;
 	
 	/**
 	 * All the plates that are currently on the screen.
@@ -52,7 +58,6 @@ public class PlateModel {
 	 */
 	private ArmState armState;
 
-
     private ArrayList<Well> selectedWells = new ArrayList<Well>();
 	
 	/**
@@ -63,9 +68,10 @@ public class PlateModel {
 	}
 
     /* On initialization, connects to given adapters. */
-    public void start(final MainPanel view, TaskModel taskModel){
+    public void start(final MainPanel view, TaskModel taskModel, SerializationModel serializationModel){
         this.view = view;
         this.taskModel = taskModel;
+        this.serializationModel = serializationModel;
 
         new Timer(100, new ActionListener() {
             public void actionPerformed (ActionEvent e) {
@@ -80,8 +86,8 @@ public class PlateModel {
 	 * @param bounds - width/length of the area arm can move over
 	 * @param canvas - canvas to draw the bounding box on
 	 */
-	public void setBorderFrame(Point2D bounds, Component canvas){
-		armState = new ArmState(bounds, this);
+	public void setBorderFrame(Point2D bounds, Point2D nozzleHomePos, Component canvas){
+		armState = new ArmState(nozzleHomePos, this);
 		border = new BorderFrame(bounds, canvas);
 		view.update();
 	}
@@ -443,5 +449,12 @@ public class PlateModel {
      */
     public Point2D getBorderSize() {
         return border.getDimensions();
+    }
+
+    /**
+     * Set arm state back to its home position.
+     */
+    public void calibrate() {
+        armState.setLocation(serializationModel.getNozzleHomePos().getX(), serializationModel.getNozzleHomePos().getY());
     }
 }

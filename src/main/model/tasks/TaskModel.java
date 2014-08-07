@@ -125,7 +125,7 @@ public class TaskModel {
      * Draw all tasks by slapping the draw visitor onto them.
      */
     public void drawTasks(Graphics g, double sF) {
-        ((IExecuteTask) taskQueue.getRoot()).executeVisitor(drawVisitor, g, sF, plateModel.getBorderSize(), plateModel.getPlateList());
+        ((IExecuteTask) taskQueue.getRoot()).executeVisitor(drawVisitor, g, sF, serializationModel.getNozzleHomePos(), plateModel.getPlateList());
     }
 
     /**
@@ -236,7 +236,8 @@ public class TaskModel {
      * Helper function for making a multitask that moves fluid amount from the start to end well.
      */
     public MultiTask makeSingleWellToWellTask(Well start, Well end, String amount) {
-        return new MultiTask("MoveFluidWellToWell", makeSingleTransaction(start, amount, true), makeSingleTransaction(end, amount, false));
+        String name = "Move" + start.getIdentifier() + "to" + end.getIdentifier();
+        return new MultiTask(name, makeSingleTransaction(start, amount, true), makeSingleTransaction(end, amount, false));
     }
 
     /**
@@ -250,10 +251,10 @@ public class TaskModel {
         String name;
 
         if (isWithdraw) {
-            name = "MoveAndWithdraw";
+            name = "Withdraw" + amount;
             amount = "-" + amount;
         }
-        else name = "MoveAndDeposit";
+        else name = "Deposit" + amount;
 
         return new MultiTask(name,
                 new MoveToWellTask(well),

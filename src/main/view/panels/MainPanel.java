@@ -18,13 +18,15 @@ public class MainPanel extends JFrame{
     private JPanel contentPane;
     private JPanel modelPane;
     private JTabbedPane tabbedPane;
+
     private PlateSetupPanel plateSetupPanel;
     private TaskCreationPanel taskCreationPanel;
+    private ArduinoPanel arduinoPanel;
 
     /* Adapters to back-end models. */
     private PlateModel plateModel;
     private SerializationModel serializationModel;
-    private SerialModel serialCommModel;
+    private SerialModel serialModel;
     private TaskModel taskModel;
     private Double defaultDispense;
 
@@ -33,20 +35,22 @@ public class MainPanel extends JFrame{
     }
 
     /* Called after bindings have completed, set up frame to actually be displayed. */
-    public void start(PlateModel plateModel, SerializationModel serializationModel, SerialModel serialCommModel, TaskModel taskModel) {
+    public void start(PlateModel plateModel, SerializationModel serializationModel, SerialModel serialModel, TaskModel taskModel) {
 
         /* Set the adapters */
         this.plateModel = plateModel;
         this.serializationModel = serializationModel;
-        this.serialCommModel = serialCommModel;
+        this.serialModel = serialModel;
         this.taskModel = taskModel;
 
         /* Start the sub-views */
         plateSetupPanel.start(this, plateModel, serializationModel);
         taskCreationPanel.start(this, taskModel, serializationModel);
+        arduinoPanel.start(this, serialModel, plateModel);
+
 
         /* Do necessary communication with backend models */
-        plateModel.setBorderFrame(serializationModel.getSavedBounds(), modelPane);
+        plateModel.setBorderFrame(serializationModel.getSavedBounds(), serializationModel.getNozzleHomePos(), modelPane);
 
         modelPane.addMouseListener(new MovementAreaMouseAdapter(plateModel, taskModel));
 

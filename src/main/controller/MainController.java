@@ -48,7 +48,7 @@ public class MainController {
 	 */
 	public void start(){
         externalCommModel.start(taskModel);
-        plateModel.start(view, taskModel);
+        plateModel.start(view, taskModel, serializationModel);
         serialModel.start(view, taskModel, plateModel);
         serializationModel.start(taskModel, plateModel);
         taskModel.start(view, plateModel, serialModel, serializationModel);

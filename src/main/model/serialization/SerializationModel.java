@@ -124,6 +124,11 @@ public class SerializationModel {
      * @return de-serialized data (not yet cast to the correct object)
      */
     public Object loadData(String qualifiedPath) {
+        if (checkData(qualifiedPath) == false) {
+            SimpleDialogs.popLoadUnsuccessful(null);
+            return null;
+        }
+
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(qualifiedPath);
@@ -136,7 +141,9 @@ public class SerializationModel {
             return loaded;
         }
         catch (Exception ex) {
+            //if loading was unsuccessful, tell user
             ex.printStackTrace();
+            SimpleDialogs.popLoadUnsuccessful(null);
             return null;
         }
     }
@@ -149,27 +156,27 @@ public class SerializationModel {
 		return (PlateSpecifications) loadData("data/plates/" + filename + ext);
 	}
 
-    /**
-     * Loads task with given filename.
-     * @param filename - name of file to load from, without folder or extension
-     * @return
-     */
-	public IExecuteTask loadTask(String filename) {
-        IExecuteTask task = (IExecuteTask) loadData("data/tasks/" + filename + ext);
-        task.resetParents();
-        return task;
-	}
-
-    /**
-     * Loads task with given filename.
-     * @param filename - name of file to load from, without folder or extension
-     * @return
-     */
-    public IExecuteTask loadExperiment(String filename) {
-        IExecuteTask task = (IExecuteTask) loadData("data/experiments/" + filename + ext);
-        task.resetParents();
-        return task;
-    }
+//    /**
+//     * Loads task with given filename.
+//     * @param filename - name of file to load from, without folder or extension
+//     * @return
+//     */
+//	public IExecuteTask loadTask(String filename) {
+//        IExecuteTask task = (IExecuteTask) loadData("data/tasks/" + filename + ext);
+//        task.resetParents();
+//        return task;
+//	}
+//
+//    /**
+//     * Loads task with given filename.
+//     * @param filename - name of file to load from, without folder or extension
+//     * @return
+//     */
+//    public IExecuteTask loadExperiment(String filename) {
+//        IExecuteTask task = (IExecuteTask) loadData("data/experiments/" + filename + ext);
+//        task.resetParents();
+//        return task;
+//    }
 	
 	/**
 	 * Uses JSON to save the IExecuteTask to data/tasks/name. Only multitasks can be saved, so the
@@ -207,7 +214,7 @@ public class SerializationModel {
 	 * Common method to save any item to specified location.
      * @return whether or not the save was successful
 	 */
-	public boolean saveItem(String qualifiedName, Object item){
+	public boolean saveItem(String qualifiedName, Object... items){
 
 		FileOutputStream fos = null;
 
@@ -224,7 +231,9 @@ public class SerializationModel {
 			Map args = new HashMap();
 			args.put(JsonWriter.PRETTY_PRINT, true);
 			JsonWriter jw = new JsonWriter(fos, args);
-			jw.write(item);
+            for (Object item : items) {
+                jw.write(item);
+            }
 			jw.close();
 		}
 		catch (Exception ex) {
@@ -248,11 +257,6 @@ public class SerializationModel {
         return savedData;
     }
 
-    /* Returns saved bounds that were loaded on program startup. */
-    public Point2D getSavedBounds() {
-        return userSettings.frameBounds;
-    }
-
     /**
      * Checks to see if item specified by qualifiedPath actually exists
      * @param qualifiedPath complete path of item to check
@@ -264,5 +268,17 @@ public class SerializationModel {
             return true;
         }
         else return false;
+    }
+
+    /* @return saved bounds that were loaded on program startup. */
+    public Point2D getSavedBounds() {
+        return userSettings.frameBounds;
+    }
+
+    /**
+     * @return origin of the nozzle head, from UserSettings
+     */
+    public Point2D getNozzleHomePos() {
+        return userSettings.nozzleHomePos;
     }
 }

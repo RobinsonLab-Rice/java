@@ -14,6 +14,7 @@ import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 import main.model.plate.PlateModel;
 import main.model.tasks.TaskModel;
+import main.view.dialogs.SimpleDialogs;
 import main.view.panels.MainPanel;
 
 /**
@@ -161,7 +162,7 @@ public class SerialModel implements SerialPortEventListener {
 			taskModel.executeNext();
 		}
 		if (serialInput.equals("Finished Calibration")){
-			//plateModel.resetArmPosition();
+			plateModel.calibrate();
 		}
 	}
 	
@@ -177,12 +178,27 @@ public class SerialModel implements SerialPortEventListener {
 	 * @param command - string to send Arduino
 	 */
 	public void sendText(String command) {
-		for (int i = 0; i < command.length(); i++){
-			try {
-				outputStream.write(command.charAt(i));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+        if (outputStream == null) {
+            SimpleDialogs.popNoSerialConnection(null);
+        }
+        else if (!checkSendCommand(command)) {
+            SimpleDialogs.popBadText(null);
+        }
+        else {
+            for (int i = 0; i < command.length(); i++){
+                try {
+                    outputStream.write(command.charAt(i));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 	}
+
+    /**
+     * Check if the serial command to be send conforms to the form "name(values)".
+     */
+    public boolean checkSendCommand(String toSend) {
+        return toSend.matches("\\w+\\(\\w*\\)");
+    }
 }

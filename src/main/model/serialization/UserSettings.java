@@ -9,6 +9,8 @@ public class UserSettings {
 
     public Point2D frameBounds;
 
+    public Point2D nozzleHomePos;
+
     public int defaultLowerSteps;
 
     public int defaultRaiseSteps;

@@ -63,7 +63,7 @@ public class DispenseTask extends ALeafTask {
     }
 	
 	public String toString() {
-		return "Dispense:" + volume;
+		return "Dispense:" + volume + "uL";
 	}
 
     /**

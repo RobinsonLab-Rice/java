@@ -49,11 +49,35 @@ public class SimpleDialogs {
     }
 
     /**
+     * Simple dialog for telling user that data was not loaded.
+     * @param parent component to pop on top of
+     */
+    public static void popLoadUnsuccessful(Component parent) {
+        JOptionPane.showMessageDialog(parent, "Data could not be loaded, possibly incorrectly formatted.");
+    }
+
+    /**
      * Simple dialog for telling user that info they input was bad.
      * @param parent component to pop on top of
      */
     public static void popBadInput(Component parent) {
         JOptionPane.showMessageDialog(parent, "Input data not in correct format, try again.");
+    }
+
+    /**
+     * Simple dialog for telling user that no serial port has been connected to.
+     * @param parent component to pop on top of
+     */
+    public static void popNoSerialConnection(Component parent) {
+        JOptionPane.showMessageDialog(parent, "No serial port selected, try reconnecting and scanning again.");
+    }
+
+    /**
+     * Simple dialog for telling user that the text they were trying to send over is bad.
+     * @param parent component to pop on top of
+     */
+    public static void popBadText(Component parent) {
+        JOptionPane.showMessageDialog(parent, "Serial text not formatted correctly, write in form \"method(parameters)\"");
     }
 
 }
