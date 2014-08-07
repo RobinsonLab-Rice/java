@@ -145,8 +145,19 @@ public abstract class ALeafTask extends AExecuteTask {
      * Sets this task to be visible/hidden on the GUI.
      */
     @Override
-    public void setVisibility(boolean isVisible) {
+    public void setVisibilityDown(boolean isVisible) {
         this.isVisible = isVisible;
+    }
+
+    /**
+     * Sets this task (and parent) to be visible/invisible.
+     * @param isVisible true if task should be shown, false if not
+     */
+    public void setVisibilityUp(boolean isVisible) {
+        this.isVisible = isVisible;
+        if (isVisible) {
+            parent.setVisibilityUp(true);
+        }
     }
 
     /**

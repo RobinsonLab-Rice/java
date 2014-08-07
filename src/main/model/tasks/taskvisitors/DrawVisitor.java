@@ -72,7 +72,7 @@ public class DrawVisitor extends ATaskVisitor {
                 //only draw if we've actually moved a little
                 if (destination.distance(0,0) != 0) {
                     //actually draw the task, drawing a different icon for withdrawing and dispensing
-                    if (dispenseHost.getVolume() > 0) { //if withdrawing, draw an arrow going up
+                    if (dispenseHost.getVolume() < 0) { //if withdrawing, draw an arrow going up
                         g2d.drawImage(dispenseIcon,
                                 (int)(destination.getX()*sF - scale), //top-left x coordinate
                                 (int)(destination.getY()*sF - scale), //top-left y coorinate
@@ -80,7 +80,7 @@ public class DrawVisitor extends ATaskVisitor {
                                 scale*2,                //height
                                 null);
                     }
-                    else if (dispenseHost.getVolume() < 0) {          //otherwise, draw an arrow going down
+                    else if (dispenseHost.getVolume() > 0) {          //otherwise, draw an arrow going down
                         g2d.drawImage(withdrawIcon,
                                 (int)(destination.getX()*sF - scale), //top-left x coordinate
                                 (int)(destination.getY()*sF - scale), //top-left y coorinate

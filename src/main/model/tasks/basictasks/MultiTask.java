@@ -217,12 +217,24 @@ public class MultiTask extends AExecuteTask {
 
     /**
      * Sets this task (and its children, if it haves them) to be visible/hidden on the GUI.
+     * @param isVisible true if task should be shown, false if not
      */
     @Override
-    public void setVisibility(boolean isVisible) {
+    public void setVisibilityDown(boolean isVisible) {
         this.isVisible = isVisible;
         for (IExecuteTask task : taskList) {
-            task.setVisibility(isVisible);
+            task.setVisibilityDown(isVisible);
+        }
+    }
+
+    /**
+     * Sets this task (and its parent, if it has one) to be visible/hidden on the GUI.
+     * @param isVisible true if task should be shown, false if not
+     */
+    public void setVisibilityUp(boolean isVisible) {
+        this.isVisible = isVisible;
+        if (parent != null) {
+            parent.setVisibilityUp(isVisible);
         }
     }
 

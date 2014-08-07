@@ -65,7 +65,21 @@ public class DecompileVisitor extends ATaskVisitor {
         addCmd("PumpParams", new ITaskVisitorCmd(){
             @Override
             public Object apply(String id, IExecuteTask host, Object... params) {
-                ((ArrayList<ALeafTask>) params[0]).add((RaiseTask) host);
+                ((ArrayList<ALeafTask>) params[0]).add((PumpParamsTask) host);
+                return null;
+            }
+        });
+        addCmd("Raw", new ITaskVisitorCmd(){
+            @Override
+            public Object apply(String id, IExecuteTask host, Object... params) {
+                ((ArrayList<ALeafTask>) params[0]).add((RawTask) host);
+                return null;
+            }
+        });
+        addCmd("Delay", new ITaskVisitorCmd(){
+            @Override
+            public Object apply(String id, IExecuteTask host, Object... params) {
+                ((ArrayList<ALeafTask>) params[0]).add((DelayTask) host);
                 return null;
             }
         });

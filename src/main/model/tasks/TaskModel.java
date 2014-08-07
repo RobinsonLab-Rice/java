@@ -136,22 +136,32 @@ public class TaskModel {
     }
 
     /**
-     * Returns factories for both pre-made tasks and user defined ones.
-     *
-     * @return
+     * Returns factories for both pre-made tasks.
      */
-    public Iterable<ITaskFactory> getTaskFactories() {
+    public Iterable<ITaskFactory> getBasicTaskFactories() {
         ArrayList<ITaskFactory> factories = new ArrayList<ITaskFactory>();
 
         //add in premade tasks
         factories.add(new TaskFactory(new MoveToWellTask("Plate1", "n", "m")));
         factories.add(new TaskFactory(new MoveToLocTask("n", "m")));
         factories.add(new TaskFactory(new PumpParamsTask(1000, 500)));
-        factories.add(new TaskFactory(new DispenseTask("n")));
+        factories.add(new TaskFactory(new DispenseTask("d")));
         factories.add(new TaskFactory(new LowerTask()));
         factories.add(new TaskFactory(new RaiseTask()));
-        factories.add(new TaskFactory(new NozzleHeightTask("n")));
+        factories.add(new TaskFactory(new NozzleHeightTask("h")));
+        factories.add(new TaskFactory(new DelayTask("t")));
+        factories.add(new TaskFactory(new RawTask()));
         factories.add(new TaskFactory(new MultiTask()));
+
+
+        return factories;
+    }
+
+    /**
+     * Returns factories for user-made tasks.
+     */
+    public Iterable<ITaskFactory> getSavedTaskFactories() {
+        ArrayList<ITaskFactory> factories = new ArrayList<ITaskFactory>();
 
         //add in user made tasks
         ArrayList<Object> savedTasks = serializationModel.getSavedData(SaveType.TASK);
@@ -270,8 +280,10 @@ public class TaskModel {
      * @param taskToAdd IExecuteTask to add
      */
     public void appendTaskToQueue(IExecuteTask taskToAdd) {
-        ((MultiTask) taskQueue.getRoot()).addTaskToEnd(taskToAdd);
-        taskQueue.nodeStructureChanged((MultiTask) taskQueue.getRoot());
+        MultiTask root = (MultiTask) taskQueue.getRoot();
+        taskToAdd.setParent(root);
+        root.addTaskToEnd(taskToAdd);
+        taskQueue.nodeStructureChanged(root);
     }
 
     /**

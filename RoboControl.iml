@@ -69,7 +69,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="junit-4.11" level="project" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
