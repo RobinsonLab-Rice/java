@@ -28,8 +28,8 @@ import java.awt.event.*;
  */
 public class TaskCreationPanel extends JPanel {
     private JPanel taskCreatingPanel;
+    private JComboBox<ITaskFactory> basicTasksCmb;
     private JComboBox<ITaskFactory> savedTasksCmb;
-    private JButton moveTaskToTreeBtn;
     private JButton debugExecuteBtn;
     private JButton executeAllBtn;
     private TaskTree taskTree;
@@ -41,6 +41,8 @@ public class TaskCreationPanel extends JPanel {
     private JButton deleteExperimentBtn;
     private JTextField hTextField;
     private JScrollPane taskTreeScrollPane;
+    private JButton loadBasicTaskBtn;
+    private JButton loadSavedTaskBtn;
 
     private MainPanel mainView;
     private TaskModel taskModel;
@@ -50,14 +52,18 @@ public class TaskCreationPanel extends JPanel {
     public TaskCreationPanel() {
 
         /* Get selected factory, make its task, and add that to the execution tree. */
-        moveTaskToTreeBtn.addActionListener(new ActionListener() {
+        loadBasicTaskBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                IExecuteTask root = (IExecuteTask) taskTree.getModel().getRoot();
-                IExecuteTask taskToAdd = savedTasksCmb.getItemAt(savedTasksCmb.getSelectedIndex()).make();
-                taskToAdd.setParent(root);
-                root.insert(taskToAdd, root.getChildCount());
-                ((DefaultTreeModel)taskTree.getModel()).nodeStructureChanged(root);
+                taskModel.appendTaskToQueue(basicTasksCmb.getItemAt(basicTasksCmb.getSelectedIndex()).make());
+            }
+        });
+
+        /* Get selected factory, make its task, and add that to the execution tree. */
+        loadSavedTaskBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                taskModel.appendTaskToQueue(savedTasksCmb.getItemAt(savedTasksCmb.getSelectedIndex()).make());
             }
         });
 
@@ -73,12 +79,12 @@ public class TaskCreationPanel extends JPanel {
         deleteTaskBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (savedTasksCmb.getSelectedIndex() <= 4) {
-                    JOptionPane.showMessageDialog(savedTasksCmb, "Can't delete a built-in task.");
+                if (savedTasksCmb.getItemCount() == 0) {
+                    JOptionPane.showMessageDialog(savedTasksCmb, "No task to delete!");
                     return;
                 }
                 serializationModel.deleteData(savedTasksCmb.getItemAt(savedTasksCmb.getSelectedIndex()).toString(), SaveType.TASK);
-                MainPanel.GUIHelper.updateCmb(taskModel.getTaskFactories(), savedTasksCmb);
+                MainPanel.GUIHelper.updateCmb(taskModel.getSavedTaskFactories(), savedTasksCmb);
             }
         });
 
@@ -145,7 +151,8 @@ public class TaskCreationPanel extends JPanel {
 //        taskTree.getActionMap().put("paste", TransferHandler.getPasteAction());
 
         //populate the task and experiment comboboxes
-        MainPanel.GUIHelper.updateCmb(taskModel.getTaskFactories(), savedTasksCmb);
+        MainPanel.GUIHelper.updateCmb(taskModel.getBasicTaskFactories(), basicTasksCmb);
+        MainPanel.GUIHelper.updateCmb(taskModel.getSavedTaskFactories(), savedTasksCmb);
         MainPanel.GUIHelper.updateCmb(taskModel.getExperimentFactories(), savedExperimentCmb);
     }
 

@@ -136,11 +136,9 @@ public class TaskModel {
     }
 
     /**
-     * Returns factories for both pre-made tasks and user defined ones.
-     *
-     * @return
+     * Returns factories for both pre-made tasks.
      */
-    public Iterable<ITaskFactory> getTaskFactories() {
+    public Iterable<ITaskFactory> getBasicTaskFactories() {
         ArrayList<ITaskFactory> factories = new ArrayList<ITaskFactory>();
 
         //add in premade tasks
@@ -154,6 +152,16 @@ public class TaskModel {
         factories.add(new TaskFactory(new DelayTask("t")));
         factories.add(new TaskFactory(new RawTask()));
         factories.add(new TaskFactory(new MultiTask()));
+
+
+        return factories;
+    }
+
+    /**
+     * Returns factories for user-made tasks.
+     */
+    public Iterable<ITaskFactory> getSavedTaskFactories() {
+        ArrayList<ITaskFactory> factories = new ArrayList<ITaskFactory>();
 
         //add in user made tasks
         ArrayList<Object> savedTasks = serializationModel.getSavedData(SaveType.TASK);
@@ -271,8 +279,10 @@ public class TaskModel {
      * @param taskToAdd IExecuteTask to add
      */
     public void appendTaskToQueue(IExecuteTask taskToAdd) {
-        ((MultiTask) taskQueue.getRoot()).addTaskToEnd(taskToAdd);
-        taskQueue.nodeStructureChanged((MultiTask) taskQueue.getRoot());
+        MultiTask root = (MultiTask) taskQueue.getRoot();
+        taskToAdd.setParent(root);
+        root.addTaskToEnd(taskToAdd);
+        taskQueue.nodeStructureChanged(root);
     }
 
     /**

@@ -86,7 +86,7 @@ public class TreeRightClickListener extends MouseAdapter {
                         serializationModel.saveTask(selected);
                     }
 
-                    MainPanel.GUIHelper.updateCmb(taskModel.getTaskFactories(), savedTasksCmb);
+                    MainPanel.GUIHelper.updateCmb(taskModel.getSavedTaskFactories(), savedTasksCmb);
                     }
                 });
 
