@@ -80,7 +80,7 @@ public class DrawVisitor extends ATaskVisitor {
                                 scale*2,                //height
                                 null);
                     }
-                    else if (dispenseHost.getVolume() > 0) {          //otherwise, draw an arrow going down
+                    else if (dispenseHost.getVolume() < 0) {          //otherwise, draw an arrow going down
                         g2d.drawImage(withdrawIcon,
                                 (int)(destination.getX()*sF - scale), //top-left x coordinate
                                 (int)(destination.getY()*sF - scale), //top-left y coorinate
