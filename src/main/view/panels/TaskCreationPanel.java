@@ -130,8 +130,8 @@ public class TaskCreationPanel extends JPanel {
                                                           boolean sel,boolean expanded,boolean leaf,int row,boolean hasFocus){
                 super.getTreeCellRendererComponent(tree,value,sel,expanded,leaf,row,hasFocus);
                 IExecuteTask node = (IExecuteTask) value;
-                //if node is not visible and is a leaf task, grey it out. never grey out multi tasks, too confusing
-                if (!node.getVisibility() && node instanceof ALeafTask){
+                //if node is not visible grey it out
+                if (!node.getVisibility()){
                     setForeground(Color.GRAY);
                 }
                 return this;

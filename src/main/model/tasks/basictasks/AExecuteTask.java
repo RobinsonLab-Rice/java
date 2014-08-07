@@ -14,7 +14,7 @@ public abstract class AExecuteTask implements IExecuteTask {
      */
     protected transient IExecuteTask parent;
 
-    protected boolean isVisible = true;
+    protected transient boolean isVisible = true;
 
     /**
      * Sets the parent of the receiver to <code>newParent</code>. Inherited from MutableTreeNode.

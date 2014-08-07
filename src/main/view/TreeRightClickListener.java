@@ -121,7 +121,8 @@ public class TreeRightClickListener extends MouseAdapter {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         AExecuteTask selected = (AExecuteTask) selPath.getLastPathComponent();
-                        selected.setVisibility(true);
+                        selected.setVisibilityDown(true);
+                        selected.setVisibilityUp(true);
                         ((DefaultTreeModel) taskTree.getModel()).nodeChanged(selected);
                         taskModel.repaint();
                     }
@@ -132,7 +133,7 @@ public class TreeRightClickListener extends MouseAdapter {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         AExecuteTask selected = (AExecuteTask) selPath.getLastPathComponent();
-                        selected.setVisibility(false);
+                        selected.setVisibilityDown(false);
                         ((DefaultTreeModel) taskTree.getModel()).nodeChanged(selected);
                         taskModel.repaint();
                     }

@@ -26,7 +26,7 @@ public class TaskFactory implements ITaskFactory {
     }
 
     /**
-     * Instantiate the specific IExecuteTask for which this factory is defined.
+     * Instantiat=e the specific IExecuteTask for which this factory is defined.
      *
      * @return An IExecuteTask instance.
      */
@@ -34,7 +34,9 @@ public class TaskFactory implements ITaskFactory {
     public IExecuteTask make() {
         //return a copy of the input task, using JSON for help
         try {
-            return (IExecuteTask) JsonReader.jsonToJava(JsonWriter.objectToJson(toMake));
+            IExecuteTask copy = (IExecuteTask) JsonReader.jsonToJava(JsonWriter.objectToJson(toMake));
+            copy.resetParents();
+            return copy;
         } catch (IOException e) {
             System.out.println("Issue making deep copy of task in premade task factory.");
             e.printStackTrace();
