@@ -151,6 +151,8 @@ public class TaskModel {
         factories.add(new TaskFactory(new LowerTask()));
         factories.add(new TaskFactory(new RaiseTask()));
         factories.add(new TaskFactory(new NozzleHeightTask("h")));
+        factories.add(new TaskFactory(new DelayTask("t")));
+        factories.add(new TaskFactory(new RawTask()));
         factories.add(new TaskFactory(new MultiTask()));
 
         //add in user made tasks

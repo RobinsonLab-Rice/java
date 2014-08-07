@@ -179,6 +179,18 @@ public class DrawVisitor extends ATaskVisitor {
                 return null;
             }
         });
+        addCmd("Raw", new ITaskVisitorCmd(){
+            @Override
+            public Object apply(String id, IExecuteTask host, Object... params) {
+                return null;
+            }
+        });
+        addCmd("Delay", new ITaskVisitorCmd(){
+            @Override
+            public Object apply(String id, IExecuteTask host, Object... params) {
+                return null;
+            }
+        });
 	}
 
     /**
