@@ -1,1 +1,1 @@
-This is the repository for the fluid handler's Java code.
+This is the repository for the RoboFlow's Java code. Only download this if you intend to make code changes to the Java program -- an executable comes with the main zip file, downloaded from the [main portal repository](https://github.com/RoboSquirt/fluidhandler).
