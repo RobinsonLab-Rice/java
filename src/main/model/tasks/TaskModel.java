@@ -452,4 +452,12 @@ public class TaskModel {
     public void replaceAll(IExecuteTask task, String toReplace, String replacement) {
         task.replaceAll(toReplace, replacement);
     }
+
+    /**
+     *  Allow ClientTask to callibrate the system
+     */
+    public void callibrate() {
+        serialCommModel.sendText("calibrate()");
+        plateModel.calibrate();
+    }
 }

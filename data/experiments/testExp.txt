@@ -1,0 +1,13 @@
+{
+  "@id":1,
+  "@type":"main.model.tasks.basictasks.MultiTask",
+  "taskList":[
+    {
+      "@type":"main.model.tasks.basictasks.MoveToWellTask",
+      "plate":"Move to: Plate1",
+      "row":"A",
+      "column":"1"
+    }
+  ],
+  "name":"testExp"
+}

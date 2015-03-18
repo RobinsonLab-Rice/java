@@ -73,6 +73,8 @@ public class SerialModel implements SerialPortEventListener {
 	
 	/**
 	 * Scans for any serial ports that are available on the computer (ones that have things connected to them, usually).
+     * This needs to be improved - Can check registry on Windows to verify device directly.  Needs better options for
+     * users to fix errors as well (assuming the registry check doesn't work for some reason).
 	 */
 	public Iterable<String> scanForPorts(){
 

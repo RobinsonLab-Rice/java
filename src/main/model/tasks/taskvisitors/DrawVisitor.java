@@ -64,7 +64,7 @@ public class DrawVisitor extends ATaskVisitor {
                 if (!dispenseHost.getVisibility()) return params[2];
 
                 Graphics2D g2d = (Graphics2D) params[0];
-                double sF = (double) params[1];
+                double sF = (Double) params[1];
                 Point2D destination = (Point2D) params[2];
 
                 int scale = 8;
@@ -109,7 +109,7 @@ public class DrawVisitor extends ATaskVisitor {
 
                 Graphics2D g2d = (Graphics2D) params[0];
                 g2d.setColor(Color.black);
-                double sF = (double) params[1];
+                double sF = (Double) params[1];
                 Point2D start = (Point2D) params[2];
                 ArrayList<Plate> plates = (ArrayList<Plate>) params[3];
                 ArrayList<String> identifiers = moveToWellHost.getDestination();
@@ -140,7 +140,7 @@ public class DrawVisitor extends ATaskVisitor {
 
                 Graphics2D g2d = (Graphics2D) params[0];
                 g2d.setColor(Color.black);
-                double sF = (double) params[1];
+                double sF = (Double) params[1];
                 Point2D start = (Point2D) params[2];
                 Point2D destination = moveToLocHost.getDestination();
 
