@@ -69,7 +69,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="json-io-2.6.11" level="application" />
-    <orderEntry type="library" name="junit-4.11" level="application" />
+    <orderEntry type="library" name="json-io-2.6.11 (2)" level="project" />
+    <orderEntry type="library" name="junit-4.11 (2)" level="project" />
   </component>
 </module>

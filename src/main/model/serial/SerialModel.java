@@ -102,7 +102,7 @@ public class SerialModel implements SerialPortEventListener {
 	 */
 	public void connectToPort(String _portName){
 		try {
-			arduinoPort = (SerialPort) CommPortIdentifier.getPortIdentifier(_portName).open("Arduino", 2000);
+			arduinoPort = CommPortIdentifier.getPortIdentifier(_portName).open("Arduino", 2000);
 			initIOStream();
 			System.out.println("Successfully connected to the Arduino on port " + _portName + "!");
 		} catch (Exception e) {
@@ -116,6 +116,7 @@ public class SerialModel implements SerialPortEventListener {
 	public void disconnectPort(){
 		arduinoPort.removeEventListener();
 		arduinoPort.close();
+        System.out.println("Arduino Disconnected");
 	}
 	
 	/**
@@ -141,12 +142,25 @@ public class SerialModel implements SerialPortEventListener {
 	 * and processes it accordingly.
 	 */
 	@Override
-	public void serialEvent(SerialPortEvent thisEvent) {
+	public synchronized void serialEvent(SerialPortEvent thisEvent) {
 		if (thisEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			try {
+                /*
 				if (inputStream.ready()){
 					processSerialInput(inputStream.readLine());
 				}
+				*/
+                String response = inputStream.readLine();
+                System.out.println("From Arduino: " + response);
+                switch (response)    {
+                    case "Done":
+                        taskModel.executeNext();
+                        break;
+                    case "Finished Calibration":
+                        plateModel.calibrate();
+                        break;
+
+                }
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -160,12 +174,23 @@ public class SerialModel implements SerialPortEventListener {
 	 */
 	public void processSerialInput(String serialInput){
 		System.out.println("From Arduino: " + serialInput);
+        switch (serialInput)    {
+            case "Done":
+                taskModel.executeNext();
+                break;
+            case "Finished Calibration":
+                plateModel.calibrate();
+                break;
+
+        }
+        /*
 		if (serialInput.equals("Done")){
 			taskModel.executeNext();
 		}
 		if (serialInput.equals("Finished Calibration")){
 			plateModel.calibrate();
 		}
+		*/
 	}
 	
 	/**
@@ -201,6 +226,6 @@ public class SerialModel implements SerialPortEventListener {
      * Check if the serial command to be send conforms to the form "name(values)".
      */
     public boolean checkSendCommand(String toSend) {
-        return toSend.matches("\\w+\\(\\w*\\)");
+        return toSend.matches("\\w+\\(\\w*\\,*\\w*\\)");
     }
 }
