@@ -162,7 +162,10 @@ public class SerialModel implements SerialPortEventListener {
 
                 }
 			} catch (IOException e) {
-				e.printStackTrace();
+				if (e.getMessage().equalsIgnoreCase("Underlying input stream returned zero bytes")) {
+                    return;
+                }
+                e.printStackTrace();
 			}
 		}
 	}

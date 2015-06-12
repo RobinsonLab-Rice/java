@@ -61,6 +61,7 @@ public class MainPanel extends JFrame{
         ImageIcon icon = new ImageIcon("src/images/HappySquirtle.png");
         setIconImage(icon.getImage());
         setVisible(true);
+        this.plateModel.calibrate();
     }
 
     /* When a request is made, update all windows. */

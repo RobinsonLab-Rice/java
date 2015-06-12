@@ -103,6 +103,12 @@ public class TaskCreationPanel extends JPanel {
                 taskModel.debugExecuteAll();
             }
         });
+        executeAllBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)  {
+                taskModel.executeAll();
+            }
+        });
     }
 
     /* Perform necessary startup procedures (populating dropboxes, etc.) */
